@@ -1,0 +1,18 @@
+# build outputs
+dist
+build
+
+# dependencies
+node_modules
+
+# package management
+package-lock.json
+pnpm-lock.yaml
+
+# environment
+.env
+.env.*
+
+# misc
+coverage
+*.log
