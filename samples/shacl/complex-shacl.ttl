@@ -1,0 +1,237 @@
+# Generated from Chat-GPT, take with a pinch of salt
+# TODO: Move to a better SHACL document after meeting with Felix
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix ex:     <http://example.org/> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix :       <#> .
+
+################################################################
+# A comprehensive SHACL shapes graph (Turtle)
+# - Mixes node shapes, property shapes, logical combos,
+#   qualified shapes, SPARQL constraint, rules, closed shapes, etc.
+################################################################
+
+# Top-level metadata (annotations)
+:shapesGraph
+    a            sh:NodeShape ;
+    rdfs:label   "Comprehensive example of many SHACL features" ;
+    rdfs:comment "Demonstration shapes graph containing many SHACL features for learning/testing." .
+
+################################################################
+# 1) Basic NodeShape with property shapes and targets
+################################################################
+ex:PersonShape
+    a                    sh:NodeShape ;
+    sh:targetClass       foaf:Person ;        # apply to all foaf:Person nodes
+    sh:deactivated       false ;
+    sh:message           "Person shape violation" ;
+    sh:severity          sh:Violation ;
+    sh:property          [ a           sh:PropertyShape ;
+                           sh:path     foaf:name ;
+                           sh:minCount 1 ;
+                           sh:datatype xsd:string ;
+                           sh:pattern  "^[A-Z].*" ;        # name must start with capital
+                           sh:message  "Name must start with a capital letter and be a string." ; ] ;
+    sh:property          [ a               sh:PropertyShape ;
+                           sh:path         foaf:age ;
+                           sh:minCount     1 ;
+                           sh:datatype     xsd:integer ;
+                           sh:minInclusive 0 ;
+                           sh:maxInclusive 150 ;
+                           sh:message      "Age should be an integer between 0 and 150." ; ] ;
+    sh:property          [ a           sh:PropertyShape ;
+                           sh:path     foaf:mbox ;
+                           sh:nodeKind sh:IRI ;            # require an IRI for mailbox
+                           sh:message  "mbox must be an IRI" ; ] ;
+    sh:closed            true ;                   # closed shape: no other props except allowed ones
+    sh:ignoredProperties ( rdf:type ) .  # allow rdf:type to appear without violation
+
+################################################################
+# 2) Property shape with sh:in (enumeration) and language uniqueness
+################################################################
+ex:CountryCodeShape
+    a                   sh:NodeShape ;
+    sh:targetSubjectsOf schema:countryCode ;  # target subjects that have schema:countryCode
+    sh:property         [ a          sh:PropertyShape ;
+                          sh:path    schema:countryCode ;
+                          sh:in      ( "DE" "FR" "ES" "IT" "GB" ) ;
+                          sh:message "countryCode must be one of the allowed values." ; ] ;
+    # show uniqueLang on a multilingual label property
+    sh:property         [ a             sh:PropertyShape ;
+                          sh:path       rdfs:label ;
+                          sh:uniqueLang true ;
+                          sh:message    "rdfs:label must not have duplicate language tags." ; ] .
+
+################################################################
+# 3) Logical combinations: sh:or, sh:and, sh:not, sh:xone
+################################################################
+ex:IdentifierShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:IdentifiableEntity ;
+    sh:or          ( [ sh:property [ sh:path    ex:ssn ;
+                                     sh:pattern "^[0-9]{3}-[0-9]{2}-[0-9]{4}$" ] ]
+                     [ sh:property [ sh:path      ex:passportNumber ;
+                                     sh:minLength 6 ] ] ) ;
+    sh:and         ( [ sh:property [ sh:path     ex:hasIdIssuedBy ;
+                                     sh:minCount 1 ] ] ) ;
+    sh:not         [                              # not allowed to have both forbidden property and another specific value
+                                                  sh:property [ sh:path     ex:isDeprecated ;
+                                                                sh:hasValue true ] ] ;
+    sh:xone        (                              # exactly one of these alternative shapes must match
+                                                  [ sh:property [ sh:path     ex:altId ;
+                                                                  sh:datatype xsd:string ] ]
+                                                  [ sh:property [ sh:path     ex:altNumericId ;
+                                                                  sh:datatype xsd:integer ] ] ) .
+
+################################################################
+# 4) Qualified value shapes (qualifiedValueShape / qualifiedMin/MaxCount)
+################################################################
+ex:ScoresShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Student ;
+    sh:property    [ a                      sh:PropertyShape ;
+                     sh:path                ex:score ;
+                     sh:qualifiedValueShape [ a               sh:NodeShape ;
+                                              sh:datatype     xsd:decimal ;
+                                              sh:minInclusive 0 ;
+                                              sh:maxInclusive 100 ; ] ;
+                     sh:qualifiedMinCount   1 ;   # at least one valid score
+                     sh:qualifiedMaxCount   10 ;  # at most 10 scores
+                     sh:message             "Scores must be decimals between 0 and 100; between 1 and 10 entries." ; ] .
+
+################################################################
+# 5) SHACL SPARQL Constraint (useful for complex constraints)
+################################################################
+ex:NoOrphanAddress
+    a              sh:NodeShape ;
+    sh:targetClass ex:Address ;
+    sh:sparql      [ a           sh:SPARQLConstraint ;
+                     sh:prefixes [ sh:declarePrefix
+                                           "ex" ; # note: not all SHACL engines support sh:prefixes syntax the same
+                                 ] ;
+                     sh:select   """
+            SELECT $this (?person AS ?offender)
+            WHERE {
+              FILTER NOT EXISTS { ?person ex:hasAddress $this . }
+            }
+        """ ;
+                     sh:message  "Address nodes must be linked from at least one Person via ex:hasAddress." ; ] .
+
+################################################################
+# 6) SHACL Rules (advanced feature) — construct a new triple (example)
+#    (This uses the SHACL Rules extension; engines vary in support.)
+################################################################
+ex:AddressInferenceShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Person ;
+    sh:rule        [ a            sh:TripleRule ;
+                     sh:subject   sh:this ;
+                     sh:predicate ex:hasInferredGraph ;
+                     sh:object    [ sh:sparql """
+            CONSTRUCT {
+              ?this ex:hasInferredGraph ?g .
+            } WHERE {
+              # compute something; placeholder
+              BIND(IRI(CONCAT(STR(?this), "/graph")) AS ?g)
+            }
+        """ ] ; ] .
+
+################################################################
+# 7) SPARQL-based targets (advanced)
+################################################################
+:SPARQLTargetShape
+    a           sh:NodeShape ;
+    sh:target   [ a         sh:SPARQLTarget ;
+                  sh:select """
+          SELECT ?s WHERE {
+            ?s ex:needsValidation true .
+          }
+        """ ] ;
+    sh:property [ a           sh:PropertyShape ;
+                  sh:path     ex:mustHaveProp ;
+                  sh:minCount 1 ; ] .
+
+################################################################
+# 8) Example of sh:message, sh:severity, sh:deactivated on a property shape
+################################################################
+ex:DeprecatedPropertyShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:LegacyThing ;
+    sh:property    [ a              sh:PropertyShape ;
+                     sh:path        ex:oldField ;
+                     sh:deactivated true ;       # this constraint is currently turned off
+                     sh:message     "oldField usage is deprecated (constraint deactivated)." ;
+                     sh:severity    sh:Warning ; ] .
+
+################################################################
+# 9) Example using sh:node (value must conform to another node shape)
+################################################################
+ex:CompanyShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Company ;
+    sh:property    [ a           sh:PropertyShape ;
+                     sh:path     ex:ceo ;
+                     sh:node     ex:PersonShape ;    # value must itself conform to ex:PersonShape
+                     sh:minCount 1 ; ] .
+
+################################################################
+# 10) Examples of sh:class, sh:nodeKind, sh:hasValue, sh:pattern etc
+################################################################
+ex:ProductShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Product ;
+    sh:property    [ a           sh:PropertyShape ;
+                     sh:path     ex:manufacturer ;
+                     sh:class    ex:Organization ;
+                     sh:nodeKind sh:IRI ; ] ;
+    sh:property    [ a           sh:PropertyShape ;
+                     sh:path     ex:sku ;
+                     sh:pattern  "^[A-Z0-9\\-]{4,}$" ;
+                     sh:minCount 1 ;
+                     sh:maxCount 1 ; ] .
+
+################################################################
+# 11) Example showing messages in different severities
+################################################################
+ex:SampleSeverityShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Thing ;
+    sh:property    [ a           sh:PropertyShape ;
+                     sh:path     ex:maybeOptional ;
+                     sh:minCount 1 ;
+                     sh:severity sh:Info ;
+                     sh:message  "This info-level constraint suggests maybeOptional be present." ; ] ;
+    sh:property    [ a           sh:PropertyShape ;
+                     sh:path     ex:important ;
+                     sh:minCount 1 ;
+                     sh:severity sh:Violation ;
+                     sh:message  "Important must be present." ; ] .
+
+################################################################
+# 12) Example of sh:scope (deprecated in some profiles) and shapes graph composition
+################################################################
+:composedShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:ComposedThing ;
+    sh:property    [ a       sh:PropertyShape ;
+                     sh:path ex:part ;
+                     sh:node ex:PartShape ; ] .
+
+################################################################
+# 13) PropertyShape using sh:languageIn (language tag constraints) - using sh:languageIn (SHACL spec)
+################################################################
+ex:LabelLanguageShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:LocalizedThing ;
+    sh:property    [ a             sh:PropertyShape ;
+                     sh:path       rdfs:label ;
+                     sh:languageIn ( "en" "de" ) ;
+                     sh:message    "labels only allowed in English or German." ; ] .
+
+################################################################
+# End of example shapes graph
+################################################################
