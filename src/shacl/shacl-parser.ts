@@ -1,5 +1,5 @@
 import { ShaclDocumentBuilder } from './shacl-document-builder';
-import { ShaclDocument } from './shacl-document';
+import { ShaclDocument } from './model/shacl-document';
 import * as fs from 'node:fs';
 import { Parser } from 'n3';
 import logger from '../logger';
@@ -29,7 +29,11 @@ export class ShaclParser {
         }
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (triple) {
-          // do nothing
+          this.shaclDocumentBuilder.setTriple({
+            subject: triple.subject.value,
+            predicate: triple.predicate.value,
+            object: triple.object.value,
+          });
         } else {
           // For some reason, the prefixes are only extracted at the end.
           // The whole parser works with callbacks and we should wait for it.
