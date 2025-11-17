@@ -9,10 +9,6 @@ on:
   pull_request:
     branches: ['**']
 
-permissions:
-  contents: read
-  pull-requests: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,15 +44,6 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage
-
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@v8
-        id: test-report # Set ID reference for step
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: JEST Tests # Name of the check run which will be created
-          path: junit.xml # Path to test results
-          reporter: jest-junit
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
