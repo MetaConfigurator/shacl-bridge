@@ -21,10 +21,13 @@ export class ShaclParser {
     const parser = new Parser({ format: 'text/turtle' });
     return new Promise((resolve, reject) => {
       parser.parse(this.content, (error, triple, prefixes) => {
+        // TODO: check if this is the correct way to handle errors
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (error) {
           logger.error(`Exception while parsing document : ${error}`);
           reject(error);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (triple) {
           // do nothing
         } else {

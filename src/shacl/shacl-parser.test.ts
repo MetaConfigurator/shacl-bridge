@@ -3,8 +3,8 @@ import { ShaclDocument } from './shacl-document';
 
 describe('SHACL Parser', () => {
   it('should parse and return the shacl document', async () => {
-    let shaclParser = new ShaclParser('src/shacl/sample-shacl.ttl');
-    let parsed = await shaclParser.parse();
+    const shaclParser = new ShaclParser('src/shacl/sample-shacl.ttl');
+    const parsed = await shaclParser.parse();
     expect(parsed).toBeDefined();
     expect(parsed).toBeInstanceOf(ShaclDocument);
     expect(parsed.prefix).toEqual(

@@ -2,7 +2,7 @@ import logger from '../logger';
 import { ShaclDocument } from './shacl-document';
 
 export class ShaclDocumentBuilder {
-  private prefix: Map<string, string> = new Map();
+  private prefix = new Map<string, string>();
 
   setPrefix(prefixName: string, prefixValue: string) {
     logger.debug(`Adding prefix ${prefixName} : ${prefixValue}`);
