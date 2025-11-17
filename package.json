@@ -8,8 +8,8 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
