@@ -13,6 +13,7 @@
   "devDependencies": {
     "@eslint/js": "^9.38.0",
     "@types/jest": "^30.0.0",
+    "@types/n3": "^1.26.1",
     "eslint": "^9.38.0",
     "globals": "^16.4.0",
     "jest": "^30.2.0",
@@ -22,5 +23,9 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "n3": "^1.26.0",
+    "pino": "^10.1.0"
+  }
 }
