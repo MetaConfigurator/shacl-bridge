@@ -10,8 +10,8 @@ on:
     branches: ['**']
 
 permissions:
-    contents: read
-    pull-requests: read
+  contents: read
+  pull-requests: read
 
 jobs:
   build:
