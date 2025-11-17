@@ -1,5 +1,5 @@
 import * as js from '@eslint/js';
-import * as globals from 'globals';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 
@@ -11,7 +11,7 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
-    ignores: ['node_modules/*', 'dist/*'],
+    ignores: ['node_modules/*', 'dist/*', 'coverage/*'],
   },
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
