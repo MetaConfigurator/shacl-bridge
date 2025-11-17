@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: ['**']
+    branches: [ '**' ]
   pull_request:
-    branches: ['**']
+    branches: [ '**' ]
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [ 18.x, 20.x, 22.x ]
 
     steps:
       - name: Checkout code
@@ -44,6 +44,12 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage
+
+      - name: Upload test results
+        uses: actions/upload-test-report@v3
+        with:
+          test-report: junit.xml
+          test-run-name: Node.js ${{ matrix.node-version }} tests
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

@@ -9,4 +9,5 @@ module.exports = {
     ...tsJestTransformCfg,
   },
   collectCoverage: true,
+  reporters: ['default', 'jest-junit'],
 };
