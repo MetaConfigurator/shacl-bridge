@@ -1,11 +1,10 @@
 import logger from '../logger';
 import { ShaclDocument } from './model/shacl-document';
-import { Triple } from './model/triple';
+import { Quad, Store } from 'n3';
 
 export class ShaclDocumentBuilder {
   private prefix = new Map<string, string>();
-  private shapes: Triple[] = new Array<Triple>();
-  private idMappings = new Map<string, string>();
+  private store = new Store();
 
   setPrefix(prefixName: string, prefixValue: string): this {
     logger.debug(`Adding prefix ${prefixName} : ${prefixValue}`);
@@ -13,24 +12,12 @@ export class ShaclDocumentBuilder {
     return this;
   }
 
-  setTriple(triple: Triple): this {
-    this.shapes.push(triple);
+  add(triple: Quad): this {
+    this.store.addQuad(triple);
     return this;
   }
 
-  private createIdMappings() {
-    const triplesWithIdMappings = this.shapes.filter(
-      (shape) => typeof shape.object == 'string' && shape.object.startsWith('n3-')
-    );
-    for (const triple of triplesWithIdMappings) {
-      if (typeof triple.object === 'string') {
-        this.idMappings.set(triple.object, triple.subject);
-      }
-    }
-  }
-
   build(): ShaclDocument {
-    this.createIdMappings();
-    return new ShaclDocument(new Map(this.prefix), this.shapes, this.idMappings);
+    return new ShaclDocument(new Map(this.prefix), this.store);
   }
 }
