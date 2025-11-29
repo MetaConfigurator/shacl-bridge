@@ -33,6 +33,7 @@
   "private": true,
   "dependencies": {
     "n3": "^1.26.0",
-    "pino": "^10.1.0"
+    "pino": "^10.1.0",
+    "ts-pattern": "^5.9.0"
   }
 }
