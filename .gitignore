@@ -17,3 +17,5 @@ dist/
 coverage/
 
 /junit.xml
+
+CLAUDE.md
