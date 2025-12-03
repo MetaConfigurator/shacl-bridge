@@ -1,6 +1,7 @@
 import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { SEVERITY, SHAPE_TYPE } from './meta-model/shape';
 import { NodeKind } from './meta-model/node-kind';
+import { Term } from 'n3';
 
 describe('ShapeDefinitionBuilder', () => {
   describe('basic construction', () => {
@@ -714,6 +715,217 @@ describe('ShapeDefinitionBuilder', () => {
       expect(result.nodeKey).toBe('n3-8');
       expect(result.coreConstraints?.first).toBe('DE');
       expect(result.coreConstraints?.rest).toBe('n3-9');
+    });
+  });
+
+  describe('setAdditionalProperty', () => {
+    it('should capture a plain literal value', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+      const literalTerm = {
+        termType: 'Literal',
+        value: '2022-04-07',
+        datatype: { value: 'http://www.w3.org/2001/XMLSchema#date' },
+      };
+
+      builder.setAdditionalProperty('http://purl.org/dc/terms/created', literalTerm as Term);
+      const result = builder.build();
+
+      expect(result.additionalProperties).toBeDefined();
+      expect(result.additionalProperties).toHaveLength(1);
+      expect(result.additionalProperties).toStrictEqual([
+        {
+          predicate: 'http://purl.org/dc/terms/created',
+          value: {
+            type: 'literal',
+            value: '2022-04-07',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+        },
+      ]);
+    });
+
+    it('should capture a language-tagged string', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+      const langStringTerm = {
+        termType: 'Literal',
+        value: 'A System is a unit of abstraction',
+        language: 'en',
+        datatype: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString' },
+      };
+
+      builder.setAdditionalProperty('http://purl.org/dc/terms/description', langStringTerm as Term);
+      const result = builder.build();
+
+      expect(result.additionalProperties).toBeDefined();
+      expect(result.additionalProperties).toHaveLength(1);
+      expect(result.additionalProperties).toStrictEqual([
+        {
+          predicate: 'http://purl.org/dc/terms/description',
+          value: { type: 'langString', value: 'A System is a unit of abstraction', language: 'en' },
+        },
+      ]);
+    });
+
+    it('should capture a URI/NamedNode value', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+      const uriTerm = {
+        termType: 'NamedNode',
+        value: 'https://w3id.org/nfdi4ing/profiles/some-profile',
+      };
+
+      builder.setAdditionalProperty('http://www.w3.org/2002/07/owl#imports', uriTerm as Term);
+      const result = builder.build();
+
+      expect(result.additionalProperties).toBeDefined();
+      expect(result.additionalProperties).toHaveLength(1);
+      expect(result.additionalProperties).toStrictEqual([
+        {
+          predicate: 'http://www.w3.org/2002/07/owl#imports',
+          value: { type: 'uri', value: 'https://w3id.org/nfdi4ing/profiles/some-profile' },
+        },
+      ]);
+    });
+
+    it('should capture a blank node as URI', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+      const blankNodeTerm = {
+        termType: 'BlankNode',
+        value: 'n3-42',
+      };
+
+      builder.setAdditionalProperty('http://example.org/someProperty', blankNodeTerm as Term);
+      const result = builder.build();
+
+      expect(result.additionalProperties).toBeDefined();
+      expect(result.additionalProperties).toHaveLength(1);
+      expect(result.additionalProperties).toStrictEqual([
+        {
+          predicate: 'http://example.org/someProperty',
+          value: { type: 'uri', value: 'n3-42' },
+        },
+      ]);
+    });
+
+    it('should capture multiple additional properties', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+
+      const dateTerm = {
+        termType: 'Literal',
+        value: '2022-04-07',
+        datatype: { value: 'http://www.w3.org/2001/XMLSchema#date' },
+      };
+
+      const titleEnTerm = {
+        termType: 'Literal',
+        value: 'System',
+        language: 'en',
+        datatype: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString' },
+      };
+
+      const titleDeTerm = {
+        termType: 'Literal',
+        value: 'System',
+        language: 'de',
+        datatype: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString' },
+      };
+
+      const licenseTerm = {
+        termType: 'NamedNode',
+        value: 'https://spdx.org/licenses/CC0-1.0.html',
+      };
+
+      builder
+        .setAdditionalProperty('http://purl.org/dc/terms/created', dateTerm as Term)
+        .setAdditionalProperty('http://purl.org/dc/terms/title', titleEnTerm as Term)
+        .setAdditionalProperty('http://purl.org/dc/terms/title', titleDeTerm as Term)
+        .setAdditionalProperty('http://purl.org/dc/terms/license', licenseTerm as Term);
+
+      const result = builder.build();
+
+      expect(result.additionalProperties).toBeDefined();
+      expect(result.additionalProperties).toHaveLength(4);
+
+      // Check created property
+      const created = result.additionalProperties?.find(
+        (p) => p.predicate === 'http://purl.org/dc/terms/created'
+      );
+      expect(created).toBeDefined();
+      expect(created).toStrictEqual({
+        predicate: 'http://purl.org/dc/terms/created',
+        value: {
+          type: 'literal',
+          value: '2022-04-07',
+          datatype: 'http://www.w3.org/2001/XMLSchema#date',
+        },
+      });
+
+      // Check title properties (both languages)
+      const titles = result.additionalProperties?.filter(
+        (p) => p.predicate === 'http://purl.org/dc/terms/title'
+      );
+      expect(titles).toHaveLength(2);
+      expect(titles?.[0].value.type).toBe('langString');
+      expect(titles?.[1].value.type).toBe('langString');
+
+      // Check license property
+      const license = result.additionalProperties?.find(
+        (p) => p.predicate === 'http://purl.org/dc/terms/license'
+      );
+      expect(license).toBeDefined();
+      expect(license?.value.type).toBe('uri');
+      expect(license?.value.value).toBe('https://spdx.org/licenses/CC0-1.0.html');
+    });
+
+    it('should not include additionalProperties field when no additional properties are set', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+      builder.setType('http://www.w3.org/ns/shacl#NodeShape');
+      const result = builder.build();
+      expect(result.additionalProperties).toBeUndefined();
+    });
+
+    it('should support method chaining with additional properties', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+
+      const dateTerm = {
+        termType: 'Literal',
+        value: '2022-04-07',
+        datatype: { value: 'http://www.w3.org/2001/XMLSchema#date' },
+      };
+
+      const result = builder
+        .setType('http://www.w3.org/ns/shacl#NodeShape')
+        .setTargetClass('http://example.org/MyClass')
+        .setAdditionalProperty('http://purl.org/dc/terms/created', dateTerm as Term)
+        .setMinCount('1')
+        .build();
+
+      expect(result.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
+      expect(result.shape?.targetClass).toBe('http://example.org/MyClass');
+      expect(result.coreConstraints?.minCount).toBe(1);
+      expect(result.additionalProperties).toBeDefined();
+      expect(result.additionalProperties).toHaveLength(1);
+    });
+
+    it('should handle literal without explicit language (plain literal)', () => {
+      const builder = new ShapeDefinitionBuilder('test');
+      const plainLiteralTerm = {
+        termType: 'Literal',
+        value: 'Some plain text',
+        datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+      };
+
+      builder.setAdditionalProperty('http://example.org/plainText', plainLiteralTerm as Term);
+      const result = builder.build();
+      expect(result.additionalProperties).toStrictEqual([
+        {
+          predicate: 'http://example.org/plainText',
+          value: {
+            type: 'literal',
+            value: 'Some plain text',
+            datatype: 'http://www.w3.org/2001/XMLSchema#string',
+          },
+        },
+      ]);
     });
   });
 });

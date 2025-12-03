@@ -1,7 +1,7 @@
 import { Shape } from './shape';
 import { CoreConstraints } from './core-constraints';
 
-type RdfValue =
+export type RdfValue =
   | { type: 'literal'; value: string; datatype?: string }
   | { type: 'uri'; value: string }
   | { type: 'langString'; value: string; language: string };
