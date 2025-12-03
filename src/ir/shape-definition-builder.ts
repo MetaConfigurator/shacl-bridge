@@ -59,13 +59,58 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
+  setMinCount(count: string) {
+    this.coreConstraints.minCount = parseInt(count);
+    return this;
+  }
+
   setMaxCount(count: string) {
     this.coreConstraints.maxCount = parseInt(count);
     return this;
   }
 
-  setMinCount(count: string) {
-    this.coreConstraints.maxCount = parseInt(count);
+  setMinInclusive(count: string) {
+    this.coreConstraints.minInclusive = parseInt(count);
+    return this;
+  }
+
+  setMaxInclusive(count: string) {
+    this.coreConstraints.maxInclusive = parseInt(count);
+    return this;
+  }
+
+  setMinExclusive(count: string) {
+    this.coreConstraints.minExclusive = parseInt(count);
+    return this;
+  }
+
+  setMaxExclusive(count: string) {
+    this.coreConstraints.maxExclusive = parseInt(count);
+    return this;
+  }
+
+  setMinLength(count: string) {
+    this.coreConstraints.minLength = parseInt(count);
+    return this;
+  }
+
+  setMaxLength(count: string) {
+    this.coreConstraints.maxLength = parseInt(count);
+    return this;
+  }
+
+  setQualifiedMinCount(count: string) {
+    this.coreConstraints.qualifiedMinCount = parseInt(count);
+    return this;
+  }
+
+  setQualifiedMaxCount(count: string) {
+    this.coreConstraints.qualifiedMaxCount = parseInt(count);
+    return this;
+  }
+
+  setUniqueLang(flag: string) {
+    this.coreConstraints.uniqueLang = flag.endsWith('true');
     return this;
   }
 
@@ -112,6 +157,73 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
+  setDatatype(datatype: string) {
+    this.coreConstraints.datatype = datatype;
+    return this;
+  }
+
+  setHasValue(flag: string) {
+    this.coreConstraints.hasValue = flag.endsWith('true');
+    return this;
+  }
+
+  setFirst(first: string) {
+    this.coreConstraints.first = first;
+    return this;
+  }
+
+  setRest(rest: string) {
+    this.coreConstraints.rest = rest;
+    return this;
+  }
+
+  setIgnoredProperties(dependentShape: string) {
+    this.coreConstraints.ignoredProperties ??= [];
+    this.coreConstraints.ignoredProperties.push(dependentShape);
+    return this;
+  }
+
+  in(dependentShape: string) {
+    this.coreConstraints.in ??= [];
+    this.coreConstraints.in.push(dependentShape);
+    return this;
+  }
+
+  or(dependentShape: string) {
+    this.coreConstraints.or ??= [];
+    this.coreConstraints.or.push(dependentShape);
+    return this;
+  }
+
+  and(dependentShape: string) {
+    this.coreConstraints.and ??= [];
+    this.coreConstraints.and.push(dependentShape);
+    return this;
+  }
+
+  not(dependentShape: string) {
+    this.coreConstraints.not ??= [];
+    this.coreConstraints.not.push(dependentShape);
+    return this;
+  }
+
+  xone(dependentShape: string) {
+    this.coreConstraints.xone ??= [];
+    this.coreConstraints.xone.push(dependentShape);
+    return this;
+  }
+
+  setQualifiedValueShape(dependentShape: string) {
+    this.coreConstraints.qualifiedValueShape = dependentShape;
+    return this;
+  }
+
+  setLanguageIn(dependentShape: string) {
+    this.coreConstraints.languageIn ??= [];
+    this.coreConstraints.languageIn.push(dependentShape);
+    return this;
+  }
+
   build(): ShapeDefinition {
     // Default if not found yet
     this.shape.type ??= SHAPE_TYPE.NODE_SHAPE;
@@ -122,5 +234,11 @@ export class ShapeDefinitionBuilder {
       coreConstraints: this.coreConstraints as CoreConstraints,
       dependentShapes: this.dependentShapeDefinitions,
     };
+  }
+
+  setProperty(property: string) {
+    this.coreConstraints.property ??= [];
+    this.coreConstraints.property.push(property);
+    return this;
   }
 }

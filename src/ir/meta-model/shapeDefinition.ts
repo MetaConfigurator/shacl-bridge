@@ -6,4 +6,5 @@ export interface ShapeDefinition {
   shape?: Shape;
   coreConstraints?: CoreConstraints;
   dependentShapes?: ShapeDefinition[];
+  customProperties?: Record<string, string>;
 }

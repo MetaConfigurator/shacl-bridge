@@ -1,38 +1,39 @@
 import { ShapeDefinition } from './shapeDefinition';
 import { NodeKind } from './nodeKind';
-import { Shape } from './shape';
 
 export interface CoreConstraints {
-  and?: ShapeDefinition[];
+  property?: string[];
   class?: string; // TODO : Maybe move to Shape Skip for now
   closed?: boolean;
-  ignoredProperties?: ShapeDefinition[]; // Skip for now
   datatype?: string;
-  disjoint?: ShapeDefinition[]; // TODO: Verify
   equals?: string; // TODO: Maybe move to Shape
-  hasValue?: string;
-  in?: ShapeDefinition[];
-  languageIn?: ShapeDefinition[];
+  hasValue?: boolean;
   lessThan?: string;
   lessThanOrEquals?: string;
   maxCount?: number;
-  maxExclusive?: string;
-  maxInclusive?: string;
+  maxExclusive?: number;
+  maxInclusive?: number;
   maxLength?: number;
   minCount?: number;
-  minExclusive?: string;
-  minInclusive?: string;
+  minExclusive?: number;
+  minInclusive?: number;
   minLength?: number;
   node?: string;
   nodeKind?: NodeKind;
-  not?: ShapeDefinition[];
-  or?: ShapeDefinition[];
-  property?: string;
   qualifiedMaxCount?: number;
   qualifiedMinCount?: number;
-  qualifiedValueShape?: Shape;
+  qualifiedValueShape?: string;
   qualifiedValueShapesDisjoint?: boolean;
   uniqueLang?: boolean;
-  xone?: ShapeDefinition[];
   pattern?: string;
+  first?: string;
+  rest?: string;
+  ignoredProperties?: string[]; // Skip for now
+  in?: string[];
+  or?: string[];
+  and?: string[];
+  not?: string[];
+  xone?: string[];
+  languageIn?: string[]; // TODO
+  disjoint?: ShapeDefinition[]; // TODO: Verify
 }

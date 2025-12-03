@@ -1,0 +1,33 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix sosa:    <http://www.w3.org/ns/sosa/> .
+@prefix ssn:     <http://www.w3.org/ns/ssn/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix aps:     <https://w3id.org/nfdi4ing/profiles/> .
+
+aps:40db38a8-2420-4c02-82f3-9b49c5b172a9
+    dcterms:created "2022-04-07"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-6793-8533> ;
+    dcterms:description
+            "Ein System ist eine Abstraktionseinheit für Teile der Infrastruktur, die Prozeduren implementieren. Ein System kann Komponenten, seine Subsysteme, haben, die andere Systeme sind."@de,
+            "A System is a unit of abstraction for pieces of infrastructure that implement Procedures. A System may have components, its subsystems, which are other Systems."@en ;
+    dcterms:license <https://spdx.org/licenses/CC0-1.0.html> ;
+    dcterms:subject <https://github.com/tibonto/dfgfo/4> ;
+    dcterms:title "System"@de, "system"@en ;
+    a sh:NodeShape ;
+    owl:imports aps:892e3573-2fe2-4275-93b7-9770db3cb6b7, aps:2a1020cd-424f-4c49-ab7b-cbd34aea2626,
+    aps:2c54dd21-1400-43ae-98a2-a05ed57cccdf ;
+    sh:node aps:892e3573-2fe2-4275-93b7-9770db3cb6b7, aps:2a1020cd-424f-4c49-ab7b-cbd34aea2626 ;
+    sh:property [ sh:node aps:2c54dd21-1400-43ae-98a2-a05ed57cccdf ;
+                  sh:description
+                          "Relation between a Sensor, or Actuator, Sampler, or Platform, and the Platform that it is mounted on or hosted by."@en ;
+                  sh:path sosa:isHostedBy ;
+                  sh:name "isHostedBy"@en ; ], [ sh:node        aps:40db38a8-2420-4c02-82f3-9b49c5b172a9 ;
+                                                 sh:description "Relation between a System and its component parts."@en ;
+                                                 sh:path        ssn:hasSubSystem ;
+                                                 sh:name        "hasSubSystem"@en ; ] ;
+    sh:targetClass ssn:System .
+
+

@@ -8,6 +8,7 @@ let complexShaclDocument: ShaclDocument;
 
 const pathToSimpleShacl = 'samples/shacl/simple-shacl.ttl';
 const pathToComplexShacl = 'samples/shacl/complex-shacl.ttl';
+const pathToAimsShacl = 'samples/shacl/system-nfdi4ing.ttl';
 
 describe('Model Creation', () => {
   beforeAll(async () => {
@@ -32,7 +33,6 @@ describe('Model Creation', () => {
 
     const shapeProperties = personShape.shape;
     expect(shapeProperties).toBeDefined();
-    // TODO: Node Shape
     expect(shapeProperties?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
     expect(shapeProperties?.targetClass).toBe('http://xmlns.com/foaf/0.1/Person');
 
@@ -71,6 +71,8 @@ describe('Model Creation', () => {
     const model = modelBuilder.build();
     expect(model).toBeDefined();
 
+    console.log(JSON.stringify(model.shapeDefinitions));
+
     // const shapeDefinitions = model.shapeDefinitions;
     // expect(shapeDefinitions.length).toBe(14);
     // expect(shapeDefinitions.map((sd) => sd.nodeKey)).toStrictEqual([
@@ -89,5 +91,18 @@ describe('Model Creation', () => {
     //   '#composedShape',
     //   'http://example.org/LabelLanguageShape',
     // ]);
+  });
+
+  it('should parse the AIMS Shacl File', async () => {
+    const parser = new ShaclParser(pathToAimsShacl);
+    const aimsDoc = await parser.parse();
+
+    const modelBuilder = new ModelBuilder(aimsDoc);
+    expect(modelBuilder).toBeDefined();
+
+    const model = modelBuilder.build();
+    expect(model).toBeDefined();
+
+    console.log(JSON.stringify(model.shapeDefinitions));
   });
 });

@@ -10,7 +10,7 @@ import { Model } from './meta-model/model';
 export class ModelBuilder {
   private model: Model = { shapeDefinitions: [] };
   private readonly data: Store;
-  private readonly idRegistry;
+  private readonly idRegistry: IdRegistry;
   private readonly prefixes: Map<string, string>;
   private readonly shapesRegistry: ShapesRegistry = new ShapesRegistry();
 
@@ -40,22 +40,45 @@ export class ModelBuilder {
 
       // Pattern Matching for the shape properties
       match(predicate)
+        .with(P.string.endsWith('property'), () => builder.setProperty(object))
         .with(P.string.endsWith('path'), () => builder.setPath(object))
         .with(P.string.endsWith('targetClass'), () => builder.setTargetClass(object))
         .with(P.string.endsWith('deactivated'), () => builder.setDeactivated(object))
         .with(P.string.endsWith('targetNode'), () => builder.setTargetNode(object))
         .with(P.string.endsWith('message'), () => builder.setMessage(object))
         .with(P.string.endsWith('severity'), () => builder.setSeverity(object))
-        .otherwise(() => {
-          logger.warn(`Could not find a match for predicate ${predicate}`);
-        });
-
-      match(predicate)
-        .with(P.string.endsWith('maxCount'), () => builder.setMaxCount(object))
         .with(P.string.endsWith('pattern'), () => builder.setPattern(object))
         .with(P.string.endsWith('class'), () => builder.setClass(object))
         .with(P.string.endsWith('nodeKind'), () => builder.setNodeKind(object))
-        .with(P.string.endsWith('closed'), () => builder.setClosed(object));
+        .with(P.string.endsWith('closed'), () => builder.setClosed(object))
+        .with(P.string.endsWith('datatype'), () => builder.setDatatype(object))
+        .with(P.string.endsWith('hasValue'), () => builder.setHasValue(object))
+        .with(P.string.endsWith('minCount'), () => builder.setMinCount(object))
+        .with(P.string.endsWith('maxCount'), () => builder.setMaxCount(object))
+        .with(P.string.endsWith('minInclusive'), () => builder.setMinInclusive(object))
+        .with(P.string.endsWith('maxInclusive'), () => builder.setMaxInclusive(object))
+        .with(P.string.endsWith('minExclusive'), () => builder.setMinExclusive(object))
+        .with(P.string.endsWith('maxExclusive'), () => builder.setMaxExclusive(object))
+        .with(P.string.endsWith('minLength'), () => builder.setMinLength(object))
+        .with(P.string.endsWith('maxLength'), () => builder.setMaxLength(object))
+        .with(P.string.endsWith('qualifiedMinCount'), () => builder.setQualifiedMinCount(object))
+        .with(P.string.endsWith('qualifiedMaxCount'), () => builder.setQualifiedMaxCount(object))
+        .with(P.string.endsWith('uniqueLang'), () => builder.setUniqueLang(object))
+        .with(P.string.endsWith('first'), () => builder.setFirst(object))
+        .with(P.string.endsWith('rest'), () => builder.setRest(object))
+        .with(P.string.endsWith('ignoredProperties'), () => builder.setIgnoredProperties(object))
+        .with(P.string.endsWith('in'), () => builder.in(object))
+        .with(P.string.endsWith('and'), () => builder.and(object))
+        .with(P.string.endsWith('or'), () => builder.or(object))
+        .with(P.string.endsWith('not'), () => builder.not(object))
+        .with(P.string.endsWith('xone'), () => builder.xone(object))
+        .with(P.string.endsWith('qualifiedValueShape'), () =>
+          builder.setQualifiedValueShape(object)
+        )
+        .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object))
+        .otherwise(() => {
+          console.log(`Should implement : ${subject} ${predicate} ${object}`);
+        });
     });
 
     this.shapesRegistry.getAll().forEach((shapeDefinition) => {
