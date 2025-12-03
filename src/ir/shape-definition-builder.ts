@@ -2,14 +2,16 @@ import { SEVERITY, Shape, SHAPE_TYPE } from './meta-model/shape';
 import { CoreConstraints } from './meta-model/core-constraints';
 import { match, P } from 'ts-pattern';
 import logger from '../logger';
-import { NodeKind } from './meta-model/nodeKind';
-import { ShapeDefinition } from './meta-model/shapeDefinition';
+import { NodeKind } from './meta-model/node-kind';
+import { AdditionalProperty, ShapeDefinition } from './meta-model/shape-definition';
+import type { Term } from 'n3';
 
 export class ShapeDefinitionBuilder {
   private readonly nodeKey: string;
   private shape: Partial<Shape> = {};
   private coreConstraints: Partial<CoreConstraints> = {};
   private dependentShapeDefinitions: ShapeDefinition[] = [];
+  private readonly additionalProperties: AdditionalProperty[] = [];
 
   constructor(nodeKey: string) {
     this.nodeKey = nodeKey;
@@ -227,6 +229,53 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
+  setAdditionalProperty(predicate: string, object: Term) {
+    // Extract RDF value information from the N3 term
+    let rdfValue: AdditionalProperty['value'];
+
+    if (object.termType === 'Literal') {
+      // Type-cast to access Literal-specific properties
+      const literal = object as unknown as {
+        value: string;
+        language?: string;
+        datatype: { value: string };
+      };
+
+      // Handle language-tagged strings
+      if (literal.language) {
+        rdfValue = {
+          type: 'langString',
+          value: literal.value,
+          language: literal.language,
+        };
+      } else {
+        rdfValue = {
+          type: 'literal',
+          value: literal.value,
+          datatype: literal.datatype.value,
+        };
+      }
+    } else if (object.termType === 'NamedNode') {
+      rdfValue = {
+        type: 'uri',
+        value: object.value,
+      };
+    } else {
+      // For blank nodes or other types, store as URI
+      rdfValue = {
+        type: 'uri',
+        value: object.value,
+      };
+    }
+
+    this.additionalProperties.push({
+      predicate,
+      value: rdfValue,
+    });
+
+    return this;
+  }
+
   build(): ShapeDefinition {
     // Default if not found yet
     this.shape.type ??= SHAPE_TYPE.NODE_SHAPE;
@@ -236,6 +285,8 @@ export class ShapeDefinitionBuilder {
       shape: this.shape as Shape,
       coreConstraints: this.coreConstraints as CoreConstraints,
       dependentShapes: this.dependentShapeDefinitions,
+      additionalProperties:
+        this.additionalProperties.length > 0 ? this.additionalProperties : undefined,
     };
   }
 

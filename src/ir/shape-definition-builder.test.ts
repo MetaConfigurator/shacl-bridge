@@ -1,6 +1,6 @@
 import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { SEVERITY, SHAPE_TYPE } from './meta-model/shape';
-import { NodeKind } from './meta-model/nodeKind';
+import { NodeKind } from './meta-model/node-kind';
 
 describe('ShapeDefinitionBuilder', () => {
   describe('basic construction', () => {

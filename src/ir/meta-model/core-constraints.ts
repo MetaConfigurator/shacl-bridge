@@ -1,5 +1,5 @@
-import { ShapeDefinition } from './shapeDefinition';
-import { NodeKind } from './nodeKind';
+import { ShapeDefinition } from './shape-definition';
+import { NodeKind } from './node-kind';
 
 export interface CoreConstraints {
   property?: string[];

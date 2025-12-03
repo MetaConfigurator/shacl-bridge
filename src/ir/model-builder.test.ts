@@ -46,7 +46,7 @@ describe('Model Creation', () => {
     expect(coreConstraints).toBeDefined();
     expect(dependentShapeDefinitions?.length).toBe(3);
 
-    const ssnDefinition = dependentShapeDefinitions?.find((sd) => sd?.nodeKey == 'n3-0');
+    const ssnDefinition = dependentShapeDefinitions?.find((sd) => sd.nodeKey == 'n3-0');
     expect(ssnDefinition).toBeDefined();
     expect(ssnDefinition?.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
     expect(ssnDefinition?.shape?.path).toBe('http://example.org/ssn');
@@ -77,7 +77,7 @@ describe('Model Creation', () => {
     expect(personShapeDefinition?.coreConstraints?.closed).toBeTruthy();
     expect(personShapeDefinition?.dependentShapes?.length).toBe(4);
     const namePropertyShape = personShapeDefinition?.dependentShapes?.find((sd) =>
-      sd?.shape?.path?.endsWith('name')
+      sd.shape?.path?.endsWith('name')
     );
     expect(namePropertyShape).toBeDefined();
     expect(namePropertyShape?.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
@@ -95,6 +95,57 @@ describe('Model Creation', () => {
 
     const model = modelBuilder.build();
     expect(model).toBeDefined();
+  });
+
+  it('should capture non-SHACL metadata properties', async () => {
+    const parser = new ShaclParser(pathToAimsShacl);
+    const aimsDoc = await parser.parse();
+    const model = new ModelBuilder(aimsDoc).build();
+
+    expect(model.shapeDefinitions).toHaveLength(1);
+    const shape = model.shapeDefinitions[0];
+
+    // Check that additionalProperties were captured
+    expect(shape.additionalProperties).toBeDefined();
+    expect(shape.additionalProperties?.length).toBeGreaterThan(0);
+
+    // Check for specific Dublin Core metadata
+    const dctermsProperties = shape.additionalProperties?.filter((p) =>
+      p.predicate.includes('purl.org/dc/terms/')
+    );
+    expect(dctermsProperties?.length).toBeGreaterThan(0);
+
+    // Verify dcterms:created
+    const created = shape.additionalProperties?.find((p) => p.predicate.endsWith('created'));
+    expect(created).toBeDefined();
+    expect(created?.value.type).toBe('literal');
+    expect(created?.value.value).toBe('2022-04-07');
+
+    // Verify dcterms:description with language tags
+    const descriptions = shape.additionalProperties?.filter((p) =>
+      p.predicate.endsWith('description')
+    );
+    expect(descriptions?.length).toBe(2); // One for @de, one for @en
+
+    const germanDesc = descriptions?.find(
+      (d) => d.value.type === 'langString' && d.value.language === 'de'
+    );
+    expect(germanDesc).toBeDefined();
+    expect(germanDesc?.value.value).toContain('System');
+
+    const englishDesc = descriptions?.find(
+      (d) => d.value.type === 'langString' && d.value.language === 'en'
+    );
+    expect(englishDesc).toBeDefined();
+    expect(englishDesc?.value.value).toContain('System');
+
+    // Verify owl:imports
+    const imports = shape.additionalProperties?.filter((p) => p.predicate.endsWith('imports'));
+    expect(imports?.length).toBe(3); // Three imports in the file
+    imports?.forEach((imp) => {
+      expect(imp.value.type).toBe('uri');
+      expect(imp.value.value).toContain('nfdi4ing/profiles/');
+    });
   });
 });
 
@@ -115,7 +166,7 @@ describe('ModelBuilder - Cardinality Constraints', () => {
 
     // Email property: minCount 1, maxCount 3
     const emailProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/email'
+      (dep) => dep.shape?.path === 'http://example.org/email'
     );
     expect(emailProp).toBeDefined();
     expect(emailProp?.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
@@ -125,7 +176,7 @@ describe('ModelBuilder - Cardinality Constraints', () => {
 
     // Age property: minCount 1, maxCount 1
     const ageProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/age'
+      (dep) => dep.shape?.path === 'http://example.org/age'
     );
     expect(ageProp).toBeDefined();
     expect(ageProp?.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
@@ -151,7 +202,7 @@ describe('ModelBuilder - Value Range Constraints', () => {
 
     // Price property: minInclusive 0, maxInclusive 10000
     const priceProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/price'
+      (dep) => dep.shape?.path === 'http://example.org/price'
     );
     expect(priceProp).toBeDefined();
     expect(priceProp?.coreConstraints?.minInclusive).toBe(0);
@@ -160,7 +211,7 @@ describe('ModelBuilder - Value Range Constraints', () => {
 
     // Discount property: minExclusive 0, maxExclusive 100
     const discountProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/discount'
+      (dep) => dep.shape?.path === 'http://example.org/discount'
     );
     expect(discountProp).toBeDefined();
     expect(discountProp?.coreConstraints?.minExclusive).toBe(0);
@@ -187,7 +238,7 @@ describe('ModelBuilder - String Constraints', () => {
 
     // Username property: minLength 3, maxLength 20, pattern
     const usernameProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/username'
+      (dep) => dep.shape?.path === 'http://example.org/username'
     );
     expect(usernameProp).toBeDefined();
     expect(usernameProp?.coreConstraints?.minLength).toBe(3);
@@ -197,7 +248,7 @@ describe('ModelBuilder - String Constraints', () => {
 
     // Password property: minLength 8
     const passwordProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/password'
+      (dep) => dep.shape?.path === 'http://example.org/password'
     );
     expect(passwordProp).toBeDefined();
     expect(passwordProp?.coreConstraints?.minLength).toBe(8);
@@ -291,7 +342,7 @@ describe('ModelBuilder - Node Kind Constraints', () => {
 
     // Author property: nodeKind IRI
     const authorProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/author'
+      (dep) => dep.shape?.path === 'http://example.org/author'
     );
     expect(authorProp).toBeDefined();
     expect(authorProp?.coreConstraints?.nodeKind).toBe('sh:IRI');
@@ -299,7 +350,7 @@ describe('ModelBuilder - Node Kind Constraints', () => {
 
     // Title property: nodeKind Literal
     const titleProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/title'
+      (dep) => dep.shape?.path === 'http://example.org/title'
     );
     expect(titleProp).toBeDefined();
     expect(titleProp?.coreConstraints?.nodeKind).toBe('sh:Literal');
@@ -307,7 +358,7 @@ describe('ModelBuilder - Node Kind Constraints', () => {
 
     // Metadata property: nodeKind BlankNode
     const metadataProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/metadata'
+      (dep) => dep.shape?.path === 'http://example.org/metadata'
     );
     expect(metadataProp).toBeDefined();
     expect(metadataProp?.coreConstraints?.nodeKind).toBe('sh:BlankNode');
@@ -330,7 +381,7 @@ describe('ModelBuilder - Property Pair Constraints', () => {
 
     // Language property: in constraint
     const languageProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/language'
+      (dep) => dep.shape?.path === 'http://example.org/language'
     );
     expect(languageProp).toBeDefined();
     expect(languageProp?.coreConstraints?.in).toBeDefined();
@@ -342,7 +393,7 @@ describe('ModelBuilder - Property Pair Constraints', () => {
 
     // Description property: languageIn and uniqueLang
     const descProp = shape.dependentShapes?.find(
-      (dep) => dep?.shape?.path === 'http://example.org/description'
+      (dep) => dep.shape?.path === 'http://example.org/description'
     );
     expect(descProp).toBeDefined();
     expect(descProp?.coreConstraints?.languageIn).toBeDefined();
@@ -391,10 +442,8 @@ describe('ModelBuilder - Integration Tests', () => {
 
     // Dependent shapes should have their own properties populated
     shape.dependentShapes?.forEach((depShape) => {
-      if (depShape) {
-        expect(depShape.nodeKey).toBeDefined();
-        expect(depShape.shape).toBeDefined();
-      }
+      expect(depShape.nodeKey).toBeDefined();
+      expect(depShape.shape).toBeDefined();
     });
   });
 
@@ -415,7 +464,7 @@ describe('ModelBuilder - Integration Tests', () => {
     // Nested qualified value shape should be resolved
     if (propertyShape?.dependentShapes && propertyShape.dependentShapes.length > 0) {
       const qualifiedShape = propertyShape.dependentShapes[0];
-      expect(qualifiedShape?.nodeKey).toBeDefined();
+      expect(qualifiedShape.nodeKey).toBeDefined();
     }
   });
 });

@@ -1,5 +1,5 @@
 import { DependencyGraph } from './dependency-graph';
-import { ShapeDefinition } from './meta-model/shapeDefinition';
+import { ShapeDefinition } from './meta-model/shape-definition';
 import { Quad } from 'n3';
 import { SHAPE_TYPE } from './meta-model/shape';
 import { match, P } from 'ts-pattern';
@@ -56,7 +56,13 @@ export class TopologicalShapeBuilder {
 
     const deps = this.graph.dependencies.get(subject) ?? new Set();
     shapeDefinition.dependentShapes ??= [];
-    shapeDefinition.dependentShapes = [...deps].map((dep) => this.resolved.get(dep));
+    shapeDefinition.dependentShapes = [...deps].map((name) => {
+      const shape = this.resolved.get(name);
+      if (!shape) {
+        throw new Error(`Named shape '${name}' was not resolved`);
+      }
+      return shape;
+    });
 
     if (this.index.blankNodesIndex.has(subject)) {
       const parent = this.graph.dependents.get(subject);
@@ -80,7 +86,6 @@ export class TopologicalShapeBuilder {
   private buildShapeFromQuads(nodeKey: string, quads: Quad[] | undefined): ShapeDefinition {
     const builder = new ShapeDefinitionBuilder(nodeKey);
     quads?.forEach((quad) => {
-      const subject = quad.subject.value;
       const predicate = quad.predicate.value;
       const object = quad.object.value;
 
@@ -123,7 +128,8 @@ export class TopologicalShapeBuilder {
         )
         .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object))
         .otherwise(() => {
-          console.log(`Should implement : ${subject} ${predicate} ${object}`);
+          // Capture non-SHACL predicates as additional properties
+          builder.setAdditionalProperty(predicate, quad.object);
         });
     });
 

@@ -131,7 +131,7 @@ describe('TopologicalShapeBuilder', () => {
       expect(result[0].nodeKey).toBe(parentShape);
       expect(result[0].dependentShapes).toHaveLength(2);
 
-      const depKeys = result[0].dependentShapes?.map((d) => d?.nodeKey).sort();
+      const depKeys = result[0].dependentShapes?.map((d) => d.nodeKey).sort();
       expect(depKeys).toEqual(['b1', 'b2']);
     });
 
