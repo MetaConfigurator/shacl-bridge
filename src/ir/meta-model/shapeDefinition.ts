@@ -5,6 +5,6 @@ export interface ShapeDefinition {
   nodeKey: string;
   shape?: Shape;
   coreConstraints?: CoreConstraints;
-  dependentShapes?: ShapeDefinition[];
+  dependentShapes?: (ShapeDefinition | undefined)[];
   customProperties?: Record<string, string>;
 }

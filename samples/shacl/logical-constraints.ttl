@@ -1,0 +1,26 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#core-components-logical
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Test logical constraints (or, and, not, xone)
+ex:AddressShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Address ;
+    # Must have either email OR phone
+    sh:or          ( [ sh:property [ sh:path     ex:email ;
+                                     sh:minCount 1 ] ] [ sh:property [ sh:path     ex:phone ;
+                                                                       sh:minCount 1 ] ] ) ;
+    # Must have both city AND country
+    sh:and         ( [ sh:property [ sh:path     ex:city ;
+                                     sh:minCount 1 ] ] [ sh:property [ sh:path     ex:country ;
+                                                                       sh:minCount 1 ] ] ) ;
+    # Must NOT have deprecated field
+    sh:not         [ sh:property [ sh:path     ex:deprecatedField ;
+                                   sh:minCount 1 ] ] ;
+    # Exactly one of zipCode OR postalCode
+    sh:xone        ( [ sh:property [ sh:path     ex:zipCode ;
+                                     sh:minCount 1 ] ] [ sh:property [ sh:path     ex:postalCode ;
+                                                                       sh:minCount 1 ] ] ) .

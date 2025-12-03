@@ -1,0 +1,16 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#QualifiedValueShapeConstraintComponent
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Test qualified value shapes
+ex:TeamShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Team ;
+    sh:property    [ sh:path                ex:member ;
+                     sh:qualifiedValueShape [ sh:class    ex:Person ;
+                                              sh:property [ sh:path     ex:role ;
+                                                            sh:hasValue "Leader" ; ] ; ] ;
+                     sh:qualifiedMinCount   1 ;
+                     sh:qualifiedMaxCount   2 ; ] .

@@ -1,0 +1,19 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#CardinalityConstraintComponent
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Test cardinality constraints
+ex:PersonCardinalityShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Person ;
+    sh:property    [ sh:path     ex:email ;
+                     sh:minCount 1 ;
+                     sh:maxCount 3 ;
+                     sh:datatype xsd:string ; ] ;
+    sh:property    [ sh:path     ex:age ;
+                     sh:minCount 1 ;
+                     sh:maxCount 1 ;
+                     sh:datatype xsd:integer ; ] .

@@ -1,0 +1,18 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#core-components-string
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Test string-based constraints
+ex:UserShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:User ;
+    sh:property    [ sh:path      ex:username ;
+                     sh:minLength 3 ;
+                     sh:maxLength 20 ;
+                     sh:pattern   "^[a-zA-Z0-9_]+$" ;
+                     sh:datatype  xsd:string ; ] ;
+    sh:property    [ sh:path      ex:password ;
+                     sh:minLength 8 ;
+                     sh:datatype  xsd:string ; ] .

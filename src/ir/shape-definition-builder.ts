@@ -18,13 +18,16 @@ export class ShapeDefinitionBuilder {
   setType(type: string) {
     match(type)
       .with(P.string.endsWith('NodeShape'), () => (this.shape.type = SHAPE_TYPE.NODE_SHAPE))
-      .with(P.string.endsWith('PropertyShape'), () => (this.shape.type = SHAPE_TYPE.PROPERTY_SHAPE))
-      .with(P.string.endsWith('path'), () => (this.shape.type = SHAPE_TYPE.PROPERTY_SHAPE));
+      .with(
+        P.string.endsWith('PropertyShape'),
+        () => (this.shape.type = SHAPE_TYPE.PROPERTY_SHAPE)
+      );
     return this;
   }
 
   setPath(path: string) {
     this.shape.path = path;
+    this.shape.type = SHAPE_TYPE.PROPERTY_SHAPE;
     return this;
   }
 
