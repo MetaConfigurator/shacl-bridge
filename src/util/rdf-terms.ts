@@ -1,0 +1,16 @@
+export const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+export const RDF_FIRST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first';
+export const RDF_REST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest';
+export const RDF_NIL = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
+export const SHACL_NODE_SHAPE = 'http://www.w3.org/ns/shacl#NodeShape';
+export const SHACL_PROPERTY_SHAPE = 'http://www.w3.org/ns/shacl#PropertyShape';
+export const SHACL_PATH = 'http://www.w3.org/ns/shacl#path';
+export const SHACL_PROPERTY = 'http://www.w3.org/ns/shacl#property';
+export const SHACL_DATATYPE = 'http://www.w3.org/ns/shacl#datatype';
+export const SHACL_TARGET_CLASS = 'http://www.w3.org/ns/shacl#targetClass';
+export const SHACL_NAME = 'http://www.w3.org/ns/shacl#name';
+export const SHACL_IGNORED_PROPERTIES = 'http://www.w3.org/ns/shacl#ignoredProperties';
+export const SHACL_CLOSED = 'http://www.w3.org/ns/shacl#closed';
+export const XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string';
+export const XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean';
+export const FOAF_PERSON = 'http://xmlns.com/foaf/0.1/Person';

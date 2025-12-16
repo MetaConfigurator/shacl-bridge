@@ -1,55 +1,21 @@
-import { DataFactory, Store } from 'n3';
+import { DataFactory } from 'n3';
 import { Indexer } from './indexer';
-
-// Common RDF and SHACL URIs
-const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-const RDF_FIRST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first';
-const RDF_REST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest';
-const SHACL_NODE_SHAPE = 'http://www.w3.org/ns/shacl#NodeShape';
-const SHACL_PROPERTY_SHAPE = 'http://www.w3.org/ns/shacl#PropertyShape';
-const SHACL_PATH = 'http://www.w3.org/ns/shacl#path';
-const SHACL_PROPERTY = 'http://www.w3.org/ns/shacl#property';
-const SHACL_DATATYPE = 'http://www.w3.org/ns/shacl#datatype';
-const SHACL_TARGET_CLASS = 'http://www.w3.org/ns/shacl#targetClass';
-const SHACL_NAME = 'http://www.w3.org/ns/shacl#name';
-const SHACL_IGNORED_PROPERTIES = 'http://www.w3.org/ns/shacl#ignoredProperties';
-const XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string';
-const FOAF_PERSON = 'http://xmlns.com/foaf/0.1/Person';
-
-class StoreBuilder {
-  private store = new Store();
-
-  shape(shapeUri: string, shapeType: string): this {
-    this.store.addQuad(
-      DataFactory.namedNode(shapeUri),
-      DataFactory.namedNode(RDF_TYPE),
-      DataFactory.namedNode(shapeType)
-    );
-    return this;
-  }
-
-  triple(subject: string, predicate: string, object: string, isBlank: boolean): this {
-    this.store.addQuad(
-      DataFactory.namedNode(subject),
-      DataFactory.namedNode(predicate),
-      isBlank ? DataFactory.blankNode(object) : DataFactory.namedNode(object)
-    );
-    return this;
-  }
-
-  blank(blankNodeId: string, predicate: string, object: string): this {
-    this.store.addQuad(
-      DataFactory.blankNode(blankNodeId),
-      DataFactory.namedNode(predicate),
-      DataFactory.namedNode(object)
-    );
-    return this;
-  }
-
-  build() {
-    return this.store;
-  }
-}
+import { StoreBuilder } from '../util/store-builder';
+import {
+  FOAF_PERSON,
+  RDF_FIRST,
+  RDF_REST,
+  RDF_TYPE,
+  SHACL_DATATYPE,
+  SHACL_IGNORED_PROPERTIES,
+  SHACL_NAME,
+  SHACL_NODE_SHAPE,
+  SHACL_PATH,
+  SHACL_PROPERTY,
+  SHACL_PROPERTY_SHAPE,
+  SHACL_TARGET_CLASS,
+  XSD_STRING,
+} from '../util/rdf-terms';
 
 describe('Indexer', () => {
   describe('build', () => {
