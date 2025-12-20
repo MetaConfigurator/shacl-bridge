@@ -1,0 +1,18 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#NodeKindConstraintComponent
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Test node kind constraints
+ex:DocumentShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Document ;
+    sh:property    [ sh:path     ex:author ;
+                     sh:nodeKind sh:IRI ;
+                     sh:class    ex:Person ; ] ;
+    sh:property    [ sh:path     ex:title ;
+                     sh:nodeKind sh:Literal ;
+                     sh:datatype xsd:string ; ] ;
+    sh:property    [ sh:path     ex:metadata ;
+                     sh:nodeKind sh:BlankNode ; ] .

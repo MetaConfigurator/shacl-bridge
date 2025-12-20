@@ -1,0 +1,18 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#core-components-range
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Test value range constraints
+ex:ProductShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Product ;
+    sh:property    [ sh:path         ex:price ;
+                     sh:minInclusive 0 ;
+                     sh:maxInclusive 10000 ;
+                     sh:datatype     xsd:decimal ; ] ;
+    sh:property    [ sh:path         ex:discount ;
+                     sh:minExclusive 0 ;
+                     sh:maxExclusive 100 ;
+                     sh:datatype     xsd:integer ; ] .

@@ -1,0 +1,15 @@
+# Source: Based on SHACL specification examples
+# https://www.w3.org/TR/shacl/#core-components-property-pairs
+@prefix ex:  <http://example.org/> .
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Test in and languageIn constraints
+ex:LanguageShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:MultilingualResource ;
+    sh:property    [ sh:path ex:language ;
+                     sh:in   ( "en" "de" "fr" "es" ) ; ] ;
+    sh:property    [ sh:path       ex:description ;
+                     sh:languageIn ( "en" "de" "fr" ) ;
+                     sh:uniqueLang true ; ] .
