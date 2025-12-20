@@ -6,9 +6,8 @@ import { match, P } from 'ts-pattern';
 import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { TripleIndex } from './indexer';
 
-export class TopologicalShapeBuilder {
+export class ShapeBuilder {
   private readonly resolved = new Map<string, ShapeDefinition>();
-  private readonly processed = new Set<string>();
 
   constructor(
     private readonly index: TripleIndex,
@@ -18,19 +17,15 @@ export class TopologicalShapeBuilder {
   build(): ShapeDefinition[] {
     const subjectsInDocument = [...this.index.quadsIndex.keys()];
 
-    while (this.processed.size < subjectsInDocument.length) {
-      const subjectsThatCanBeProcessed = subjectsInDocument
-        .filter((subject) => !this.processed.has(subject))
-        .filter((subject) => this.canProcess(subject));
+    // First pass: Create all ShapeDefinitions without resolving dependencies
+    subjectsInDocument.forEach((subject) => {
+      this.buildAndRegisterShape(subject);
+    });
 
-      if (subjectsThatCanBeProcessed.length === 0) {
-        throw new Error('Circular dependency detected in SHACL shapes');
-      }
-
-      subjectsThatCanBeProcessed.forEach((subject) => {
-        this.process(subject);
-      });
-    }
+    // Second pass: Resolve dependencies for all shapes
+    subjectsInDocument.forEach((subject) => {
+      this.resolveDependencies(subject);
+    });
 
     return [...this.index.namedShapesIndex].map((name) => {
       const shape = this.resolved.get(name);
@@ -41,32 +36,32 @@ export class TopologicalShapeBuilder {
     });
   }
 
-  private canProcess(subject: string): boolean {
-    // Every dependencies of the subject should be processed before the current one can be processed.
-    const dependenciesOfSubject = this.graph.dependencies.get(subject) ?? new Set();
-    return [...dependenciesOfSubject].every((dependency) => this.processed.has(dependency));
+  private buildAndRegisterShape(subject: string): void {
+    const quads = this.index.quadsIndex.get(subject);
+    const shapeDefinition = this.buildShapeFromQuads(subject, quads);
+    this.resolved.set(subject, shapeDefinition);
   }
 
-  private process(subject: string) {
-    if (this.resolved.has(subject)) return;
+  private resolveDependencies(subject: string): void {
+    const shapeDefinition = this.resolved.get(subject);
+    if (!shapeDefinition) {
+      throw new Error(`Shape '${subject}' was not created in first pass`);
+    }
 
-    const quads = this.index.quadsIndex.get(subject);
-
-    const shapeDefinition = this.buildShapeFromQuads(subject, quads);
-
+    // Resolve dependent shapes
     const deps = this.graph.dependencies.get(subject) ?? new Set();
-    shapeDefinition.dependentShapes ??= [];
     shapeDefinition.dependentShapes = [...deps].map((name) => {
       const shape = this.resolved.get(name);
       if (!shape) {
-        throw new Error(`Named shape '${name}' was not resolved`);
+        throw new Error(`Dependent shape '${name}' was not resolved`);
       }
       return shape;
     });
 
+    // Handle property shape type override for blank nodes
     if (this.index.blankNodesIndex.has(subject)) {
-      const parent = this.graph.dependents.get(subject);
-      if (parent) {
+      const parents = this.graph.dependents.get(subject) ?? new Set<string>();
+      for (const parent of parents) {
         // Check if parent references this blank node via sh:property
         const parentQuads = this.index.quadsIndex.get(parent) ?? [];
         const isProperty = parentQuads.some(
@@ -75,12 +70,10 @@ export class TopologicalShapeBuilder {
         // Override the type if it's a blank node referenced via sh:property and doesn't have an explicit type
         if (isProperty && shapeDefinition.shape?.type === SHAPE_TYPE.NODE_SHAPE) {
           shapeDefinition.shape.type = SHAPE_TYPE.PROPERTY_SHAPE;
+          break; // Only need to check once
         }
       }
     }
-
-    this.resolved.set(subject, shapeDefinition);
-    this.processed.add(subject);
   }
 
   private buildShapeFromQuads(nodeKey: string, quads: Quad[] | undefined): ShapeDefinition {

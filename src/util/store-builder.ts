@@ -1,6 +1,6 @@
 // Common RDF and SHACL URIs
 import { DataFactory, Store } from 'n3';
-import { RDF_TYPE } from './rdf-terms';
+import { RDF_TYPE, XSD_BOOLEAN, XSD_INTEGER } from './rdf-terms';
 
 export class StoreBuilder {
   private store = new Store();
@@ -28,6 +28,69 @@ export class StoreBuilder {
       DataFactory.blankNode(blankNodeId),
       DataFactory.namedNode(predicate),
       DataFactory.namedNode(object)
+    );
+    return this;
+  }
+
+  bothBlank(subject: string, predicate: string, object: string): this {
+    this.store.addQuad(
+      DataFactory.blankNode(subject),
+      DataFactory.namedNode(predicate),
+      DataFactory.blankNode(object)
+    );
+    return this;
+  }
+
+  /**
+   * Adds a triple with an integer literal as the object
+   */
+  literalInt(subject: string, predicate: string, value: number, isBlankSubject = false): this {
+    this.store.addQuad(
+      isBlankSubject ? DataFactory.blankNode(subject) : DataFactory.namedNode(subject),
+      DataFactory.namedNode(predicate),
+      DataFactory.literal(value.toString(), DataFactory.namedNode(XSD_INTEGER))
+    );
+    return this;
+  }
+
+  /**
+   * Adds a triple with a boolean literal as the object
+   */
+  literalBool(subject: string, predicate: string, value: boolean, isBlankSubject = false): this {
+    this.store.addQuad(
+      isBlankSubject ? DataFactory.blankNode(subject) : DataFactory.namedNode(subject),
+      DataFactory.namedNode(predicate),
+      DataFactory.literal(value.toString(), DataFactory.namedNode(XSD_BOOLEAN))
+    );
+    return this;
+  }
+
+  /**
+   * Adds a triple with a plain string literal as the object
+   */
+  literalString(subject: string, predicate: string, value: string, isBlankSubject = false): this {
+    this.store.addQuad(
+      isBlankSubject ? DataFactory.blankNode(subject) : DataFactory.namedNode(subject),
+      DataFactory.namedNode(predicate),
+      DataFactory.literal(value)
+    );
+    return this;
+  }
+
+  /**
+   * Adds a triple with a typed literal as the object
+   */
+  literal(
+    subject: string,
+    predicate: string,
+    value: string,
+    datatype: string,
+    isBlankSubject = false
+  ): this {
+    this.store.addQuad(
+      isBlankSubject ? DataFactory.blankNode(subject) : DataFactory.namedNode(subject),
+      DataFactory.namedNode(predicate),
+      DataFactory.literal(value, DataFactory.namedNode(datatype))
     );
     return this;
   }

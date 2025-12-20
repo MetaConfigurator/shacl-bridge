@@ -1,4 +1,3 @@
-import { DataFactory } from 'n3';
 import { Indexer } from './indexer';
 import { StoreBuilder } from '../util/store-builder';
 import {
@@ -220,14 +219,12 @@ describe('Indexer', () => {
 
     it('should handle RDF list nodes as blank nodes', () => {
       const shape = 'http://example.org/PersonShape';
-      const listNode1 = DataFactory.blankNode('l1');
-      const listNode2 = DataFactory.blankNode('l2');
       const store = new StoreBuilder()
         .triple(shape, SHACL_IGNORED_PROPERTIES, 'l1', true)
         .blank('l1', RDF_FIRST, RDF_TYPE)
         .blank('l2', RDF_FIRST, 'http://example.org/customProp')
+        .bothBlank('l1', RDF_REST, 'l2')
         .build();
-      store.addQuad(listNode1, DataFactory.namedNode(RDF_REST), listNode2);
       const index = new Indexer(store).build();
 
       expect(index.blankNodesIndex.size).toBe(2);

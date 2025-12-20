@@ -1,4 +1,4 @@
-import { DataFactory, Store } from 'n3';
+import { Store } from 'n3';
 import { DependencyGraphBuilder } from './dependency-graph';
 import { Indexer } from './indexer';
 import { StoreBuilder } from '../util/store-builder';
@@ -14,8 +14,14 @@ import {
   SHACL_PATH,
   SHACL_PROPERTY,
   SHACL_TARGET_CLASS,
-  XSD_BOOLEAN,
 } from '../util/rdf-terms';
+
+function getGraph(store: Store) {
+  const indexer = new Indexer(store);
+  const index = indexer.build();
+  const builder = new DependencyGraphBuilder(index);
+  return builder.build();
+}
 
 describe('DependencyGraphBuilder', () => {
   describe('build', () => {
@@ -23,10 +29,7 @@ describe('DependencyGraphBuilder', () => {
       const store = new StoreBuilder()
         .shape('http://example.org/PersonShape', SHACL_NODE_SHAPE)
         .build();
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(0);
       expect(graph.dependents.size).toBe(0);
@@ -40,10 +43,7 @@ describe('DependencyGraphBuilder', () => {
         .blank('b1', SHACL_PATH, 'http://example.org/name')
         .build();
 
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(1);
       expect(graph.dependencies.has(parentShape)).toBe(true);
@@ -64,10 +64,7 @@ describe('DependencyGraphBuilder', () => {
         .blank('b3', SHACL_PATH, 'http://example.org/email')
         .build();
 
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(1);
       expect(graph.dependencies.has(parentShape)).toBe(true);
@@ -94,10 +91,7 @@ describe('DependencyGraphBuilder', () => {
         .blank('b2', SHACL_PATH, 'http://example.org/address')
         .build();
 
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(2);
       expect(graph.dependencies.has(personShape)).toBe(true);
@@ -116,10 +110,7 @@ describe('DependencyGraphBuilder', () => {
         .triple(parentShape, SHACL_TARGET_CLASS, FOAF_PERSON, false)
         .build();
 
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(0);
       expect(graph.dependents.size).toBe(0);
@@ -131,46 +122,22 @@ describe('DependencyGraphBuilder', () => {
         .triple(parentShape, 'http://www.w3.org/ns/shacl#maxCount', '1', false)
         .build();
 
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(0);
       expect(graph.dependents.size).toBe(0);
     });
 
     it('should handle nested blank nodes (blank node pointing to another blank node)', () => {
-      const store = new Store();
       const parentShape = 'http://example.org/PersonShape';
-      const blankNode1 = DataFactory.blankNode('b1');
-      const blankNode2 = DataFactory.blankNode('b2');
+      const store = new StoreBuilder()
+        .shape(parentShape, SHACL_NODE_SHAPE)
+        .triple(parentShape, SHACL_PROPERTY, 'b1', true)
+        .bothBlank('b1', SHACL_NODE_SHAPE, 'b2')
+        .blank('b2', SHACL_PATH, 'http://example.org/address')
+        .build();
 
-      // Parent shape pointing to first blank node
-      store.addQuad(
-        DataFactory.namedNode(parentShape),
-        DataFactory.namedNode('http://www.w3.org/ns/shacl#property'),
-        blankNode1
-      );
-
-      // First blank node pointing to second blank node
-      store.addQuad(
-        blankNode1,
-        DataFactory.namedNode('http://www.w3.org/ns/shacl#node'),
-        blankNode2
-      );
-
-      // Second blank node properties
-      store.addQuad(
-        blankNode2,
-        DataFactory.namedNode('http://www.w3.org/ns/shacl#path'),
-        DataFactory.namedNode('http://example.org/address')
-      );
-
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(2);
 
@@ -194,17 +161,10 @@ describe('DependencyGraphBuilder', () => {
         .blank('l1', RDF_FIRST, RDF_TYPE)
         .blank('l2', RDF_FIRST, 'http://example.org/customProp')
         .blank('l2', RDF_REST, RDF_NIL)
+        .bothBlank('l1', RDF_REST, 'l2')
         .build();
-      store.addQuad(
-        DataFactory.blankNode('l1'),
-        DataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'),
-        DataFactory.blankNode('l2')
-      );
 
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       expect(graph.dependencies.size).toBe(2);
 
@@ -222,24 +182,14 @@ describe('DependencyGraphBuilder', () => {
 
     it('should handle mixed predicates with blank node and non-blank node objects', () => {
       const parentShape = 'http://example.org/PersonShape';
-      // Need to manually add literal since StoreBuilder doesn't support literals
       const store = new StoreBuilder()
         .triple(parentShape, SHACL_TARGET_CLASS, FOAF_PERSON, false)
         .triple(parentShape, SHACL_PROPERTY, 'b1', true)
         .blank('b1', SHACL_PATH, 'http://example.org/name')
+        .literalBool(parentShape, SHACL_CLOSED, true)
         .build();
 
-      // Add literal predicate manually
-      store.addQuad(
-        DataFactory.namedNode(parentShape),
-        DataFactory.namedNode(SHACL_CLOSED),
-        DataFactory.literal('true', DataFactory.namedNode(XSD_BOOLEAN))
-      );
-
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const builder = new DependencyGraphBuilder(index);
-      const graph = builder.build();
+      const graph = getGraph(store);
 
       // Only the blank node should create a dependency
       expect(graph.dependencies.size).toBe(1);
@@ -267,6 +217,33 @@ describe('DependencyGraphBuilder', () => {
       expect(dependencyGraph.dependencies.get(shape1)).toStrictEqual(new Set().add('b1'));
       expect(dependencyGraph.dependents.size).toBe(1);
       expect(dependencyGraph.dependents.get('b1')).toStrictEqual(new Set().add(shape1).add(shape2));
+    });
+
+    it('should detect and store cycles in blank node dependencies', () => {
+      // Create a cycle: b1 -> b2 -> b3 -> b1
+      const store = new StoreBuilder()
+        .bothBlank('b1', SHACL_NODE_SHAPE, 'b2')
+        .bothBlank('b2', SHACL_NODE_SHAPE, 'b3')
+        .bothBlank('b3', SHACL_NODE_SHAPE, 'b1')
+        .build();
+      const indexer = new Indexer(store);
+      const index = indexer.build();
+      const dependencyGraph = new DependencyGraphBuilder(index).build();
+
+      // Verify the cycle is detected
+      expect(dependencyGraph.cycles.size).toBeGreaterThan(0);
+
+      // All nodes in the cycle should be marked
+      expect(dependencyGraph.cycles.has('b1')).toBe(true);
+      expect(dependencyGraph.cycles.has('b2')).toBe(true);
+      expect(dependencyGraph.cycles.has('b3')).toBe(true);
+
+      // Each node should have all cycle members in its cycle set
+      const b1Cycles = dependencyGraph.cycles.get('b1');
+      expect(b1Cycles?.size).toBe(3);
+      expect(b1Cycles?.has('b1')).toBe(true);
+      expect(b1Cycles?.has('b2')).toBe(true);
+      expect(b1Cycles?.has('b3')).toBe(true);
     });
   });
 });
