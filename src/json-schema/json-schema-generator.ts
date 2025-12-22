@@ -46,8 +46,7 @@ export class JsonSchemaGenerator {
     schema.$defs = {};
     for (const shapeDef of model.shapeDefinitions) {
       const name = this.extractName(shapeDef.nodeKey);
-      const shapeSchema = this.shapeConverter.convert(shapeDef);
-      schema.$defs[name] = shapeSchema;
+      schema.$defs[name] = this.shapeConverter.convert(shapeDef);
     }
 
     // Set root $ref to first shape

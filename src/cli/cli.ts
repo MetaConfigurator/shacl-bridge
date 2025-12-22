@@ -5,8 +5,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
 import { ModelBuilder } from '../ir/model-builder';
-import { JsonSchemaGenerator } from '../json-schema/json-schema-generator';
-import { GeneratorConfig, isMultiSchemaResult, isSingleSchemaResult } from '../json-schema/types';
+import {
+  GeneratorConfig,
+  isMultiSchemaResult,
+  isSingleSchemaResult,
+  JsonSchemaGenerator,
+} from '../json-schema';
 
 interface CliOptions {
   mode: 'single' | 'multi';

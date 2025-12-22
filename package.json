@@ -16,7 +16,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "prepare": "husky"
+    "prepare": "husky",
+    "fix:lint-format": "npm run lint:fix && npm run format"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
