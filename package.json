@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "bin": {
+    "shacl-bridge": "./dist/cli/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
@@ -32,6 +35,7 @@
   },
   "private": true,
   "dependencies": {
+    "commander": "^14.0.2",
     "n3": "^1.26.0",
     "pino": "^10.1.0",
     "ts-pattern": "^5.9.0"
