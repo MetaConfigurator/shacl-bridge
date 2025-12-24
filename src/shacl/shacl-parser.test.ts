@@ -5,8 +5,7 @@ describe('SHACL Parser', () => {
   const pathToComplexShacl = 'samples/shacl/complex-shacl.ttl';
 
   it('should parse simple shacl file accurately', async () => {
-    const shaclParser = new ShaclParser(pathToSimpleShacl);
-    const shaclDocument = await shaclParser.parse();
+    const shaclDocument = await new ShaclParser().withPath(pathToSimpleShacl).parse();
     expect(shaclDocument).toBeDefined();
     expect(Object.keys(shaclDocument.prefix).length).toBe(5);
     expect(shaclDocument.prefix).toEqual({
@@ -58,8 +57,7 @@ describe('SHACL Parser', () => {
   });
 
   it('should parse complex turtle file accurately', async () => {
-    const shaclParser = new ShaclParser(pathToComplexShacl);
-    const shaclDocument = await shaclParser.parse();
+    const shaclDocument = await new ShaclParser().withPath(pathToComplexShacl).parse();
     expect(shaclDocument).toBeDefined();
     expect(Object.keys(shaclDocument.prefix).length).toBe(8);
     expect(shaclDocument.prefix).toEqual({
