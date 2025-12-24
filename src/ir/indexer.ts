@@ -1,50 +1,39 @@
-import { Quad, Store } from 'n3';
+import { BlankNode, Quad, Quad_Subject, Util } from 'n3';
+import { RDF_TYPE, SHACL_NODE_SHAPE, SHACL_PROPERTY_SHAPE } from '../util/rdf-terms';
+import { ShaclDocument } from '../shacl/shacl-document';
+import isBlankNode = Util.isBlankNode;
 
-const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-const SHACL_NODE_SHAPE = 'http://www.w3.org/ns/shacl#NodeShape';
-const SHACL_PROPERTY_SHAPE = 'http://www.w3.org/ns/shacl#PropertyShape';
-
-export interface TripleIndex {
-  quadsIndex: Map<string, Quad[]>;
-  blankNodesIndex: Set<string>;
-  namedShapesIndex: Set<string>;
-}
-
-function isBlankNode(quad: Quad): boolean {
-  return quad.subject.termType === 'BlankNode';
-}
-
-function isAShape(quad: Quad): boolean {
-  return (
-    quad.predicate.value === RDF_TYPE &&
-    (quad.object.value === SHACL_NODE_SHAPE || quad.object.value === SHACL_PROPERTY_SHAPE)
-  );
+export interface Index {
+  quads: Map<string, Quad[]>;
+  blanks: BlankNode[];
+  shapes: Quad_Subject[];
 }
 
 export class Indexer {
-  constructor(private readonly store: Store) {}
+  constructor(private readonly shaclDocument: ShaclDocument) {}
 
-  build(): TripleIndex {
-    const quads = new Map<string, Quad[]>();
-    const blanks = new Set<string>();
-    const namedShapes = new Set<string>();
+  build(): Index {
+    const quads = new Map(
+      this.shaclDocument.subjects.map((subject) => [
+        subject.value,
+        this.shaclDocument.store.getQuads(subject, null, null, this.shaclDocument.graphId),
+      ])
+    );
 
-    this.store.getQuads(null, null, null, null).forEach((quad) => {
-      const subject = quad.subject.value;
+    const blankNodes = this.shaclDocument.subjects.filter((subject) => isBlankNode(subject));
 
-      if (!quads.has(subject)) {
-        quads.set(subject, []);
-      }
-      quads.get(subject)?.push(quad);
+    const nodeShapes = this.shaclDocument.store
+      .getQuads(null, RDF_TYPE, SHACL_NODE_SHAPE, this.shaclDocument.graphId)
+      .map((quad) => quad.subject);
 
-      if (isBlankNode(quad)) {
-        blanks.add(subject);
-        return;
-      }
+    const propertyShapes = this.shaclDocument.store
+      .getQuads(null, RDF_TYPE, SHACL_PROPERTY_SHAPE, this.shaclDocument.graphId)
+      .map((quad) => quad.subject);
 
-      if (isAShape(quad)) namedShapes.add(subject);
-    });
-
-    return { quadsIndex: quads, blankNodesIndex: blanks, namedShapesIndex: namedShapes };
+    return {
+      quads: quads,
+      blanks: [...new Set(blankNodes)],
+      shapes: [...new Set([...nodeShapes, ...propertyShapes])],
+    };
   }
 }
