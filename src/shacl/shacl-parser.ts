@@ -1,49 +1,59 @@
-import { ShaclDocumentBuilder } from './shacl-document-builder';
-import { ShaclDocument } from './model/shacl-document';
+import { ShaclDocument } from './shacl-document';
 import * as fs from 'node:fs';
-import { Parser } from 'n3';
-import logger from '../logger';
+import { Parser, Prefixes, Quad, Store, Term } from 'n3';
 
 export class ShaclParser {
-  private readonly content: string;
-  private readonly shaclDocumentBuilder: ShaclDocumentBuilder;
+  private content = '';
+  private graphId = '';
 
-  constructor(path: string) {
-    this.content = this.getTurtleContent(path);
-    this.shaclDocumentBuilder = new ShaclDocumentBuilder();
+  withContent(content: string): this {
+    this.content = content;
+    return this;
   }
 
-  getTurtleContent(path: string): string {
-    return fs.readFileSync(path, 'utf8');
+  withPath(path: string): this {
+    this.content = this.getTurtleContent(path);
+    return this;
   }
 
   async parse(): Promise<ShaclDocument> {
-    const parser = new Parser({ format: 'text/turtle' });
+    const store = new Store();
+    const { quads, prefixes } = await this.getQuadsAndPrefixes();
+    store.addQuads(quads);
+    return {
+      prefix: prefixes,
+      store: store,
+      lists: store.extractLists() as Record<string, Term[]>,
+      graphId: this.graphId,
+      subjects: store.getSubjects(null, null, this.graphId),
+    };
+  }
+
+  private getTurtleContent(path: string): string {
+    return fs.readFileSync(path, 'utf8');
+  }
+
+  private async getQuadsAndPrefixes(): Promise<{ quads: Quad[]; prefixes: Prefixes }> {
+    const parser = new Parser({
+      blankNodePrefix: '',
+      format: 'text/turtle',
+    });
     return new Promise((resolve, reject) => {
-      parser.parse(this.content, (error, quad, prefixes) => {
-        // TODO: check if this is the correct way to handle errors
+      const quads: Quad[] = [];
+      parser.parse(this.content, (e, q, p) => {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (error) {
-          logger.error(`Exception while parsing document : ${error}`);
-          reject(error);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (quad) {
-          this.shaclDocumentBuilder.add(quad);
+        if (e) {
+          reject(e);
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        } else if (q) {
+          if (q.graph.id != '') {
+            this.graphId = q.graph.id;
+          }
+          quads.push(q);
         } else {
-          // For some reason, the prefixes are only extracted at the end.
-          // The whole parser works with callbacks and we should wait for it.
-          logger.debug(`Extracting prefixes`);
-          this.addPrefixes(prefixes as unknown as Record<string, string>);
-          resolve(this.shaclDocumentBuilder.build());
+          resolve({ quads: quads, prefixes: p });
         }
       });
     });
-  }
-
-  addPrefixes(prefixes: Record<string, string>): void {
-    for (const prefixKey in prefixes) {
-      this.shaclDocumentBuilder.setPrefix(prefixKey, prefixes[prefixKey]);
-    }
   }
 }
