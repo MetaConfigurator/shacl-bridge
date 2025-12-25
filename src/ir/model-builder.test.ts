@@ -14,11 +14,8 @@ const pathToAimsShacl = 'samples/shacl/system-nfdi4ing.ttl';
 
 describe('Model Creation', () => {
   beforeAll(async () => {
-    let shaclParser = new ShaclParser(pathToSimpleShacl);
-    simpleShaclDocument = await shaclParser.parse();
-
-    shaclParser = new ShaclParser(pathToComplexShacl);
-    complexShaclDocument = await shaclParser.parse();
+    simpleShaclDocument = await new ShaclParser().withPath(pathToSimpleShacl).parse();
+    complexShaclDocument = await new ShaclParser().withPath(pathToComplexShacl).parse();
   });
 
   it('should generate IR model for simple SHACL document', () => {
@@ -86,20 +83,8 @@ describe('Model Creation', () => {
     expect(namePropertyShape?.coreConstraints?.pattern).toBe('^[A-Z].*');
   });
 
-  it('should parse the AIMS Shacl File', async () => {
-    const parser = new ShaclParser(pathToAimsShacl);
-    const aimsDoc = await parser.parse();
-
-    const modelBuilder = new ModelBuilder(aimsDoc);
-    expect(modelBuilder).toBeDefined();
-
-    const model = modelBuilder.build();
-    expect(model).toBeDefined();
-  });
-
   it('should capture non-SHACL metadata properties', async () => {
-    const parser = new ShaclParser(pathToAimsShacl);
-    const aimsDoc = await parser.parse();
+    const aimsDoc = await new ShaclParser().withPath(pathToAimsShacl).parse();
     const model = new ModelBuilder(aimsDoc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -151,8 +136,9 @@ describe('Model Creation', () => {
 
 describe('ModelBuilder - Cardinality Constraints', () => {
   it('should correctly parse cardinality constraints (minCount, maxCount)', async () => {
-    const parser = new ShaclParser('samples/shacl/cardinality-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser()
+      .withPath('samples/shacl/cardinality-constraints.ttl')
+      .parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -188,8 +174,9 @@ describe('ModelBuilder - Cardinality Constraints', () => {
 
 describe('ModelBuilder - Value Range Constraints', () => {
   it('should correctly parse value range constraints (minInclusive, maxInclusive, minExclusive, maxExclusive)', async () => {
-    const parser = new ShaclParser('samples/shacl/value-range-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser()
+      .withPath('samples/shacl/value-range-constraints.ttl')
+      .parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -224,8 +211,7 @@ describe('ModelBuilder - Value Range Constraints', () => {
 
 describe('ModelBuilder - String Constraints', () => {
   it('should correctly parse string-based constraints (minLength, maxLength, pattern)', async () => {
-    const parser = new ShaclParser('samples/shacl/string-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath('samples/shacl/string-constraints.ttl').parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -258,8 +244,7 @@ describe('ModelBuilder - String Constraints', () => {
 
 describe('ModelBuilder - Qualified Value Shapes', () => {
   it('should correctly parse qualified value shape constraints', async () => {
-    const parser = new ShaclParser('samples/shacl/qualified-shapes.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath('samples/shacl/qualified-shapes.ttl').parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -293,8 +278,7 @@ describe('ModelBuilder - Qualified Value Shapes', () => {
 
 describe('ModelBuilder - Logical Constraints', () => {
   it('should correctly parse logical constraints (or, and, not, xone)', async () => {
-    const parser = new ShaclParser('samples/shacl/logical-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath('samples/shacl/logical-constraints.ttl').parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -328,8 +312,7 @@ describe('ModelBuilder - Logical Constraints', () => {
 
 describe('ModelBuilder - Node Kind Constraints', () => {
   it('should correctly parse node kind constraints (IRI, Literal, BlankNode)', async () => {
-    const parser = new ShaclParser('samples/shacl/node-kind-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath('samples/shacl/node-kind-constraints.ttl').parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -367,8 +350,9 @@ describe('ModelBuilder - Node Kind Constraints', () => {
 
 describe('ModelBuilder - Property Pair Constraints', () => {
   it('should correctly parse in and languageIn constraints', async () => {
-    const parser = new ShaclParser('samples/shacl/property-pair-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser()
+      .withPath('samples/shacl/property-pair-constraints.ttl')
+      .parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(1);
@@ -403,8 +387,7 @@ describe('ModelBuilder - Integration Tests', () => {
     const tempFile = 'samples/shacl/empty-test.ttl';
     fs.writeFileSync(tempFile, emptyTtl);
 
-    const parser = new ShaclParser(tempFile);
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath(tempFile).parse();
     const model = new ModelBuilder(doc).build();
 
     expect(model.shapeDefinitions).toHaveLength(0);
@@ -413,8 +396,9 @@ describe('ModelBuilder - Integration Tests', () => {
   });
 
   it('should correctly handle multiple named shapes', async () => {
-    const parser = new ShaclParser('samples/shacl/cardinality-constraints.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser()
+      .withPath('samples/shacl/cardinality-constraints.ttl')
+      .parse();
     const model = new ModelBuilder(doc).build();
 
     // All returned shapes should be named shapes (not blank nodes)
@@ -425,8 +409,7 @@ describe('ModelBuilder - Integration Tests', () => {
   });
 
   it('should correctly resolve dependencies between shapes', async () => {
-    const parser = new ShaclParser('samples/shacl/qualified-shapes.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath('samples/shacl/qualified-shapes.ttl').parse();
     const model = new ModelBuilder(doc).build();
 
     const shape = model.shapeDefinitions[0];
@@ -443,8 +426,7 @@ describe('ModelBuilder - Integration Tests', () => {
   });
 
   it('should maintain correct topological order for nested dependencies', async () => {
-    const parser = new ShaclParser('samples/shacl/qualified-shapes.ttl');
-    const doc = await parser.parse();
+    const doc = await new ShaclParser().withPath('samples/shacl/qualified-shapes.ttl').parse();
     const model = new ModelBuilder(doc).build();
 
     // The main shape should be at the top level

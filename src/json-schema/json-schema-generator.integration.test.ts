@@ -16,8 +16,7 @@ describe('JsonSchemaGenerator Integration', () => {
       };
 
       // Parse SHACL
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
 
       // Build IR model
       const modelBuilder = new ModelBuilder(shaclDoc);
@@ -68,8 +67,7 @@ describe('JsonSchemaGenerator Integration', () => {
         includeMetadata: false,
       };
 
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new ModelBuilder(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
@@ -95,8 +93,7 @@ describe('JsonSchemaGenerator Integration', () => {
         includeMetadata: false,
       };
 
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new ModelBuilder(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
@@ -127,8 +124,7 @@ describe('JsonSchemaGenerator Integration', () => {
         includeMetadata: false,
       };
 
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new ModelBuilder(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
@@ -153,8 +149,7 @@ describe('JsonSchemaGenerator Integration', () => {
         includeMetadata: false,
       };
 
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new ModelBuilder(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
@@ -179,8 +174,7 @@ describe('JsonSchemaGenerator Integration', () => {
         includeMetadata: false,
       };
 
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new ModelBuilder(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
@@ -214,8 +208,7 @@ describe('JsonSchemaGenerator Integration', () => {
         includeMetadata: true,
       };
 
-      const parser = new ShaclParser(filePath);
-      const shaclDoc = await parser.parse();
+      const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new ModelBuilder(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 

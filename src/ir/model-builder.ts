@@ -10,7 +10,7 @@ export class ModelBuilder {
   build(): Model {
     const index = new Indexer(this.shaclDocument).build();
     const graph = new DependencyGraphBuilder(index, this.shaclDocument).build();
-    const shapeDefinitions = new ShapeBuilder(index, graph, this.shaclDocument.lists).build();
+    const shapeDefinitions = new ShapeBuilder(this.shaclDocument, index, graph).build();
     return { shapeDefinitions };
   }
 }

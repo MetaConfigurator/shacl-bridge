@@ -54,8 +54,7 @@ async function run(file: string, options: CliOptions): Promise<void> {
   }
 
   // Parse SHACL
-  const parser = new ShaclParser(file);
-  const shaclDoc = await parser.parse();
+  const shaclDoc = await new ShaclParser().withPath(file).parse();
 
   // Build IR model
   const model = new ModelBuilder(shaclDoc).build();

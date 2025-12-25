@@ -254,10 +254,9 @@ export class ShapeDefinitionBuilder {
    * Otherwise returns the identifier as a single-element array.
    */
   private extractListValues(listHeadOrValue: string): string[] {
-    const extractedList = this.lists[listHeadOrValue];
-    if (extractedList) {
+    if (listHeadOrValue in this.lists) {
       // This is a list head - extract all values
-      return extractedList.map((term) => term.value);
+      return this.lists[listHeadOrValue].map((term) => term.value);
     }
     // Not a list - return as single value
     return [listHeadOrValue];
