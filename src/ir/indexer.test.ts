@@ -16,6 +16,7 @@ import {
   XSD_STRING,
 } from '../util/rdf-terms';
 import { ShaclParser } from '../shacl/shacl-parser';
+import { DataFactory } from 'n3';
 
 describe('Indexer', () => {
   describe('build', () => {
@@ -41,9 +42,11 @@ describe('Indexer', () => {
       const index = new Indexer(shaclDocument).build();
 
       expect(index.quads.size).toBe(1);
-      expect(index.quads.has(subject)).toBe(true);
+      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([subject]);
 
-      const quads = index.quads.get(subject);
+      const subKey =
+        [...index.quads.keys()].find((s) => s.value === subject) ?? DataFactory.namedNode(subject);
+      const quads = index.quads.get(subKey);
       expect(quads).toBeDefined();
       expect(quads?.length).toBe(2);
     });
@@ -108,7 +111,7 @@ describe('Indexer', () => {
 
     it('should NOT include blank node shapes in namedShapesIndex', async () => {
       const content = await new StoreBuilder()
-        .blank('b1', SHACL_PATH, 'http://example.org/name')
+        .blank('b1', SHACL_PATH, 'https://example.org/name')
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
       const index = new Indexer(shaclDocument).build();
@@ -143,8 +146,7 @@ describe('Indexer', () => {
       const index = new Indexer(shaclDocument).build();
 
       expect(index.quads.size).toBe(2);
-      expect(index.quads.has(namedShape)).toBe(true);
-      expect(index.quads.has('b1')).toBe(true);
+      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([namedShape, 'b1']);
 
       expect(index.shapes.length).toBe(1);
       expect(index.shapes.map((s) => s.value).includes(namedShape)).toBe(true);
@@ -164,8 +166,7 @@ describe('Indexer', () => {
       const index = new Indexer(shaclDocument).build();
 
       expect(index.quads.size).toBe(2);
-      expect(index.quads.has(subject1)).toBe(true);
-      expect(index.quads.has(subject2)).toBe(true);
+      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([subject1, subject2]);
     });
 
     it('should handle complex SHACL document with all types of nodes', async () => {
@@ -185,10 +186,9 @@ describe('Indexer', () => {
 
       // Should have 4 subjects in quads index
       expect(index.quads.size).toBe(4);
-      expect(index.quads.has(personShape)).toBe(true);
-      expect(index.quads.has(companyShape)).toBe(true);
-      expect(index.quads.has('b1')).toBe(true);
-      expect(index.quads.has('b2')).toBe(true);
+      expect([...index.quads.keys()].map((term) => term.value).sort()).toStrictEqual(
+        [personShape, companyShape, 'b1', 'b2'].sort()
+      );
 
       // Should have 2 named shapes
       expect(index.shapes.length).toBe(2);
@@ -214,9 +214,7 @@ describe('Indexer', () => {
       expect(index.blanks.map((b) => b.value)).toStrictEqual(['l1', 'l2']);
 
       expect(index.quads.size).toBe(3);
-      expect(index.quads.has(shape)).toBe(true);
-      expect(index.quads.has('l1')).toBe(true);
-      expect(index.quads.has('l2')).toBe(true);
+      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([shape, 'l1', 'l2']);
     });
   });
 });

@@ -93,29 +93,46 @@ export class ShapeConverter {
 
     // sh:or → anyOf
     if (constraints.or && constraints.or.length > 0) {
-      schema.anyOf = constraints.or.map((ref) => ({
-        $ref: `#/$defs/${this.extractName(ref)}`,
-      }));
+      schema.anyOf = constraints.or.map((ref) => this.resolveShapeReference(ref, shape));
     }
 
     // sh:and → allOf
     if (constraints.and && constraints.and.length > 0) {
-      schema.allOf = constraints.and.map((ref) => ({
-        $ref: `#/$defs/${this.extractName(ref)}`,
-      }));
+      schema.allOf = constraints.and.map((ref) => this.resolveShapeReference(ref, shape));
     }
 
     // sh:xone → oneOf
     if (constraints.xone && constraints.xone.length > 0) {
-      schema.oneOf = constraints.xone.map((ref) => ({
-        $ref: `#/$defs/${this.extractName(ref)}`,
-      }));
+      schema.oneOf = constraints.xone.map((ref) => this.resolveShapeReference(ref, shape));
     }
 
     // sh:not → not (takes first element only as JSON Schema not is singular)
     if (constraints.not && constraints.not.length > 0) {
-      schema.not = {
-        $ref: `#/$defs/${this.extractName(constraints.not[0])}`,
+      schema.not = this.resolveShapeReference(constraints.not[0], shape);
+    }
+  }
+
+  /**
+   * Resolves a shape reference - inlines blank nodes, creates $ref for named shapes
+   */
+  private resolveShapeReference(nodeKey: string, parentShape: ShapeDefinition): JsonSchema {
+    // Check if this is a blank node in dependentShapes
+    const dependentShape = parentShape.dependentShapes?.find((dep) => dep.nodeKey === nodeKey);
+
+    if (dependentShape) {
+      // This is a blank node - inline it by converting directly
+      const inlinedSchema = this.convert(dependentShape);
+
+      // Remove the title if it's a blank node ID (starts with 'n3-')
+      if (inlinedSchema.title?.startsWith('n3-')) {
+        delete inlinedSchema.title;
+      }
+
+      return inlinedSchema;
+    } else {
+      // This is a named shape - create a $ref
+      return {
+        $ref: `#/$defs/${this.extractName(nodeKey)}`,
       };
     }
   }

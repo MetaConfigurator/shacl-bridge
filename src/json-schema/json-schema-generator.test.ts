@@ -31,6 +31,84 @@ describe('JsonSchemaGenerator', () => {
       }
     });
 
+    it('should inline blank nodes in logical constraints instead of creating $refs', () => {
+      // Shape with sh:or that references blank node shapes
+      const model: Model = {
+        shapeDefinitions: [
+          {
+            nodeKey: 'http://example.org/IdentifierShape',
+            shape: { type: SHAPE_TYPE.NODE_SHAPE },
+            coreConstraints: {
+              or: ['n3-1', 'n3-2'], // References to blank nodes
+            },
+            dependentShapes: [
+              {
+                nodeKey: 'n3-1',
+                shape: { type: SHAPE_TYPE.NODE_SHAPE },
+                coreConstraints: {},
+                dependentShapes: [
+                  {
+                    nodeKey: 'n3-prop-1',
+                    shape: { type: SHAPE_TYPE.PROPERTY_SHAPE, path: 'http://example.org/ssn' },
+                    coreConstraints: { pattern: '^[0-9]{3}$', minCount: 1 },
+                  },
+                ],
+              },
+              {
+                nodeKey: 'n3-2',
+                shape: { type: SHAPE_TYPE.NODE_SHAPE },
+                coreConstraints: {},
+                dependentShapes: [
+                  {
+                    nodeKey: 'n3-prop-2',
+                    shape: {
+                      type: SHAPE_TYPE.PROPERTY_SHAPE,
+                      path: 'http://example.org/passport',
+                    },
+                    coreConstraints: { minLength: 6, minCount: 1 },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const generator = new JsonSchemaGenerator(singleConfig);
+      const result = generator.generate(model);
+
+      expect(isSingleSchemaResult(result)).toBe(true);
+      if (isSingleSchemaResult(result)) {
+        // Named shape should be in $defs
+        expect(result.schema.$defs?.IdentifierShape).toBeDefined();
+
+        // Blank nodes should NOT be in $defs
+        expect(result.schema.$defs?.['n3-1']).toBeUndefined();
+        expect(result.schema.$defs?.['n3-2']).toBeUndefined();
+
+        // The main shape should have anyOf with inlined schemas (not $refs)
+        const idShape = result.schema.$defs?.IdentifierShape;
+        expect(idShape?.anyOf).toBeDefined();
+        expect(idShape?.anyOf).toHaveLength(2);
+
+        // Verify the first alternative is inlined
+        expect(idShape?.anyOf?.[0]).not.toHaveProperty('$ref');
+        expect(idShape?.anyOf?.[0]).toHaveProperty('type', 'object');
+        expect(idShape?.anyOf?.[0]).toHaveProperty('properties');
+        expect(idShape?.anyOf?.[0].properties?.ssn).toBeDefined();
+        // Blank node titles should be removed
+        expect(idShape?.anyOf?.[0]).not.toHaveProperty('title');
+
+        // Verify the second alternative is inlined
+        expect(idShape?.anyOf?.[1]).not.toHaveProperty('$ref');
+        expect(idShape?.anyOf?.[1]).toHaveProperty('type', 'object');
+        expect(idShape?.anyOf?.[1]).toHaveProperty('properties');
+        expect(idShape?.anyOf?.[1].properties?.passport).toBeDefined();
+        // Blank node titles should be removed
+        expect(idShape?.anyOf?.[1]).not.toHaveProperty('title');
+      }
+    });
+
     it('should place all shapes in $defs', () => {
       const model: Model = {
         shapeDefinitions: [

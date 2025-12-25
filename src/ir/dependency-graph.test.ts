@@ -1,4 +1,3 @@
-import { Store } from 'n3';
 import { DependencyGraphBuilder } from './dependency-graph';
 import { Indexer } from './indexer';
 import { StoreBuilder } from '../util/store-builder';
@@ -15,235 +14,311 @@ import {
   SHACL_PROPERTY,
   SHACL_TARGET_CLASS,
 } from '../util/rdf-terms';
+import { ShaclParser } from '../shacl/shacl-parser';
+import { DataFactory, Term } from 'n3';
 
-function getGraph(store: Store) {
-  const indexer = new Indexer(store);
+async function getGraph(content: string) {
+  const shaclDocument = await new ShaclParser().withContent(content).parse();
+  const indexer = new Indexer(shaclDocument);
   const index = indexer.build();
-  const builder = new DependencyGraphBuilder(index);
+  const builder = new DependencyGraphBuilder(index, shaclDocument);
   return builder.build();
+}
+
+function getDependencyKey(dependencies: Map<Term, Set<Term>>, shape: string) {
+  return (
+    [...dependencies.keys()].find((term) => term.value == shape) ?? DataFactory.namedNode(shape)
+  );
+}
+
+function getDependentKey(dependents: Map<Term, Set<Term>>, node: string) {
+  return [...dependents.keys()].find((term) => term.value == node) ?? DataFactory.namedNode(node);
 }
 
 describe('DependencyGraphBuilder', () => {
   describe('build', () => {
-    it('should create empty dependency graph for store with no blank nodes', () => {
-      const store = new StoreBuilder()
+    it('should create empty dependency graph for store with no blank nodes', async () => {
+      const content = await new StoreBuilder()
         .shape('http://example.org/PersonShape', SHACL_NODE_SHAPE)
-        .build();
-      const graph = getGraph(store);
+        .write();
+      const graph = await getGraph(content);
 
       expect(graph.dependencies.size).toBe(0);
       expect(graph.dependents.size).toBe(0);
     });
 
-    it('should create dependency graph with single blank node dependency', () => {
+    it('should create dependency graph with single blank node dependency', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .shape(parentShape, SHACL_NODE_SHAPE)
         .triple(parentShape, SHACL_PROPERTY, 'b1', true)
         .blank('b1', SHACL_PATH, 'http://example.org/name')
-        .build();
+        .write();
 
-      const graph = getGraph(store);
+      const graph = await getGraph(content);
 
       expect(graph.dependencies.size).toBe(1);
-      expect(graph.dependencies.has(parentShape)).toBe(true);
-      expect(graph.dependencies.get(parentShape)?.has('b1')).toBe(true);
+
+      const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
+      expect(graph.dependencies.has(parentShapeKey)).toBe(true);
+      expect(
+        [...(graph.dependencies.get(parentShapeKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['b1']);
 
       expect(graph.dependents.size).toBe(1);
-      expect(graph.dependents.get('b1')).toStrictEqual(new Set().add(parentShape));
+
+      const b1Key = getDependentKey(graph.dependents, 'b1');
+      expect(graph.dependents.get(b1Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
     });
 
-    it('should create dependency graph with multiple blank node dependencies', () => {
+    it('should create dependency graph with multiple blank node dependencies', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(parentShape, SHACL_PROPERTY, 'b1', true)
         .triple(parentShape, SHACL_PROPERTY, 'b2', true)
         .triple(parentShape, SHACL_PROPERTY, 'b3', true)
         .blank('b1', SHACL_PATH, 'http://example.org/name')
         .blank('b2', SHACL_PATH, 'http://example.org/age')
         .blank('b3', SHACL_PATH, 'http://example.org/email')
-        .build();
+        .write();
 
-      const graph = getGraph(store);
+      const graph = await getGraph(content);
 
       expect(graph.dependencies.size).toBe(1);
-      expect(graph.dependencies.has(parentShape)).toBe(true);
 
-      const deps = graph.dependencies.get(parentShape);
-      expect(deps?.size).toBe(3);
-      expect(deps?.has('b1')).toBe(true);
-      expect(deps?.has('b2')).toBe(true);
-      expect(deps?.has('b3')).toBe(true);
+      const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
+
+      expect(graph.dependencies.has(parentShapeKey)).toBe(true);
+
+      const deps = graph.dependencies.get(parentShapeKey) ?? new Set();
+      expect(deps.size).toBe(3);
+      expect([...deps].map((b) => b.value)).toStrictEqual(['b1', 'b2', 'b3']);
 
       expect(graph.dependents.size).toBe(3);
-      expect(graph.dependents.get('b1')).toStrictEqual(new Set().add(parentShape));
-      expect(graph.dependents.get('b2')).toStrictEqual(new Set().add(parentShape));
-      expect(graph.dependents.get('b3')).toStrictEqual(new Set().add(parentShape));
+      const b1Key = getDependentKey(graph.dependents, 'b1');
+      const b2Key = getDependentKey(graph.dependents, 'b2');
+      const b3Key = getDependentKey(graph.dependents, 'b3');
+      expect(graph.dependents.get(b1Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
+      expect(graph.dependents.get(b2Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
+      expect(graph.dependents.get(b3Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
     });
 
-    it('should handle multiple parent shapes with their own blank node dependencies', () => {
+    it('should handle multiple parent shapes with their own blank node dependencies', async () => {
       const personShape = 'http://example.org/PersonShape';
       const companyShape = 'http://example.org/CompanyShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(personShape, SHACL_PROPERTY, 'b1', true)
         .triple(companyShape, SHACL_PROPERTY, 'b2', true)
         .blank('b1', SHACL_PATH, 'http://example.org/name')
         .blank('b2', SHACL_PATH, 'http://example.org/address')
-        .build();
-
-      const graph = getGraph(store);
+        .write();
+      const graph = await getGraph(content);
 
       expect(graph.dependencies.size).toBe(2);
-      expect(graph.dependencies.has(personShape)).toBe(true);
-      expect(graph.dependencies.has(companyShape)).toBe(true);
-      expect(graph.dependencies.get(personShape)?.has('b1')).toBe(true);
-      expect(graph.dependencies.get(companyShape)?.has('b2')).toBe(true);
+
+      const personShapeKey = getDependencyKey(graph.dependencies, personShape);
+      const companyShapeKey = getDependencyKey(graph.dependencies, companyShape);
+
+      expect(graph.dependencies.has(personShapeKey)).toBe(true);
+      expect(graph.dependencies.has(companyShapeKey)).toBe(true);
+      expect(
+        [...(graph.dependencies.get(personShapeKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['b1']);
+      expect(
+        [...(graph.dependencies.get(companyShapeKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['b2']);
 
       expect(graph.dependents.size).toBe(2);
-      expect(graph.dependents.get('b1')).toStrictEqual(new Set().add(personShape));
-      expect(graph.dependents.get('b2')).toStrictEqual(new Set().add(companyShape));
+      const b1Key = getDependentKey(graph.dependents, 'b1');
+      const b2Key = getDependentKey(graph.dependents, 'b2');
+      expect(graph.dependents.get(b1Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(personShape))
+      );
+      expect(graph.dependents.get(b2Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(companyShape))
+      );
     });
 
-    it('should ignore named node objects (not create dependencies)', () => {
+    it('should ignore named node objects (not create dependencies)', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(parentShape, SHACL_TARGET_CLASS, FOAF_PERSON, false)
-        .build();
-
-      const graph = getGraph(store);
-
+        .write();
+      const graph = await getGraph(content);
       expect(graph.dependencies.size).toBe(0);
       expect(graph.dependents.size).toBe(0);
     });
 
-    it('should ignore literal objects (not create dependencies)', () => {
+    it('should ignore literal objects (not create dependencies)', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(parentShape, 'http://www.w3.org/ns/shacl#maxCount', '1', false)
-        .build();
-
-      const graph = getGraph(store);
-
+        .write();
+      const graph = await getGraph(content);
       expect(graph.dependencies.size).toBe(0);
       expect(graph.dependents.size).toBe(0);
     });
 
-    it('should handle nested blank nodes (blank node pointing to another blank node)', () => {
+    it('should handle nested blank nodes (blank node pointing to another blank node)', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .shape(parentShape, SHACL_NODE_SHAPE)
         .triple(parentShape, SHACL_PROPERTY, 'b1', true)
         .bothBlank('b1', SHACL_NODE_SHAPE, 'b2')
         .blank('b2', SHACL_PATH, 'http://example.org/address')
-        .build();
+        .write();
 
-      const graph = getGraph(store);
+      const graph = await getGraph(content);
 
       expect(graph.dependencies.size).toBe(2);
 
       // Parent shape depends on blankNode1
-      expect(graph.dependencies.has(parentShape)).toBe(true);
-      expect(graph.dependencies.get(parentShape)?.has('b1')).toBe(true);
+      const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
+      expect(graph.dependencies.has(parentShapeKey)).toBe(true);
+      expect(
+        [...(graph.dependencies.get(parentShapeKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['b1']);
 
       // BlankNode1 depends on blankNode2
-      expect(graph.dependencies.has('b1')).toBe(true);
-      expect(graph.dependencies.get('b1')?.has('b2')).toBe(true);
+      const b1DependencyKey = getDependencyKey(graph.dependencies, 'b1');
+      expect(graph.dependencies.has(b1DependencyKey)).toBe(true);
+      expect(
+        [...(graph.dependencies.get(b1DependencyKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['b2']);
 
+      const b1DependentKey = getDependentKey(graph.dependents, 'b1');
+      const b2DependentKey = getDependentKey(graph.dependents, 'b2');
       expect(graph.dependents.size).toBe(2);
-      expect(graph.dependents.get('b1')).toStrictEqual(new Set().add(parentShape));
-      expect(graph.dependents.get('b2')).toStrictEqual(new Set().add('b1'));
+      expect(graph.dependents.get(b1DependentKey)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
+      expect(graph.dependents.get(b2DependentKey)).toStrictEqual(
+        new Set().add(DataFactory.blankNode('b1'))
+      );
     });
 
-    it('should handle blank nodes in RDF lists (sh:ignoredProperties)', () => {
+    it('should handle blank nodes in RDF lists (sh:ignoredProperties)', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(parentShape, SHACL_IGNORED_PROPERTIES, 'l1', true)
         .blank('l1', RDF_FIRST, RDF_TYPE)
+        .bothBlank('l1', RDF_REST, 'l2')
         .blank('l2', RDF_FIRST, 'http://example.org/customProp')
         .blank('l2', RDF_REST, RDF_NIL)
-        .bothBlank('l1', RDF_REST, 'l2')
-        .build();
+        .write();
 
-      const graph = getGraph(store);
+      const graph = await getGraph(content);
 
       expect(graph.dependencies.size).toBe(2);
 
       // Parent shape depends on first list node
-      expect(graph.dependencies.has(parentShape)).toBe(true);
-      expect(graph.dependencies.get(parentShape)?.has('l1')).toBe(true);
+      const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
+      expect(graph.dependencies.has(parentShapeKey)).toBe(true);
+      expect(
+        [...(graph.dependencies.get(parentShapeKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['l1']);
 
       // First list node depends on second list node (via rdf:rest)
-      expect(graph.dependencies.has('l1')).toBe(true);
-      expect(graph.dependencies.get('l1')?.has('l2')).toBe(true);
+      const l1DependencyKey = getDependencyKey(graph.dependencies, 'l1');
+      expect(graph.dependencies.has(l1DependencyKey)).toBe(true);
+      expect(
+        [...(graph.dependencies.get(l1DependencyKey) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['l2']);
 
-      expect(graph.dependents.get('l1')).toStrictEqual(new Set().add(parentShape));
-      expect(graph.dependents.get('l2')).toStrictEqual(new Set().add('l1'));
+      const l1DependentKey = getDependentKey(graph.dependents, 'l1');
+      const l2DependentKey = getDependentKey(graph.dependents, 'l2');
+      expect(graph.dependents.get(l1DependentKey)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
+      expect(graph.dependents.get(l2DependentKey)).toStrictEqual(
+        new Set().add(DataFactory.blankNode('l1'))
+      );
     });
 
-    it('should handle mixed predicates with blank node and non-blank node objects', () => {
+    it('should handle mixed predicates with blank node and non-blank node objects', async () => {
       const parentShape = 'http://example.org/PersonShape';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(parentShape, SHACL_TARGET_CLASS, FOAF_PERSON, false)
         .triple(parentShape, SHACL_PROPERTY, 'b1', true)
         .blank('b1', SHACL_PATH, 'http://example.org/name')
         .literalBool(parentShape, SHACL_CLOSED, true)
-        .build();
+        .write();
 
-      const graph = getGraph(store);
+      const graph = await getGraph(content);
 
       // Only the blank node should create a dependency
       expect(graph.dependencies.size).toBe(1);
-      expect(graph.dependencies.has(parentShape)).toBe(true);
-      expect(graph.dependencies.get(parentShape)?.size).toBe(1);
-      expect(graph.dependencies.get(parentShape)?.has('b1')).toBe(true);
+      const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
+      expect(graph.dependencies.has(parentShapeKey)).toBe(true);
+      expect(graph.dependencies.get(parentShapeKey)?.size).toBe(1);
+      expect(
+        [...(graph.dependencies.get(parentShapeKey) ?? new Set<Term>())].map((b) => b.value)
+      ).toStrictEqual(['b1']);
 
+      const b1Key = getDependentKey(graph.dependents, 'b1');
       expect(graph.dependents.size).toBe(1);
-      expect(graph.dependents.get('b1')).toStrictEqual(new Set().add(parentShape));
+      expect(graph.dependents.get(b1Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(parentShape))
+      );
     });
 
-    it('should throw error when blank node has multiple parents', () => {
+    it('should throw error when blank node has multiple parents', async () => {
       const shape1 = 'http://example.org/Shape1';
       const shape2 = 'http://example.org/Shape2';
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .triple(shape1, SHACL_PROPERTY, 'b1', true)
         .triple(shape2, SHACL_PROPERTY, 'b1', true)
         .blank('b1', SHACL_PATH, 'http://example.org/name')
-        .build();
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const dependencyGraph = new DependencyGraphBuilder(index).build();
+        .write();
+      const graph = await getGraph(content);
 
-      expect(dependencyGraph.dependencies.size).toBe(2);
-      expect(dependencyGraph.dependencies.get(shape1)).toStrictEqual(new Set().add('b1'));
-      expect(dependencyGraph.dependents.size).toBe(1);
-      expect(dependencyGraph.dependents.get('b1')).toStrictEqual(new Set().add(shape1).add(shape2));
+      expect(graph.dependencies.size).toBe(2);
+      const shape1Key = getDependencyKey(graph.dependencies, shape1);
+      expect(
+        [...(graph.dependencies.get(shape1Key) ?? new Set())].map((b) => b.value)
+      ).toStrictEqual(['b1']);
+
+      expect(graph.dependents.size).toBe(1);
+      const b1Key = getDependentKey(graph.dependents, 'b1');
+      expect(graph.dependents.get(b1Key)).toStrictEqual(
+        new Set().add(DataFactory.namedNode(shape1)).add(DataFactory.namedNode(shape2))
+      );
     });
 
-    it('should detect and store cycles in blank node dependencies', () => {
+    it('should detect and store cycles in blank node dependencies', async () => {
       // Create a cycle: b1 -> b2 -> b3 -> b1
-      const store = new StoreBuilder()
+      const content = await new StoreBuilder()
         .bothBlank('b1', SHACL_NODE_SHAPE, 'b2')
         .bothBlank('b2', SHACL_NODE_SHAPE, 'b3')
         .bothBlank('b3', SHACL_NODE_SHAPE, 'b1')
-        .build();
-      const indexer = new Indexer(store);
-      const index = indexer.build();
-      const dependencyGraph = new DependencyGraphBuilder(index).build();
+        .write();
+
+      const graph = await getGraph(content);
 
       // Verify the cycle is detected
-      expect(dependencyGraph.cycles.size).toBeGreaterThan(0);
+      expect(graph.cycles.size).toBeGreaterThan(0);
 
       // All nodes in the cycle should be marked
-      expect(dependencyGraph.cycles.has('b1')).toBe(true);
-      expect(dependencyGraph.cycles.has('b2')).toBe(true);
-      expect(dependencyGraph.cycles.has('b3')).toBe(true);
+      expect([...graph.cycles.keys()].map((term) => term.value).sort()).toStrictEqual([
+        'b1',
+        'b2',
+        'b3',
+      ]);
 
       // Each node should have all cycle members in its cycle set
-      const b1Cycles = dependencyGraph.cycles.get('b1');
-      expect(b1Cycles?.size).toBe(3);
-      expect(b1Cycles?.has('b1')).toBe(true);
-      expect(b1Cycles?.has('b2')).toBe(true);
-      expect(b1Cycles?.has('b3')).toBe(true);
+      const b1Key =
+        [...graph.cycles.keys()].find((term) => term.value === 'b1') ?? DataFactory.blankNode('b1');
+      const b1Cycles = graph.cycles.get(b1Key) ?? new Set<Term>();
+      expect(b1Cycles.size).toBe(3);
+      expect([...b1Cycles].map((term) => term.value).sort()).toStrictEqual(['b1', 'b2', 'b3']);
     });
   });
 });

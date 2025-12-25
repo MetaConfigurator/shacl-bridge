@@ -1,6 +1,6 @@
 import { ShaclParser } from '../shacl/shacl-parser';
 import { ModelBuilder } from './model-builder';
-import { ShaclDocument } from '../shacl/model/shacl-document';
+import { ShaclDocument } from '../shacl/shacl-document';
 import { SEVERITY, SHAPE_TYPE } from './meta-model/shape';
 
 import fs from 'fs';
@@ -44,7 +44,7 @@ describe('Model Creation', () => {
 
     const dependentShapeDefinitions = personShape.dependentShapes;
     expect(coreConstraints).toBeDefined();
-    expect(dependentShapeDefinitions?.length).toBe(3);
+    expect(dependentShapeDefinitions?.length).toBe(2);
 
     const ssnDefinition = dependentShapeDefinitions?.find((sd) => sd.nodeKey == 'n3-0');
     expect(ssnDefinition).toBeDefined();
@@ -75,7 +75,7 @@ describe('Model Creation', () => {
     expect(personShapeDefinition?.shape?.deactivated).toBeFalsy();
     expect(personShapeDefinition?.shape?.severity).toBe(SEVERITY.VIOLATION);
     expect(personShapeDefinition?.coreConstraints?.closed).toBeTruthy();
-    expect(personShapeDefinition?.dependentShapes?.length).toBe(4);
+    expect(personShapeDefinition?.dependentShapes?.length).toBe(3);
     const namePropertyShape = personShapeDefinition?.dependentShapes?.find((sd) =>
       sd.shape?.path?.endsWith('name')
     );
@@ -385,11 +385,6 @@ describe('ModelBuilder - Property Pair Constraints', () => {
     );
     expect(languageProp).toBeDefined();
     expect(languageProp?.coreConstraints?.in).toBeDefined();
-
-    // Check the RDF list for 'in' constraint
-    const inList = languageProp?.dependentShapes;
-    expect(inList).toBeDefined();
-    expect(inList?.length).toBeGreaterThan(0);
 
     // Description property: languageIn and uniqueLang
     const descProp = shape.dependentShapes?.find(

@@ -20,12 +20,14 @@ export class ShaclParser {
     const store = new Store();
     const { quads, prefixes } = await this.getQuadsAndPrefixes();
     store.addQuads(quads);
+    // Use null for graphId to match any graph when graphId is empty
+    const graphFilter = this.graphId || null;
     return {
       prefix: prefixes,
       store: store,
       lists: store.extractLists() as Record<string, Term[]>,
       graphId: this.graphId,
-      subjects: store.getSubjects(null, null, this.graphId),
+      subjects: store.getSubjects(null, null, graphFilter),
     };
   }
 

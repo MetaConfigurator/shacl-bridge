@@ -49,6 +49,12 @@ export class PropertyConverter {
       valueSchema.$ref = `#/$defs/${className}`;
     }
 
+    // Apply sh:node reference (value must conform to a shape)
+    if (constraints.node) {
+      const shapeName = this.extractPropertyName(constraints.node);
+      valueSchema.$ref = `#/$defs/${shapeName}`;
+    }
+
     // Apply constraints
     const constraintSchema = this.constraintConverter.convert(constraints);
     valueSchema = { ...valueSchema, ...constraintSchema };

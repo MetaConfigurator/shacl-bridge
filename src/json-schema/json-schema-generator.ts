@@ -42,7 +42,7 @@ export class JsonSchemaGenerator {
       return { schema };
     }
 
-    // Convert all shapes and place in $defs
+    // Only add named shapes to $defs (blank nodes are inlined where referenced)
     schema.$defs = {};
     for (const shapeDef of model.shapeDefinitions) {
       const name = this.extractName(shapeDef.nodeKey);
