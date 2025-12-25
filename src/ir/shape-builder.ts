@@ -1,11 +1,12 @@
 import { DependencyGraph } from './dependency-graph';
 import { ShapeDefinition } from './meta-model/shape-definition';
-import { Quad, Term } from 'n3';
+import { Quad, Term, Util } from 'n3';
 import { SHAPE_TYPE } from './meta-model/shape';
 import { match, P } from 'ts-pattern';
 import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { Index } from './indexer';
 import { ShaclDocument } from '../shacl/shacl-document';
+import isBlankNode = Util.isBlankNode;
 
 export class ShapeBuilder {
   private readonly resolved = new Map<string, ShapeDefinition>();
@@ -38,13 +39,17 @@ export class ShapeBuilder {
       this.resolveDependencies(subject);
     });
 
-    return this.index.shapes.map((shapeTerm) => {
-      const shape = this.resolved.get(shapeTerm.value);
-      if (!shape) {
-        throw new Error(`Named shape '${shapeTerm.value}' was not resolved`);
-      }
-      return shape;
-    });
+    // Return only named shapes (non-blank nodes)
+    // Blank node shapes appear as dependentShapes of their parent shapes
+    return this.index.shapes
+      .filter((shapeTerm) => !isBlankNode(shapeTerm))
+      .map((shapeTerm) => {
+        const shape = this.resolved.get(shapeTerm.value);
+        if (!shape) {
+          throw new Error(`Named shape '${shapeTerm.value}' was not resolved`);
+        }
+        return shape;
+      });
   }
 
   private getCanonicalTerm(term: Term): Term {

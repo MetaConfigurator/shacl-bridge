@@ -115,7 +115,7 @@ describe('TopologicalShapeBuilder', () => {
         .shape(parentShape, SHACL_NODE_SHAPE)
         .triple(parentShape, SHACL_PROPERTY, 'b1', true)
         .blank('b1', SHACL_PATH, 'http://example.org/address')
-        .triple('b1', 'http://www.w3.org/ns/shacl#qualifiedValueShape', 'b2', true)
+        .bothBlank('b1', 'http://www.w3.org/ns/shacl#qualifiedValueShape', 'b2')
         .blank(
           'b2',
           'http://www.w3.org/ns/shacl#datatype',
