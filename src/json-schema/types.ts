@@ -73,13 +73,18 @@ export interface JsonSchema {
 
 export type UnmappableConstraintStrategy = 'extension' | 'warn' | 'error';
 
+export enum Mode {
+  Single = 'single',
+  Multi = 'multi',
+}
+
 export interface GeneratorConfig {
   /**
    * Output mode:
    * - 'single': All shapes in one schema with $defs
    * - 'multi': One schema file per named shape
    */
-  mode: 'single' | 'multi';
+  mode: Mode;
 
   /**
    * Include SHACL metadata as x-shacl-* extensions

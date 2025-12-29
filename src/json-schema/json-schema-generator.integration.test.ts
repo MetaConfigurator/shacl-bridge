@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
-import { ModelBuilder } from '../ir/model-builder';
+import { IntermediateRepresentation } from '../ir/intermediate-representation';
 import { JsonSchemaGenerator } from './json-schema-generator';
-import { GeneratorConfig, isMultiSchemaResult, isSingleSchemaResult } from './types';
+import { GeneratorConfig, isMultiSchemaResult, isSingleSchemaResult, Mode } from './types';
 
 describe('JsonSchemaGenerator Integration', () => {
   const samplesDir = path.join(__dirname, '../../samples/shacl');
@@ -11,7 +11,7 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should generate valid JSON Schema from simple SHACL', async () => {
       const filePath = path.join(samplesDir, 'simple-shacl.ttl');
       const config: GeneratorConfig = {
-        mode: 'single',
+        mode: Mode.Single,
         includeMetadata: true,
       };
 
@@ -19,7 +19,7 @@ describe('JsonSchemaGenerator Integration', () => {
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
 
       // Build IR model
-      const modelBuilder = new ModelBuilder(shaclDoc);
+      const modelBuilder = new IntermediateRepresentation(shaclDoc);
       const model = modelBuilder.build();
 
       // Generate JSON Schema
@@ -63,12 +63,12 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should handle cardinality constraints correctly', async () => {
       const filePath = path.join(samplesDir, 'cardinality-constraints.ttl');
       const config: GeneratorConfig = {
-        mode: 'single',
+        mode: Mode.Single,
         includeMetadata: false,
       };
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
-      const model = new ModelBuilder(shaclDoc).build();
+      const model = new IntermediateRepresentation(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
       expect(isSingleSchemaResult(result)).toBe(true);
@@ -89,12 +89,12 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should handle string constraints correctly', async () => {
       const filePath = path.join(samplesDir, 'string-constraints.ttl');
       const config: GeneratorConfig = {
-        mode: 'single',
+        mode: Mode.Single,
         includeMetadata: false,
       };
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
-      const model = new ModelBuilder(shaclDoc).build();
+      const model = new IntermediateRepresentation(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
       expect(isSingleSchemaResult(result)).toBe(true);
@@ -120,12 +120,12 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should handle logical operators correctly', async () => {
       const filePath = path.join(samplesDir, 'logical-constraints.ttl');
       const config: GeneratorConfig = {
-        mode: 'single',
+        mode: Mode.Single,
         includeMetadata: false,
       };
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
-      const model = new ModelBuilder(shaclDoc).build();
+      const model = new IntermediateRepresentation(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
       expect(isSingleSchemaResult(result)).toBe(true);
@@ -145,12 +145,12 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should generate separate schemas in multi mode', async () => {
       const filePath = path.join(samplesDir, 'simple-shacl.ttl');
       const config: GeneratorConfig = {
-        mode: 'multi',
+        mode: Mode.Multi,
         includeMetadata: false,
       };
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
-      const model = new ModelBuilder(shaclDoc).build();
+      const model = new IntermediateRepresentation(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
       expect(isMultiSchemaResult(result)).toBe(true);
@@ -170,12 +170,12 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should handle numeric range constraints correctly', async () => {
       const filePath = path.join(samplesDir, 'value-range-constraints.ttl');
       const config: GeneratorConfig = {
-        mode: 'single',
+        mode: Mode.Single,
         includeMetadata: false,
       };
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
-      const model = new ModelBuilder(shaclDoc).build();
+      const model = new IntermediateRepresentation(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
       expect(isSingleSchemaResult(result)).toBe(true);
@@ -204,12 +204,12 @@ describe('JsonSchemaGenerator Integration', () => {
     it('should handle nodeKind constraints', async () => {
       const filePath = path.join(samplesDir, 'node-kind-constraints.ttl');
       const config: GeneratorConfig = {
-        mode: 'single',
+        mode: Mode.Single,
         includeMetadata: true,
       };
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
-      const model = new ModelBuilder(shaclDoc).build();
+      const model = new IntermediateRepresentation(shaclDoc).build();
       const result = new JsonSchemaGenerator(config).generate(model);
 
       expect(isSingleSchemaResult(result)).toBe(true);

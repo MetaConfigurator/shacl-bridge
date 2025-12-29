@@ -4,13 +4,14 @@ import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
-import { ModelBuilder } from '../ir/model-builder';
+import { IntermediateRepresentation } from '../ir/intermediate-representation';
 import {
   GeneratorConfig,
   isMultiSchemaResult,
   isSingleSchemaResult,
   JsonSchemaGenerator,
 } from '../json-schema';
+import { Mode } from '../json-schema/types';
 
 interface CliOptions {
   mode: 'single' | 'multi';
@@ -57,11 +58,11 @@ async function run(file: string, options: CliOptions): Promise<void> {
   const shaclDoc = await new ShaclParser().withPath(file).parse();
 
   // Build IR model
-  const model = new ModelBuilder(shaclDoc).build();
+  const model = new IntermediateRepresentation(shaclDoc).build();
 
   // Configure generator
   const config: GeneratorConfig = {
-    mode: options.mode,
+    mode: options.mode == 'single' ? Mode.Single : Mode.Multi,
     includeMetadata: options.includeMetadata,
     preserveRdfMetadata: options.preserveRdfMetadata,
   };

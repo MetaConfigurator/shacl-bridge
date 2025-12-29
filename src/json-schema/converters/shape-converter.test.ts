@@ -1,11 +1,11 @@
 import { ShapeConverter } from './shape-converter';
 import { ShapeDefinition } from '../../ir/meta-model/shape-definition';
 import { SEVERITY, SHAPE_TYPE } from '../../ir/meta-model/shape';
-import { GeneratorConfig } from '../types';
+import { GeneratorConfig, Mode } from '../types';
 
 describe('ShapeConverter', () => {
   const defaultConfig: GeneratorConfig = {
-    mode: 'single',
+    mode: Mode.Single,
     includeMetadata: false,
     preserveRdfMetadata: false,
   };

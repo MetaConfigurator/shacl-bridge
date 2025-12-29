@@ -73,4 +73,28 @@ describe('SHACL Parser', () => {
     expect(shaclDocument.store.size).toBeGreaterThan(0);
     expect(shaclDocument.store.size).toBe(184);
   });
+
+  it('should throw error when trying to set both options, final option is content', () => {
+    expect(() =>
+      new ShaclParser().withPath(pathToSimpleShacl).withContent('some content').parse()
+    ).toThrow(new Error('Cannot set content after specifying a file path'));
+  });
+
+  it('should throw error when trying to set both options, final option is path', () => {
+    expect(() =>
+      new ShaclParser().withContent('some content').withPath(pathToSimpleShacl).parse()
+    ).toThrow(new Error('Cannot set a file path after specifying content'));
+  });
+
+  it('should throw error when trying to set content more than once', () => {
+    expect(() =>
+      new ShaclParser().withContent('some content').withContent('some content').parse()
+    ).toThrow(new Error('Cannot set content more than once'));
+  });
+
+  it('should throw error when trying to set file path more than once', () => {
+    expect(() =>
+      new ShaclParser().withPath(pathToSimpleShacl).withPath(pathToSimpleShacl).parse()
+    ).toThrow(new Error('Cannot set a file path more than once'));
+  });
 });

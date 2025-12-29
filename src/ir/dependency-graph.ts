@@ -1,20 +1,17 @@
 import { Index } from './indexer';
 import { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term, Util, Variable } from 'n3';
 import { ShaclDocument } from '../shacl/shacl-document';
-import { CycleDetector } from './cycle-detector';
 import isBlankNode = Util.isBlankNode;
 
 export interface DependencyGraph {
   dependencies: Map<Term, Set<Term>>;
   dependents: Map<Term, Set<Term>>;
-  cycles: Map<Term, Set<BlankNode>>;
 }
 
 export class DependencyGraphBuilder {
   private graph: DependencyGraph = {
     dependencies: new Map<Term, Set<Term>>(),
     dependents: new Map<BlankNode, Set<Term>>(),
-    cycles: new Map<Term, Set<BlankNode>>(),
   };
   private termCache = new Map<string, Term>();
 
@@ -27,13 +24,9 @@ export class DependencyGraphBuilder {
     const { quads, blanks } = this.index;
     const lists = this.shaclDocument.lists;
 
-    // First pass: Build dependency and dependent relationships
     quads.forEach((quads, subject) => {
       this.findDependenciesForSubject(quads, this.getCanonicalTerm(subject), lists, blanks);
     });
-
-    // Second pass: Detect cycles using DFS
-    this.detectCycles();
 
     return this.graph;
   }
@@ -109,10 +102,5 @@ export class DependencyGraphBuilder {
       }
       this.graph.dependents.get(canonicalTerm)?.add(subject);
     }
-  }
-
-  private detectCycles(): void {
-    const detector = new CycleDetector(this.graph.dependencies);
-    this.graph.cycles = detector.detect();
   }
 }

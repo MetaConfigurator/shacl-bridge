@@ -1,5 +1,5 @@
 import { ShaclParser } from '../shacl/shacl-parser';
-import { ModelBuilder } from './model-builder';
+import { IntermediateRepresentation } from './intermediate-representation';
 import { ShaclDocument } from '../shacl/shacl-document';
 import { SEVERITY, SHAPE_TYPE } from './meta-model/shape';
 
@@ -12,22 +12,19 @@ const pathToSimpleShacl = 'samples/shacl/simple-shacl.ttl';
 const pathToComplexShacl = 'samples/shacl/complex-shacl.ttl';
 const pathToAimsShacl = 'samples/shacl/system-nfdi4ing.ttl';
 
-describe('Model Creation', () => {
+describe('ir Creation', () => {
   beforeAll(async () => {
     simpleShaclDocument = await new ShaclParser().withPath(pathToSimpleShacl).parse();
     complexShaclDocument = await new ShaclParser().withPath(pathToComplexShacl).parse();
   });
 
-  it('should generate IR model for simple SHACL document', () => {
-    const modelBuilder = new ModelBuilder(simpleShaclDocument);
-    expect(modelBuilder).toBeDefined();
+  it('should generate IR ir for simple SHACL document', () => {
+    const ir = new IntermediateRepresentation(simpleShaclDocument).build();
 
-    const model = modelBuilder.build();
-    expect(model).toBeDefined();
-    expect(model.shapeDefinitions).toBeDefined();
-    expect(model.shapeDefinitions.length).toBe(1);
+    expect(ir).toBeDefined();
+    expect(ir.length).toBe(1);
 
-    const personShape = model.shapeDefinitions[0];
+    const personShape = ir[0];
     expect(personShape.nodeKey).toBe('http://example.org/PersonShape');
 
     const shapeProperties = personShape.shape;
@@ -51,20 +48,12 @@ describe('Model Creation', () => {
     expect(ssnDefinition?.coreConstraints?.pattern).toBe('^\\d{3}-\\d{2}-\\d{4}$');
   });
 
-  it('should generate IR model for complex SHACL document', () => {
-    const modelBuilder = new ModelBuilder(complexShaclDocument);
-    expect(modelBuilder).toBeDefined();
+  it('should generate IR ir for complex SHACL document', () => {
+    const ir = new IntermediateRepresentation(complexShaclDocument).build();
+    expect(ir).toBeDefined();
+    expect(ir.length).toBe(14);
 
-    const model = modelBuilder.build();
-    expect(model).toBeDefined();
-
-    const shapeDefinitions = model.shapeDefinitions;
-    expect(shapeDefinitions).toBeDefined();
-    expect(shapeDefinitions.length).toBe(14);
-
-    const personShapeDefinition = shapeDefinitions.find(
-      (sd) => sd.nodeKey === 'http://example.org/PersonShape'
-    );
+    const personShapeDefinition = ir.find((sd) => sd.nodeKey === 'http://example.org/PersonShape');
     expect(personShapeDefinition).toBeDefined();
     expect(personShapeDefinition?.shape).toBeDefined();
     expect(personShapeDefinition?.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
@@ -85,10 +74,10 @@ describe('Model Creation', () => {
 
   it('should capture non-SHACL metadata properties', async () => {
     const aimsDoc = await new ShaclParser().withPath(pathToAimsShacl).parse();
-    const model = new ModelBuilder(aimsDoc).build();
+    const ir = new IntermediateRepresentation(aimsDoc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
 
     // Check that additionalProperties were captured
     expect(shape.additionalProperties).toBeDefined();
@@ -134,15 +123,15 @@ describe('Model Creation', () => {
   });
 });
 
-describe('ModelBuilder - Cardinality Constraints', () => {
+describe('irBuilder - Cardinality Constraints', () => {
   it('should correctly parse cardinality constraints (minCount, maxCount)', async () => {
     const doc = await new ShaclParser()
       .withPath('samples/shacl/cardinality-constraints.ttl')
       .parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/PersonCardinalityShape');
     expect(shape.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
     expect(shape.shape?.targetClass).toBe('http://example.org/Person');
@@ -172,15 +161,15 @@ describe('ModelBuilder - Cardinality Constraints', () => {
   });
 });
 
-describe('ModelBuilder - Value Range Constraints', () => {
+describe('irBuilder - Value Range Constraints', () => {
   it('should correctly parse value range constraints (minInclusive, maxInclusive, minExclusive, maxExclusive)', async () => {
     const doc = await new ShaclParser()
       .withPath('samples/shacl/value-range-constraints.ttl')
       .parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/ProductShape');
     expect(shape.shape?.targetClass).toBe('http://example.org/Product');
 
@@ -209,13 +198,13 @@ describe('ModelBuilder - Value Range Constraints', () => {
   });
 });
 
-describe('ModelBuilder - String Constraints', () => {
+describe('irBuilder - String Constraints', () => {
   it('should correctly parse string-based constraints (minLength, maxLength, pattern)', async () => {
     const doc = await new ShaclParser().withPath('samples/shacl/string-constraints.ttl').parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/UserShape');
     expect(shape.shape?.targetClass).toBe('http://example.org/User');
 
@@ -242,13 +231,13 @@ describe('ModelBuilder - String Constraints', () => {
   });
 });
 
-describe('ModelBuilder - Qualified Value Shapes', () => {
+describe('irBuilder - Qualified Value Shapes', () => {
   it('should correctly parse qualified value shape constraints', async () => {
     const doc = await new ShaclParser().withPath('samples/shacl/qualified-shapes.ttl').parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/TeamShape');
     expect(shape.shape?.targetClass).toBe('http://example.org/Team');
 
@@ -276,13 +265,13 @@ describe('ModelBuilder - Qualified Value Shapes', () => {
   });
 });
 
-describe('ModelBuilder - Logical Constraints', () => {
+describe('irBuilder - Logical Constraints', () => {
   it('should correctly parse logical constraints (or, and, not, xone)', async () => {
     const doc = await new ShaclParser().withPath('samples/shacl/logical-constraints.ttl').parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/AddressShape');
     expect(shape.shape?.targetClass).toBe('http://example.org/Address');
 
@@ -310,13 +299,13 @@ describe('ModelBuilder - Logical Constraints', () => {
   });
 });
 
-describe('ModelBuilder - Node Kind Constraints', () => {
+describe('irBuilder - Node Kind Constraints', () => {
   it('should correctly parse node kind constraints (IRI, Literal, BlankNode)', async () => {
     const doc = await new ShaclParser().withPath('samples/shacl/node-kind-constraints.ttl').parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/DocumentShape');
     expect(shape.shape?.targetClass).toBe('http://example.org/Document');
 
@@ -348,15 +337,15 @@ describe('ModelBuilder - Node Kind Constraints', () => {
   });
 });
 
-describe('ModelBuilder - Property Pair Constraints', () => {
+describe('irBuilder - Property Pair Constraints', () => {
   it('should correctly parse in and languageIn constraints', async () => {
     const doc = await new ShaclParser()
       .withPath('samples/shacl/property-pair-constraints.ttl')
       .parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(1);
-    const shape = model.shapeDefinitions[0];
+    expect(ir).toHaveLength(1);
+    const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/LanguageShape');
     expect(shape.shape?.targetClass).toBe('http://example.org/MultilingualResource');
 
@@ -381,16 +370,16 @@ describe('ModelBuilder - Property Pair Constraints', () => {
   });
 });
 
-describe('ModelBuilder - Integration Tests', () => {
+describe('irBuilder - Integration Tests', () => {
   it('should handle empty SHACL document', async () => {
     const emptyTtl = `@prefix sh: <http://www.w3.org/ns/shacl#> .`;
     const tempFile = 'samples/shacl/empty-test.ttl';
     fs.writeFileSync(tempFile, emptyTtl);
 
     const doc = await new ShaclParser().withPath(tempFile).parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    expect(model.shapeDefinitions).toHaveLength(0);
+    expect(ir).toHaveLength(0);
 
     fs.unlinkSync(tempFile);
   });
@@ -399,10 +388,10 @@ describe('ModelBuilder - Integration Tests', () => {
     const doc = await new ShaclParser()
       .withPath('samples/shacl/cardinality-constraints.ttl')
       .parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
     // All returned shapes should be named shapes (not blank nodes)
-    model.shapeDefinitions.forEach((shape) => {
+    ir.forEach((shape) => {
       expect(shape.nodeKey).toBeDefined();
       expect(shape.nodeKey.startsWith('http://') || shape.nodeKey.startsWith('#')).toBe(true);
     });
@@ -410,9 +399,9 @@ describe('ModelBuilder - Integration Tests', () => {
 
   it('should correctly resolve dependencies between shapes', async () => {
     const doc = await new ShaclParser().withPath('samples/shacl/qualified-shapes.ttl').parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
-    const shape = model.shapeDefinitions[0];
+    const shape = ir[0];
 
     // Parent shape should have dependent shapes
     expect(shape.dependentShapes).toBeDefined();
@@ -427,12 +416,12 @@ describe('ModelBuilder - Integration Tests', () => {
 
   it('should maintain correct topological order for nested dependencies', async () => {
     const doc = await new ShaclParser().withPath('samples/shacl/qualified-shapes.ttl').parse();
-    const model = new ModelBuilder(doc).build();
+    const ir = new IntermediateRepresentation(doc).build();
 
     // The main shape should be at the top level
-    expect(model.shapeDefinitions.length).toBe(1);
+    expect(ir.length).toBe(1);
 
-    const mainShape = model.shapeDefinitions[0];
+    const mainShape = ir[0];
 
     // Check that nested shapes are resolved in dependent shapes
     const propertyShape = mainShape.dependentShapes?.[0];

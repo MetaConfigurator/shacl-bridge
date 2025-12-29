@@ -292,33 +292,5 @@ describe('DependencyGraphBuilder', () => {
         new Set().add(DataFactory.namedNode(shape1)).add(DataFactory.namedNode(shape2))
       );
     });
-
-    it('should detect and store cycles in blank node dependencies', async () => {
-      // Create a cycle: b1 -> b2 -> b3 -> b1
-      const content = await new StoreBuilder()
-        .bothBlank('b1', SHACL_NODE_SHAPE, 'b2')
-        .bothBlank('b2', SHACL_NODE_SHAPE, 'b3')
-        .bothBlank('b3', SHACL_NODE_SHAPE, 'b1')
-        .write();
-
-      const graph = await getGraph(content);
-
-      // Verify the cycle is detected
-      expect(graph.cycles.size).toBeGreaterThan(0);
-
-      // All nodes in the cycle should be marked
-      expect([...graph.cycles.keys()].map((term) => term.value).sort()).toStrictEqual([
-        'b1',
-        'b2',
-        'b3',
-      ]);
-
-      // Each node should have all cycle members in its cycle set
-      const b1Key =
-        [...graph.cycles.keys()].find((term) => term.value === 'b1') ?? DataFactory.blankNode('b1');
-      const b1Cycles = graph.cycles.get(b1Key) ?? new Set<Term>();
-      expect(b1Cycles.size).toBe(3);
-      expect([...b1Cycles].map((term) => term.value).sort()).toStrictEqual(['b1', 'b2', 'b3']);
-    });
   });
 });

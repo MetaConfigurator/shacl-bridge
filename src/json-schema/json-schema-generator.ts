@@ -1,14 +1,14 @@
-import { Model } from '../ir/meta-model/model';
 import {
   GeneratorConfig,
   GeneratorResult,
   JsonSchema,
+  Mode,
   MultiSchemaResult,
   SingleSchemaResult,
 } from './types';
 import { ShapeConverter } from './converters/shape-converter';
-
-const JSON_SCHEMA_DRAFT = 'https://json-schema.org/draft/2020-12/schema';
+import { ShapeDefinition } from '../ir/meta-model/shape-definition';
+import { JSON_SCHEMA_DRAFT } from '../util/json-schema-terms';
 
 export class JsonSchemaGenerator {
   private readonly shapeConverter: ShapeConverter;
@@ -17,40 +17,32 @@ export class JsonSchemaGenerator {
     this.shapeConverter = new ShapeConverter(config);
   }
 
-  /**
-   * Generates JSON Schema(s) from an IR Model
-   * @param model The IR model containing shape definitions
-   * @returns Single schema or map of schemas depending on config mode
-   */
-  generate(model: Model): GeneratorResult {
-    if (this.config.mode === 'single') {
-      return this.generateSingleSchema(model);
-    } else {
-      return this.generateMultiSchema(model);
-    }
+  generate(ir: ShapeDefinition[]): GeneratorResult {
+    return this.config.mode === Mode.Single
+      ? this.generateSingleSchema(ir)
+      : this.generateMultiSchema(ir);
   }
 
   /**
    * Generates a single JSON Schema with all shapes in $defs
    */
-  private generateSingleSchema(model: Model): SingleSchemaResult {
+  private generateSingleSchema(ir: ShapeDefinition[]): SingleSchemaResult {
     const schema: JsonSchema = {
       $schema: JSON_SCHEMA_DRAFT,
     };
 
-    if (model.shapeDefinitions.length === 0) {
+    if (ir.length === 0) {
       return { schema };
     }
 
-    // Only add named shapes to $defs (blank nodes are inlined where referenced)
     schema.$defs = {};
-    for (const shapeDef of model.shapeDefinitions) {
+    for (const shapeDef of ir) {
       const name = this.extractName(shapeDef.nodeKey);
       schema.$defs[name] = this.shapeConverter.convert(shapeDef);
     }
 
     // Set root $ref to first shape
-    const firstName = this.extractName(model.shapeDefinitions[0].nodeKey);
+    const firstName = this.extractName(ir[0].nodeKey);
     schema.$ref = `#/$defs/${firstName}`;
 
     return { schema };
@@ -59,10 +51,10 @@ export class JsonSchemaGenerator {
   /**
    * Generates multiple JSON Schemas, one per shape
    */
-  private generateMultiSchema(model: Model): MultiSchemaResult {
+  private generateMultiSchema(ir: ShapeDefinition[]): MultiSchemaResult {
     const schemas = new Map<string, JsonSchema>();
 
-    for (const shapeDef of model.shapeDefinitions) {
+    for (const shapeDef of ir) {
       const name = this.extractName(shapeDef.nodeKey);
       const shapeSchema = this.shapeConverter.convert(shapeDef);
 
