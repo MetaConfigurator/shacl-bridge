@@ -1,6 +1,12 @@
 import { JsonSchemaGenerator } from './json-schema-generator';
 import { SHAPE_TYPE } from '../ir/meta-model/shape';
-import { GeneratorConfig, isMultiSchemaResult, isSingleSchemaResult, Mode } from './types';
+import {
+  GeneratorConfig,
+  isMultiSchemaResult,
+  isSingleSchemaResult,
+  JsonSchema,
+  Mode,
+} from './types';
 import { ShapeDefinition } from '../ir/meta-model/shape-definition';
 
 describe('JsonSchemaGenerator', () => {
@@ -21,12 +27,10 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(singleConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
-      if (isSingleSchemaResult(result)) {
-        expect(result.schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
-      }
+      expect(result.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
     });
 
     it('should inline blank nodes in logical constraints instead of creating $refs', () => {
@@ -71,38 +75,34 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(singleConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
-      if (isSingleSchemaResult(result)) {
-        // Named shape should be in $defs
-        expect(result.schema.$defs?.IdentifierShape).toBeDefined();
+      // Named shape should be in $defs
+      expect(result.$defs?.IdentifierShape).toBeDefined();
+      // Blank nodes should NOT be in $defs
+      expect(result.$defs?.['n3-1']).toBeUndefined();
+      expect(result.$defs?.['n3-2']).toBeUndefined();
 
-        // Blank nodes should NOT be in $defs
-        expect(result.schema.$defs?.['n3-1']).toBeUndefined();
-        expect(result.schema.$defs?.['n3-2']).toBeUndefined();
+      const idShape = result.$defs?.IdentifierShape;
+      expect(idShape?.anyOf).toBeDefined();
+      expect(idShape?.anyOf).toHaveLength(2);
 
-        // The main shape should have anyOf with inlined schemas (not $refs)
-        const idShape = result.schema.$defs?.IdentifierShape;
-        expect(idShape?.anyOf).toBeDefined();
-        expect(idShape?.anyOf).toHaveLength(2);
+      // Verify the first alternative is inlined
+      expect(idShape?.anyOf?.[0]).not.toHaveProperty('$ref');
+      expect(idShape?.anyOf?.[0]).toHaveProperty('type', 'object');
+      expect(idShape?.anyOf?.[0]).toHaveProperty('properties');
+      expect(idShape?.anyOf?.[0].properties?.ssn).toBeDefined();
+      // Blank node titles should be removed
+      expect(idShape?.anyOf?.[0]).not.toHaveProperty('title');
 
-        // Verify the first alternative is inlined
-        expect(idShape?.anyOf?.[0]).not.toHaveProperty('$ref');
-        expect(idShape?.anyOf?.[0]).toHaveProperty('type', 'object');
-        expect(idShape?.anyOf?.[0]).toHaveProperty('properties');
-        expect(idShape?.anyOf?.[0].properties?.ssn).toBeDefined();
-        // Blank node titles should be removed
-        expect(idShape?.anyOf?.[0]).not.toHaveProperty('title');
-
-        // Verify the second alternative is inlined
-        expect(idShape?.anyOf?.[1]).not.toHaveProperty('$ref');
-        expect(idShape?.anyOf?.[1]).toHaveProperty('type', 'object');
-        expect(idShape?.anyOf?.[1]).toHaveProperty('properties');
-        expect(idShape?.anyOf?.[1].properties?.passport).toBeDefined();
-        // Blank node titles should be removed
-        expect(idShape?.anyOf?.[1]).not.toHaveProperty('title');
-      }
+      // Verify the second alternative is inlined
+      expect(idShape?.anyOf?.[1]).not.toHaveProperty('$ref');
+      expect(idShape?.anyOf?.[1]).toHaveProperty('type', 'object');
+      expect(idShape?.anyOf?.[1]).toHaveProperty('properties');
+      expect(idShape?.anyOf?.[1].properties?.passport).toBeDefined();
+      // Blank node titles should be removed
+      expect(idShape?.anyOf?.[1]).not.toHaveProperty('title');
     });
 
     it('should place all shapes in $defs', () => {
@@ -120,14 +120,12 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(singleConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
-      if (isSingleSchemaResult(result)) {
-        expect(result.schema.$defs).toBeDefined();
-        expect(result.schema.$defs?.PersonShape).toBeDefined();
-        expect(result.schema.$defs?.AddressShape).toBeDefined();
-      }
+      expect(result.$defs).toBeDefined();
+      expect(result.$defs?.PersonShape).toBeDefined();
+      expect(result.$defs?.AddressShape).toBeDefined();
     });
 
     it('should set root $ref to first shape', () => {
@@ -140,25 +138,21 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(singleConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
-      if (isSingleSchemaResult(result)) {
-        expect(result.schema.$ref).toBe('#/$defs/PersonShape');
-      }
+      expect(result.$ref).toBe('#/$defs/PersonShape');
     });
 
     it('should handle empty model', () => {
       const ir: ShapeDefinition[] = [];
 
       const generator = new JsonSchemaGenerator(singleConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
-      if (isSingleSchemaResult(result)) {
-        expect(result.schema.$defs).toBeUndefined();
-        expect(result.schema.$ref).toBeUndefined();
-      }
+      expect(result.$defs).toBeUndefined();
+      expect(result.$ref).toBeUndefined();
     });
 
     it('should convert shape with properties', () => {
@@ -185,15 +179,13 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(singleConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
-      if (isSingleSchemaResult(result)) {
-        const personSchema = result.schema.$defs?.PersonShape;
-        expect(personSchema?.properties?.name).toBeDefined();
-        expect(personSchema?.properties?.name.type).toBe('string');
-        expect(personSchema?.required).toContain('name');
-      }
+      const personSchema = result.$defs?.PersonShape;
+      expect(personSchema?.properties?.name).toBeDefined();
+      expect(personSchema?.properties?.name.type).toBe('string');
+      expect(personSchema?.required).toContain('name');
     });
   });
 
@@ -219,14 +211,11 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(multiConfig);
-      const result = generator.generate(ir);
-
+      const result = generator.generate(ir) as { schemas: Map<string, JsonSchema> };
       expect(isMultiSchemaResult(result)).toBe(true);
-      if (isMultiSchemaResult(result)) {
-        expect(result.schemas.size).toBe(2);
-        expect(result.schemas.has('PersonShape')).toBe(true);
-        expect(result.schemas.has('AddressShape')).toBe(true);
-      }
+      expect(result.schemas.size).toBe(2);
+      expect(result.schemas.has('PersonShape')).toBe(true);
+      expect(result.schemas.has('AddressShape')).toBe(true);
     });
 
     it('should include $schema in each schema', () => {
@@ -239,13 +228,11 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(multiConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as { schemas: Map<string, JsonSchema> };
 
       expect(isMultiSchemaResult(result)).toBe(true);
-      if (isMultiSchemaResult(result)) {
-        const personSchema = result.schemas.get('PersonShape');
-        expect(personSchema?.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
-      }
+      const personSchema = result.schemas.get('PersonShape');
+      expect(personSchema?.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
     });
 
     it('should include $id for each schema', () => {
@@ -258,13 +245,11 @@ describe('JsonSchemaGenerator', () => {
       ];
 
       const generator = new JsonSchemaGenerator(multiConfig);
-      const result = generator.generate(ir);
+      const result = generator.generate(ir) as { schemas: Map<string, JsonSchema> };
 
       expect(isMultiSchemaResult(result)).toBe(true);
-      if (isMultiSchemaResult(result)) {
-        const personSchema = result.schemas.get('PersonShape');
-        expect(personSchema?.$id).toBe('PersonShape.json');
-      }
+      const personSchema = result.schemas.get('PersonShape');
+      expect(personSchema?.$id).toBe('PersonShape.json');
     });
 
     describe('cross-references', () => {
@@ -296,14 +281,14 @@ describe('JsonSchemaGenerator', () => {
         ];
 
         const generator = new JsonSchemaGenerator(singleConfig);
-        const result = generator.generate(ir);
+        const result = generator.generate(ir) as JsonSchema;
 
         expect(isSingleSchemaResult(result)).toBe(true);
-        if (isSingleSchemaResult(result)) {
-          const personSchema = result.schema.$defs?.PersonShape;
-          const addressProp = personSchema?.properties?.address;
-          expect(addressProp?.$ref).toBe('#/$defs/Address');
-        }
+        const personSchema = result.$defs?.PersonShape;
+        expect(personSchema).toBeDefined();
+        const addressProp = personSchema?.properties?.address;
+        expect(addressProp).toBeDefined();
+        expect(addressProp?.$ref).toBe('#/$defs/Address');
       });
 
       it('should generate file-based $ref in multi mode', () => {
@@ -334,14 +319,12 @@ describe('JsonSchemaGenerator', () => {
         ];
 
         const generator = new JsonSchemaGenerator(multiConfig);
-        const result = generator.generate(ir);
+        const result = generator.generate(ir) as { schemas: Map<string, JsonSchema> };
 
         expect(isMultiSchemaResult(result)).toBe(true);
-        if (isMultiSchemaResult(result)) {
-          const personSchema = result.schemas.get('PersonShape');
-          const addressProp = personSchema?.properties?.address;
-          expect(addressProp?.$ref).toBe('Address.json');
-        }
+        const personSchema = result.schemas.get('PersonShape');
+        const addressProp = personSchema?.properties?.address;
+        expect(addressProp?.$ref).toBe('Address.json');
       });
     });
 
@@ -364,13 +347,11 @@ describe('JsonSchemaGenerator', () => {
         ];
 
         const generator = new JsonSchemaGenerator(config);
-        const result = generator.generate(ir);
+        const result = generator.generate(ir) as JsonSchema;
 
         expect(isSingleSchemaResult(result)).toBe(true);
-        if (isSingleSchemaResult(result)) {
-          const personSchema = result.schema.$defs?.PersonShape;
-          expect(personSchema?.['x-shacl-targetClass']).toBe('http://example.org/Person');
-        }
+        const personSchema = result.$defs?.PersonShape;
+        expect(personSchema?.['x-shacl-targetClass']).toBe('http://example.org/Person');
       });
     });
   });

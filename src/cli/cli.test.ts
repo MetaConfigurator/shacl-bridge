@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { JsonSchema } from '../json-schema';
+import { JsonSchema } from '../json-schema/types';
 
 type MultiSchemaOutput = Record<string, JsonSchema>;
 

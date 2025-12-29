@@ -79,58 +79,18 @@ export enum Mode {
 }
 
 export interface GeneratorConfig {
-  /**
-   * Output mode:
-   * - 'single': All shapes in one schema with $defs
-   * - 'multi': One schema file per named shape
-   */
   mode: Mode;
-
-  /**
-   * Include SHACL metadata as x-shacl-* extensions
-   */
   includeMetadata?: boolean;
-
-  /**
-   * Preserve non-SHACL RDF properties as x-rdf-properties
-   */
   preserveRdfMetadata?: boolean;
-
-  /**
-   * How to handle SHACL constraints without JSON Schema equivalent:
-   * - 'extension': Add as x-shacl-* (default)
-   * - 'warn': Log warning and skip
-   * - 'error': Throw error
-   */
   unmappableConstraints?: UnmappableConstraintStrategy;
 }
 
-/**
- * Result of JSON Schema generation in single mode
- */
-export interface SingleSchemaResult {
-  schema: JsonSchema;
+export type Result = JsonSchema | { schemas: Map<string, JsonSchema> };
+
+export function isSingleSchemaResult(result: Result): boolean {
+  return !('schemas' in result);
 }
 
-/**
- * Result of JSON Schema generation in multi mode
- */
-export interface MultiSchemaResult {
-  schemas: Map<string, JsonSchema>;
-}
-
-export type GeneratorResult = SingleSchemaResult | MultiSchemaResult;
-
-/**
- * Type guard for SingleSchemaResult
- */
-export function isSingleSchemaResult(result: GeneratorResult): result is SingleSchemaResult {
-  return 'schema' in result;
-}
-
-/**
- * Type guard for MultiSchemaResult
- */
-export function isMultiSchemaResult(result: GeneratorResult): result is MultiSchemaResult {
+export function isMultiSchemaResult(result: Result): boolean {
   return 'schemas' in result;
 }

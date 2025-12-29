@@ -1,11 +1,4 @@
-import {
-  GeneratorConfig,
-  GeneratorResult,
-  JsonSchema,
-  Mode,
-  MultiSchemaResult,
-  SingleSchemaResult,
-} from './types';
+import { GeneratorConfig, JsonSchema, Mode, Result } from './types';
 import { ShapeConverter } from './converters/shape-converter';
 import { ShapeDefinition } from '../ir/meta-model/shape-definition';
 import { JSON_SCHEMA_DRAFT } from '../util/json-schema-terms';
@@ -17,7 +10,7 @@ export class JsonSchemaGenerator {
     this.shapeConverter = new ShapeConverter(config);
   }
 
-  generate(ir: ShapeDefinition[]): GeneratorResult {
+  generate(ir: ShapeDefinition[]): Result {
     return this.config.mode === Mode.Single
       ? this.generateSingleSchema(ir)
       : this.generateMultiSchema(ir);
@@ -26,13 +19,13 @@ export class JsonSchemaGenerator {
   /**
    * Generates a single JSON Schema with all shapes in $defs
    */
-  private generateSingleSchema(ir: ShapeDefinition[]): SingleSchemaResult {
+  private generateSingleSchema(ir: ShapeDefinition[]): JsonSchema {
     const schema: JsonSchema = {
       $schema: JSON_SCHEMA_DRAFT,
     };
 
     if (ir.length === 0) {
-      return { schema };
+      return schema;
     }
 
     schema.$defs = {};
@@ -45,13 +38,13 @@ export class JsonSchemaGenerator {
     const firstName = this.extractName(ir[0].nodeKey);
     schema.$ref = `#/$defs/${firstName}`;
 
-    return { schema };
+    return schema;
   }
 
   /**
    * Generates multiple JSON Schemas, one per shape
    */
-  private generateMultiSchema(ir: ShapeDefinition[]): MultiSchemaResult {
+  private generateMultiSchema(ir: ShapeDefinition[]): { schemas: Map<string, JsonSchema> } {
     const schemas = new Map<string, JsonSchema>();
 
     for (const shapeDef of ir) {
@@ -68,7 +61,7 @@ export class JsonSchemaGenerator {
       schemas.set(name, shapeSchema);
     }
 
-    return { schemas };
+    return { schemas: schemas };
   }
 
   /**

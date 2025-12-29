@@ -5,13 +5,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
 import { IntermediateRepresentation } from '../ir/intermediate-representation';
-import {
-  GeneratorConfig,
-  isMultiSchemaResult,
-  isSingleSchemaResult,
-  JsonSchemaGenerator,
-} from '../json-schema';
-import { Mode } from '../json-schema/types';
+import { GeneratorConfig, JsonSchema, Mode } from '../json-schema/types';
+import { match } from 'ts-pattern';
+import { ShapeDefinition } from '../ir/meta-model/shape-definition';
+import { JsonSchemaGenerator } from '../json-schema/json-schema-generator';
 
 interface CliOptions {
   mode: 'single' | 'multi';
@@ -55,10 +52,10 @@ async function run(file: string, options: CliOptions): Promise<void> {
   }
 
   // Parse SHACL
-  const shaclDoc = await new ShaclParser().withPath(file).parse();
+  const shaclDocument = await new ShaclParser().withPath(file).parse();
 
   // Build IR model
-  const model = new IntermediateRepresentation(shaclDoc).build();
+  const ir = new IntermediateRepresentation(shaclDocument).build();
 
   // Configure generator
   const config: GeneratorConfig = {
@@ -67,38 +64,51 @@ async function run(file: string, options: CliOptions): Promise<void> {
     preserveRdfMetadata: options.preserveRdfMetadata,
   };
 
-  // Generate JSON Schema
-  const generator = new JsonSchemaGenerator(config);
-  const result = generator.generate(model);
+  match(config.mode)
+    .with(Mode.Single, () => {
+      handleSingleMode(config, ir, options);
+    })
+    .with(Mode.Multi, () => {
+      handleMultiMode(config, ir, options);
+    })
+    .exhaustive();
+}
 
-  // Output result
-  if (isSingleSchemaResult(result)) {
-    const jsonOutput = JSON.stringify(result.schema, null, 2);
+function handleSingleMode(
+  config: GeneratorConfig,
+  ir: ShapeDefinition[],
+  options: CliOptions
+): void {
+  const result = new JsonSchemaGenerator(config).generate(ir) as JsonSchema;
+  const jsonOutput = JSON.stringify(result, null, 2);
+  if (options.output) {
+    fs.writeFileSync(options.output, jsonOutput);
+  } else {
+    console.log(jsonOutput);
+  }
+}
 
-    if (options.output) {
-      fs.writeFileSync(options.output, jsonOutput);
-    } else {
-      console.log(jsonOutput);
+function handleMultiMode(config: GeneratorConfig, ir: ShapeDefinition[], options: CliOptions) {
+  const result = new JsonSchemaGenerator(config).generate(ir) as {
+    schemas: Map<string, JsonSchema>;
+  };
+  if (options.output) {
+    // Write each schema to a separate file in the output directory
+    if (!fs.existsSync(options.output)) {
+      fs.mkdirSync(options.output, { recursive: true });
     }
-  } else if (isMultiSchemaResult(result)) {
-    if (options.output) {
-      // Write each schema to a separate file in the output directory
-      if (!fs.existsSync(options.output)) {
-        fs.mkdirSync(options.output, { recursive: true });
-      }
 
-      for (const [name, schema] of result.schemas) {
-        const filePath = path.join(options.output, `${name}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(schema, null, 2));
-      }
-    } else {
-      // Output all schemas as a single JSON object to stdout
-      const allSchemas: Record<string, unknown> = {};
-      for (const [name, schema] of result.schemas) {
-        allSchemas[name] = schema;
-      }
-      console.log(JSON.stringify(allSchemas, null, 2));
+    for (const [name, schema] of result.schemas) {
+      const filePath = path.join(options.output, `${name}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(schema, null, 2));
     }
+  } else {
+    // Output all schemas as a single JSON object to stdout
+    const allSchemas: Record<string, unknown> = {};
+    for (const [name, schema] of result.schemas) {
+      allSchemas[name] = schema;
+    }
+    console.log(JSON.stringify(allSchemas, null, 2));
   }
 }
 
