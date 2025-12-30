@@ -37,7 +37,7 @@ export class ShapeBuilder {
     return shapes
       .filter((shapeTerm) => !isBlankNode(shapeTerm))
       .map((shapeTerm) => this.resolved.get(shapeTerm.value))
-      .filter((shape) => !!shape);
+      .filter((shape) => shape != null);
   }
 
   private getCanonicalTerm(term: Term): Term {
