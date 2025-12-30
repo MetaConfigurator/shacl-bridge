@@ -30,7 +30,7 @@ describe('ir Creation', () => {
     const shapeProperties = personShape.shape;
     expect(shapeProperties).toBeDefined();
     expect(shapeProperties?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-    expect(shapeProperties?.targetClass).toBe('http://xmlns.com/foaf/0.1/Person');
+    expect(shapeProperties?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
 
     const coreConstraints = personShape.coreConstraints;
     expect(coreConstraints).toBeDefined();
@@ -57,7 +57,7 @@ describe('ir Creation', () => {
     expect(personShapeDefinition).toBeDefined();
     expect(personShapeDefinition?.shape).toBeDefined();
     expect(personShapeDefinition?.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-    expect(personShapeDefinition?.shape?.targetClass?.endsWith('Person')).toBeTruthy();
+    expect(personShapeDefinition?.shape?.targetClasses?.[0]?.endsWith('Person')).toBeTruthy();
     expect(personShapeDefinition?.shape?.deactivated).toBeFalsy();
     expect(personShapeDefinition?.shape?.severity).toBe(SEVERITY.VIOLATION);
     expect(personShapeDefinition?.coreConstraints?.closed).toBeTruthy();
@@ -134,7 +134,7 @@ describe('irBuilder - Cardinality Constraints', () => {
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/PersonCardinalityShape');
     expect(shape.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-    expect(shape.shape?.targetClass).toBe('http://example.org/Person');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/Person');
 
     // Should have 2 property shapes
     expect(shape.dependentShapes).toHaveLength(2);
@@ -171,7 +171,7 @@ describe('irBuilder - Value Range Constraints', () => {
     expect(ir).toHaveLength(1);
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/ProductShape');
-    expect(shape.shape?.targetClass).toBe('http://example.org/Product');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/Product');
 
     // Should have 2 property shapes
     expect(shape.dependentShapes).toHaveLength(2);
@@ -206,7 +206,7 @@ describe('irBuilder - String Constraints', () => {
     expect(ir).toHaveLength(1);
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/UserShape');
-    expect(shape.shape?.targetClass).toBe('http://example.org/User');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/User');
 
     // Should have 2 property shapes
     expect(shape.dependentShapes).toHaveLength(2);
@@ -239,7 +239,7 @@ describe('irBuilder - Qualified Value Shapes', () => {
     expect(ir).toHaveLength(1);
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/TeamShape');
-    expect(shape.shape?.targetClass).toBe('http://example.org/Team');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/Team');
 
     // Should have 1 property shape
     expect(shape.dependentShapes).toHaveLength(1);
@@ -273,7 +273,7 @@ describe('irBuilder - Logical Constraints', () => {
     expect(ir).toHaveLength(1);
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/AddressShape');
-    expect(shape.shape?.targetClass).toBe('http://example.org/Address');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/Address');
 
     // Check for logical constraint arrays
     // Each points to an RDF list structure
@@ -307,7 +307,7 @@ describe('irBuilder - Node Kind Constraints', () => {
     expect(ir).toHaveLength(1);
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/DocumentShape');
-    expect(shape.shape?.targetClass).toBe('http://example.org/Document');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/Document');
 
     // Should have 3 property shapes
     expect(shape.dependentShapes).toHaveLength(3);
@@ -347,7 +347,7 @@ describe('irBuilder - Property Pair Constraints', () => {
     expect(ir).toHaveLength(1);
     const shape = ir[0];
     expect(shape.nodeKey).toBe('http://example.org/LanguageShape');
-    expect(shape.shape?.targetClass).toBe('http://example.org/MultilingualResource');
+    expect(shape.shape?.targetClasses?.[0]).toBe('http://example.org/MultilingualResource');
 
     // Should have 2 property shapes
     expect(shape.dependentShapes).toHaveLength(2);
