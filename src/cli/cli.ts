@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclDocument } from '../shacl/shacl-document';
 import { IntermediateRepresentation } from '../ir/intermediate-representation';
 import { GeneratorConfig, JsonSchema, Mode } from '../json-schema/types';
 import { match } from 'ts-pattern';
@@ -66,10 +67,10 @@ async function run(file: string, options: CliOptions): Promise<void> {
 
   match(config.mode)
     .with(Mode.Single, () => {
-      handleSingleMode(config, ir, options);
+      handleSingleMode(config, ir, shaclDocument, options);
     })
     .with(Mode.Multi, () => {
-      handleMultiMode(config, ir, options);
+      handleMultiMode(config, ir, shaclDocument, options);
     })
     .exhaustive();
 }
@@ -77,9 +78,10 @@ async function run(file: string, options: CliOptions): Promise<void> {
 function handleSingleMode(
   config: GeneratorConfig,
   ir: ShapeDefinition[],
+  shaclDocument: ShaclDocument,
   options: CliOptions
 ): void {
-  const result = new JsonSchemaGenerator(config).generate(ir) as JsonSchema;
+  const result = new JsonSchemaGenerator(config).generate(ir, shaclDocument) as JsonSchema;
   const jsonOutput = JSON.stringify(result, null, 2);
   if (options.output) {
     fs.writeFileSync(options.output, jsonOutput);
@@ -88,8 +90,13 @@ function handleSingleMode(
   }
 }
 
-function handleMultiMode(config: GeneratorConfig, ir: ShapeDefinition[], options: CliOptions) {
-  const result = new JsonSchemaGenerator(config).generate(ir) as {
+function handleMultiMode(
+  config: GeneratorConfig,
+  ir: ShapeDefinition[],
+  shaclDocument: ShaclDocument,
+  options: CliOptions
+) {
+  const result = new JsonSchemaGenerator(config).generate(ir, shaclDocument) as {
     schemas: Map<string, JsonSchema>;
   };
   if (options.output) {

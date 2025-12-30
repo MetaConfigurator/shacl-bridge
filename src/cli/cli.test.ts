@@ -27,7 +27,7 @@ describe('CLI', () => {
 
       expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
       expect(schema.$defs).toBeDefined();
-      expect(schema.$defs?.PersonShape).toBeDefined();
+      expect(schema.$defs?.Person).toBeDefined();
     });
 
     it('should show help with --help', () => {
@@ -59,8 +59,8 @@ describe('CLI', () => {
       const schemas = JSON.parse(output) as MultiSchemaOutput;
 
       expect(schemas).toBeInstanceOf(Object);
-      expect(schemas.PersonShape).toBeDefined();
-      expect(schemas.PersonShape.$id).toBe('PersonShape.json');
+      expect(schemas.Person).toBeDefined();
+      expect(schemas.Person.$id).toBe('Person.json');
     });
   });
 
@@ -69,16 +69,16 @@ describe('CLI', () => {
       const output = runCli(simpleShaclPath);
       const schema = JSON.parse(output) as JsonSchema;
 
-      expect(schema.$defs?.PersonShape['x-shacl-targetClass']).toBeUndefined();
+      expect(schema.$defs?.Person['x-shacl-targetClass']).toBeUndefined();
     });
 
     it('should include metadata when flag is set', () => {
       const output = runCli(`${simpleShaclPath} --include-metadata`);
       const schema = JSON.parse(output) as JsonSchema;
 
-      expect(schema.$defs?.PersonShape['x-shacl-targetClass']).toBe(
-        'http://xmlns.com/foaf/0.1/Person'
-      );
+      expect(schema.$defs?.Person['x-shacl-targetClass']).toEqual([
+        'http://xmlns.com/foaf/0.1/Person',
+      ]);
     });
   });
 
