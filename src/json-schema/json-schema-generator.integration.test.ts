@@ -2,13 +2,7 @@ import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
 import { IntermediateRepresentation } from '../ir/intermediate-representation';
 import JsonSchemaGenerator from './json-schema-generator';
-import {
-  GeneratorConfig,
-  isMultiSchemaResult,
-  isSingleSchemaResult,
-  JsonSchema,
-  Mode,
-} from './types';
+import { GeneratorConfig, isMultiSchemaResult, isSingleSchemaResult, JsonSchema, Mode, } from './types';
 
 describe('JsonSchemaGenerator Integration', () => {
   const samplesDir = path.join(__dirname, '../../samples/shacl');
@@ -30,15 +24,15 @@ describe('JsonSchemaGenerator Integration', () => {
 
       // Generate JSON Schema
       const generator = new JsonSchemaGenerator(config);
-      const result = generator.generate(model) as JsonSchema;
+      const result = generator.generate(model, shaclDoc) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
       // Verify schema structure
       expect(result.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
       expect(result.$defs).toBeDefined();
-      expect(result.$defs?.PersonShape).toBeDefined();
+      expect(result.$defs?.Person).toBeDefined();
 
-      const personSchema = result.$defs?.PersonShape;
+      const personSchema = result.$defs?.Person;
 
       // Verify type and closed
       expect(personSchema?.type).toBe('object');
@@ -59,7 +53,7 @@ describe('JsonSchemaGenerator Integration', () => {
       expect(worksForProp?.$ref).toBe('#/$defs/Company');
 
       // Verify metadata
-      expect(personSchema?.['x-shacl-targetClass']).toBe('http://xmlns.com/foaf/0.1/Person');
+      expect(personSchema?.['x-shacl-targetClass']).toEqual(['http://xmlns.com/foaf/0.1/Person']);
     });
   });
 
@@ -73,7 +67,7 @@ describe('JsonSchemaGenerator Integration', () => {
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new IntermediateRepresentation(shaclDoc).build();
-      const result = new JsonSchemaGenerator(config).generate(model) as JsonSchema;
+      const result = new JsonSchemaGenerator(config).generate(model, shaclDoc) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
       expect(result.$defs).toBeDefined();
@@ -97,7 +91,7 @@ describe('JsonSchemaGenerator Integration', () => {
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new IntermediateRepresentation(shaclDoc).build();
-      const result = new JsonSchemaGenerator(config).generate(model) as JsonSchema;
+      const result = new JsonSchemaGenerator(config).generate(model, shaclDoc) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
       const defs = result.$defs ?? {};
@@ -126,7 +120,7 @@ describe('JsonSchemaGenerator Integration', () => {
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new IntermediateRepresentation(shaclDoc).build();
-      const result = new JsonSchemaGenerator(config).generate(model) as JsonSchema;
+      const result = new JsonSchemaGenerator(config).generate(model, shaclDoc) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
       const defs = result.$defs ?? {};
@@ -149,7 +143,7 @@ describe('JsonSchemaGenerator Integration', () => {
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new IntermediateRepresentation(shaclDoc).build();
-      const result = new JsonSchemaGenerator(config).generate(model) as {
+      const result = new JsonSchemaGenerator(config).generate(model, shaclDoc) as {
         schemas: Map<string, JsonSchema>;
       };
 
@@ -174,7 +168,7 @@ describe('JsonSchemaGenerator Integration', () => {
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new IntermediateRepresentation(shaclDoc).build();
-      const result = new JsonSchemaGenerator(config).generate(model) as JsonSchema;
+      const result = new JsonSchemaGenerator(config).generate(model, shaclDoc) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
       const defs = result.$defs ?? {};
@@ -206,7 +200,7 @@ describe('JsonSchemaGenerator Integration', () => {
 
       const shaclDoc = await new ShaclParser().withPath(filePath).parse();
       const model = new IntermediateRepresentation(shaclDoc).build();
-      const result = new JsonSchemaGenerator(config).generate(model) as JsonSchema;
+      const result = new JsonSchemaGenerator(config).generate(model, shaclDoc) as JsonSchema;
 
       expect(isSingleSchemaResult(result)).toBe(true);
       const defs = result.$defs ?? {};
