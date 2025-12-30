@@ -1,4 +1,4 @@
-import { JsonSchemaGenerator } from './json-schema-generator';
+import JsonSchemaGenerator from './json-schema-generator';
 import { SHAPE_TYPE } from '../ir/meta-model/shape';
 import {
   GeneratorConfig,

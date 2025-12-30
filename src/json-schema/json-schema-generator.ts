@@ -2,8 +2,9 @@ import { GeneratorConfig, JsonSchema, Mode, Result } from './types';
 import { ShapeConverter } from './converters/shape-converter';
 import { ShapeDefinition } from '../ir/meta-model/shape-definition';
 import { JSON_SCHEMA_DRAFT } from '../util/json-schema-terms';
+import { extractName } from '../util/helpers';
 
-export class JsonSchemaGenerator {
+class JsonSchemaGenerator {
   private readonly shapeConverter: ShapeConverter;
 
   constructor(private readonly config: GeneratorConfig) {
@@ -16,9 +17,6 @@ export class JsonSchemaGenerator {
       : this.generateMultiSchema(ir);
   }
 
-  /**
-   * Generates a single JSON Schema with all shapes in $defs
-   */
   private generateSingleSchema(ir: ShapeDefinition[]): JsonSchema {
     const schema: JsonSchema = {
       $schema: JSON_SCHEMA_DRAFT,
@@ -30,25 +28,22 @@ export class JsonSchemaGenerator {
 
     schema.$defs = {};
     for (const shapeDef of ir) {
-      const name = this.extractName(shapeDef.nodeKey);
+      const name = extractName(shapeDef.nodeKey);
       schema.$defs[name] = this.shapeConverter.convert(shapeDef);
     }
 
     // Set root $ref to first shape
-    const firstName = this.extractName(ir[0].nodeKey);
+    const firstName = extractName(ir[0].nodeKey);
     schema.$ref = `#/$defs/${firstName}`;
 
     return schema;
   }
 
-  /**
-   * Generates multiple JSON Schemas, one per shape
-   */
   private generateMultiSchema(ir: ShapeDefinition[]): { schemas: Map<string, JsonSchema> } {
     const schemas = new Map<string, JsonSchema>();
 
     for (const shapeDef of ir) {
-      const name = this.extractName(shapeDef.nodeKey);
+      const name = extractName(shapeDef.nodeKey);
       const shapeSchema = this.shapeConverter.convert(shapeDef);
 
       // Add schema metadata
@@ -64,10 +59,6 @@ export class JsonSchemaGenerator {
     return { schemas: schemas };
   }
 
-  /**
-   * Converts $defs references to file-based references
-   * e.g., #/$defs/Address → Address.json
-   */
   private convertRefsToFileRefs(schema: JsonSchema): void {
     if (schema.$ref?.startsWith('#/$defs/')) {
       const refName = schema.$ref.replace('#/$defs/', '');
@@ -107,25 +98,6 @@ export class JsonSchemaGenerator {
       this.convertRefsToFileRefs(schema.not);
     }
   }
-
-  /**
-   * Extracts name from a URI (last segment after / or #)
-   */
-  private extractName(uri: string): string {
-    if (!uri) {
-      return '';
-    }
-
-    const hashIndex = uri.lastIndexOf('#');
-    if (hashIndex !== -1 && hashIndex < uri.length - 1) {
-      return uri.substring(hashIndex + 1);
-    }
-
-    const slashIndex = uri.lastIndexOf('/');
-    if (slashIndex !== -1 && slashIndex < uri.length - 1) {
-      return uri.substring(slashIndex + 1);
-    }
-
-    return uri;
-  }
 }
+
+export default JsonSchemaGenerator;

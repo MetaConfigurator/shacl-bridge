@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
 import { IntermediateRepresentation } from '../ir/intermediate-representation';
-import { JsonSchemaGenerator } from './json-schema-generator';
+import JsonSchemaGenerator from './json-schema-generator';
 import {
   GeneratorConfig,
   isMultiSchemaResult,

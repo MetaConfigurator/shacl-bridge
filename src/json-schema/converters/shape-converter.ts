@@ -2,6 +2,7 @@ import { ShapeDefinition } from '../../ir/meta-model/shape-definition';
 import { SHAPE_TYPE } from '../../ir/meta-model/shape';
 import { GeneratorConfig, JsonSchema } from '../types';
 import { PropertyConverter } from './property-converter';
+import { extractName } from '../../util/helpers';
 
 export class ShapeConverter {
   private readonly propertyConverter: PropertyConverter;
@@ -21,7 +22,7 @@ export class ShapeConverter {
     };
 
     // Set title from nodeKey
-    schema.title = this.extractName(shape.nodeKey);
+    schema.title = extractName(shape.nodeKey);
 
     // Handle properties from dependent shapes
     this.convertProperties(shape, schema);
@@ -132,7 +133,7 @@ export class ShapeConverter {
     } else {
       // This is a named shape - create a $ref
       return {
-        $ref: `#/$defs/${this.extractName(nodeKey)}`,
+        $ref: `#/$defs/${extractName(nodeKey)}`,
       };
     }
   }
@@ -152,26 +153,5 @@ export class ShapeConverter {
     if (shape.shape?.message) {
       schema['x-shacl-message'] = shape.shape.message;
     }
-  }
-
-  /**
-   * Extracts name from a URI (last segment after / or #)
-   */
-  private extractName(uri: string): string {
-    if (!uri) {
-      return '';
-    }
-
-    const hashIndex = uri.lastIndexOf('#');
-    if (hashIndex !== -1 && hashIndex < uri.length - 1) {
-      return uri.substring(hashIndex + 1);
-    }
-
-    const slashIndex = uri.lastIndexOf('/');
-    if (slashIndex !== -1 && slashIndex < uri.length - 1) {
-      return uri.substring(slashIndex + 1);
-    }
-
-    return uri;
   }
 }

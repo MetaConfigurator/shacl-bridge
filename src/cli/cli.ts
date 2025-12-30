@@ -8,7 +8,7 @@ import { IntermediateRepresentation } from '../ir/intermediate-representation';
 import { GeneratorConfig, JsonSchema, Mode } from '../json-schema/types';
 import { match } from 'ts-pattern';
 import { ShapeDefinition } from '../ir/meta-model/shape-definition';
-import { JsonSchemaGenerator } from '../json-schema/json-schema-generator';
+import JsonSchemaGenerator from '../json-schema/json-schema-generator';
 
 interface CliOptions {
   mode: 'single' | 'multi';
