@@ -12,11 +12,12 @@ export enum SEVERITY {
 export interface Shape {
   type: SHAPE_TYPE;
   path?: string;
-  targetClass?: string;
+  targetClasses?: string[];
+  targetNodes?: string[];
+  rdfTypes?: string[];
+  targetObjectsOf?: string[];
+  targetSubjectsOf?: string[];
   deactivated?: boolean;
-  targetNode?: string;
-  targetObjectsOf?: string; // Skip for now
-  targetSubjectsOf?: string; // Skip for now
   message?: string;
   severity?: SEVERITY;
 }

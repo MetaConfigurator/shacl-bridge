@@ -13,10 +13,7 @@ export class ShapeDefinitionBuilder {
   private dependentShapeDefinitions: ShapeDefinition[] = [];
   private readonly additionalProperties: AdditionalProperty[] = [];
 
-  constructor(
-    nodeKey: string,
-    private readonly lists: Record<string, Term[]> = {}
-  ) {
+  constructor(nodeKey: string) {
     this.nodeKey = nodeKey;
   }
 
@@ -28,10 +25,11 @@ export class ShapeDefinitionBuilder {
   setType(type: string) {
     match(type)
       .with(P.string.endsWith('NodeShape'), () => (this.shape.type = SHAPE_TYPE.NODE_SHAPE))
-      .with(
-        P.string.endsWith('PropertyShape'),
-        () => (this.shape.type = SHAPE_TYPE.PROPERTY_SHAPE)
-      );
+      .with(P.string.endsWith('PropertyShape'), () => (this.shape.type = SHAPE_TYPE.PROPERTY_SHAPE))
+      .otherwise(() => {
+        this.shape.rdfTypes ??= [];
+        this.shape.rdfTypes.push(type);
+      });
     return this;
   }
 
@@ -42,7 +40,8 @@ export class ShapeDefinitionBuilder {
   }
 
   setTargetClass(target: string) {
-    this.shape.targetClass = target;
+    this.shape.targetClasses ??= [];
+    this.shape.targetClasses.push(target);
     return this;
   }
 
@@ -52,7 +51,20 @@ export class ShapeDefinitionBuilder {
   }
 
   setTargetNode(node: string) {
-    this.shape.targetNode = node;
+    this.shape.targetNodes ??= [];
+    this.shape.targetNodes.push(node);
+    return this;
+  }
+
+  setTargetObjectsOf(predicate: string) {
+    this.shape.targetObjectsOf ??= [];
+    this.shape.targetObjectsOf.push(predicate);
+    return this;
+  }
+
+  setTargetSubjectsOf(predicate: string) {
+    this.shape.targetSubjectsOf ??= [];
+    this.shape.targetSubjectsOf.push(predicate);
     return this;
   }
 
@@ -137,10 +149,10 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  in(listHeadOrValue: string) {
+  in(listHeadOrValue: string, lists: Record<string, Term[]>) {
     this.coreConstraints.in ??= [];
     // Extract values from RDF list if this is a list head
-    const values = this.extractListValues(listHeadOrValue);
+    const values = this.extractListValues(listHeadOrValue, lists);
     this.coreConstraints.in.push(...values);
     return this;
   }
@@ -204,42 +216,42 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  or(listHeadOrValue: string) {
+  or(listHeadOrValue: string, lists: Record<string, Term[]>) {
     this.coreConstraints.or ??= [];
     // Extract values from RDF list if this is a list head
-    const values = this.extractListValues(listHeadOrValue);
+    const values = this.extractListValues(listHeadOrValue, lists);
     this.coreConstraints.or.push(...values);
     return this;
   }
 
-  and(listHeadOrValue: string) {
+  and(listHeadOrValue: string, lists: Record<string, Term[]>) {
     this.coreConstraints.and ??= [];
     // Extract values from RDF list if this is a list head
-    const values = this.extractListValues(listHeadOrValue);
+    const values = this.extractListValues(listHeadOrValue, lists);
     this.coreConstraints.and.push(...values);
     return this;
   }
 
-  not(listHeadOrValue: string) {
+  not(listHeadOrValue: string, lists: Record<string, Term[]>) {
     this.coreConstraints.not ??= [];
     // Extract values from RDF list if this is a list head
-    const values = this.extractListValues(listHeadOrValue);
+    const values = this.extractListValues(listHeadOrValue, lists);
     this.coreConstraints.not.push(...values);
     return this;
   }
 
-  xone(listHeadOrValue: string) {
+  xone(listHeadOrValue: string, lists: Record<string, Term[]>) {
     this.coreConstraints.xone ??= [];
     // Extract values from RDF list if this is a list head
-    const values = this.extractListValues(listHeadOrValue);
+    const values = this.extractListValues(listHeadOrValue, lists);
     this.coreConstraints.xone.push(...values);
     return this;
   }
 
-  setLanguageIn(listHeadOrValue: string) {
+  setLanguageIn(listHeadOrValue: string, lists: Record<string, Term[]>) {
     this.coreConstraints.languageIn ??= [];
     // Extract values from RDF list if this is a list head
-    const values = this.extractListValues(listHeadOrValue);
+    const values = this.extractListValues(listHeadOrValue, lists);
     this.coreConstraints.languageIn.push(...values);
     return this;
   }
@@ -253,10 +265,10 @@ export class ShapeDefinitionBuilder {
    * Extracts values from an RDF list if the identifier is a list head.
    * Otherwise returns the identifier as a single-element array.
    */
-  private extractListValues(listHeadOrValue: string): string[] {
-    if (listHeadOrValue in this.lists) {
+  private extractListValues(listHeadOrValue: string, lists: Record<string, Term[]>): string[] {
+    if (listHeadOrValue in lists) {
       // This is a list head - extract all values
-      return this.lists[listHeadOrValue].map((term) => term.value);
+      return lists[listHeadOrValue].map((term) => term.value);
     }
     // Not a list - return as single value
     return [listHeadOrValue];

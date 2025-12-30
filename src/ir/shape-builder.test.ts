@@ -65,7 +65,7 @@ describe('TopologicalShapeBuilder', () => {
       expect(result).toHaveLength(1);
       expect(result[0].nodeKey).toBe(shape);
       expect(result[0].shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-      expect(result[0].shape?.targetClass).toBe('http://xmlns.com/foaf/0.1/Person');
+      expect(result[0].shape?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
       expect(result[0].dependentShapes).toEqual([]);
     });
 
@@ -408,7 +408,7 @@ describe('TopologicalShapeBuilder', () => {
       expect(result[0].dependentShapes).toHaveLength(0); // List nodes should not be dependent shapes
     });
 
-    it('should handle targetNode constraint', async () => {
+    it('should handle targetNodes constraint', async () => {
       const shape = 'http://example.org/SpecificNodeShape';
       const content = await new StoreBuilder()
         .shape(shape, SHACL_NODE_SHAPE)
@@ -418,7 +418,7 @@ describe('TopologicalShapeBuilder', () => {
       const result = await getShapeDefinitionList(content);
 
       expect(result).toHaveLength(1);
-      expect(result[0].shape?.targetNode).toBe('http://example.org/SpecificInstance');
+      expect(result[0].shape?.targetNodes?.[0]).toBe('http://example.org/SpecificInstance');
     });
   });
 });
