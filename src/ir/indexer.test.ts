@@ -16,18 +16,23 @@ import {
   XSD_STRING,
 } from '../util/rdf-terms';
 import { ShaclParser } from '../shacl/shacl-parser';
-import { DataFactory } from 'n3';
+import { DataFactory, Quad_Subject } from 'n3';
+
+function getKey(shapes: Quad_Subject[], search: string) {
+  return [...shapes].filter((shape) => shape.value.endsWith(search));
+}
 
 describe('Indexer', () => {
   describe('build', () => {
     it('should return empty indexes for an empty store', async () => {
       const shaclDocument = await new ShaclParser().parse();
       const indexer = new Indexer(shaclDocument);
-      const index = indexer.build();
+      const { shapes, blanks, quads, targets } = indexer.build();
 
-      expect(index.quads.size).toBe(0);
-      expect(index.blanks.length).toBe(0);
-      expect(index.shapes.length).toBe(0);
+      expect(quads.size).toBe(0);
+      expect(blanks.length).toBe(0);
+      expect(shapes.length).toBe(0);
+      expect(targets.size).toBe(0);
     });
 
     it('should index quads by subject', async () => {
@@ -38,17 +43,22 @@ describe('Indexer', () => {
         .write();
 
       const shaclDocument = await new ShaclParser().withContent(content).parse();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      const index = new Indexer(shaclDocument).build();
-
-      expect(index.quads.size).toBe(1);
-      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([subject]);
+      expect(quads.size).toBe(1);
+      expect([...quads.keys()].map((term) => term.value)).toStrictEqual([subject]);
 
       const subKey =
-        [...index.quads.keys()].find((s) => s.value === subject) ?? DataFactory.namedNode(subject);
-      const quads = index.quads.get(subKey);
-      expect(quads).toBeDefined();
-      expect(quads?.length).toBe(2);
+        [...quads.keys()].find((s) => s.value === subject) ?? DataFactory.namedNode(subject);
+      const quadsForPersonShape = quads.get(subKey);
+      expect(quadsForPersonShape).toBeDefined();
+      expect(quadsForPersonShape?.length).toBe(2);
+
+      expect(blanks.length).toBe(0);
+      expect(shapes.length).toBe(1);
+      expect(shapes.map((shape) => shape.value)).toContain(subject);
+      const key = getKey(shapes, 'PersonShape')[0];
+      expect(targets.get(key)).toEqual(['Person']);
     });
 
     it('should identify blank nodes in blankNodesIndex', async () => {
@@ -56,10 +66,13 @@ describe('Indexer', () => {
         .blank('b1', SHACL_PATH, 'http://example.org/name')
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.blanks.length).toBe(1);
-      expect(index.blanks.map((b) => b.value)).toContain('b1');
+      expect(quads.size).toBe(1);
+      expect(blanks.length).toBe(1);
+      expect(blanks.map((b) => b.value)).toContain('b1');
+      expect(targets.size).toBe(0);
+      expect(shapes.length).toBe(0);
     });
 
     it('should identify multiple blank nodes', async () => {
@@ -69,30 +82,41 @@ describe('Indexer', () => {
         .blank('b3', SHACL_DATATYPE, XSD_STRING)
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.blanks.length).toBe(3);
-      expect(index.blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2', 'b3']);
+      expect(quads.size).toBe(3);
+      expect(blanks.length).toBe(3);
+      expect(blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2', 'b3']);
+      expect(targets.size).toBe(0);
+      expect(shapes.length).toBe(0);
     });
 
     it('should identify named NodeShapes in namedShapesIndex', async () => {
       const shapeSubject = 'http://example.org/PersonShape';
       const content = await new StoreBuilder().shape(shapeSubject, SHACL_NODE_SHAPE).write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.shapes.length).toBe(1);
-      expect(index.shapes.map((shape) => shape.value).includes(shapeSubject)).toBe(true);
+      expect(quads.size).toBe(1);
+      expect(shapes.length).toBe(1);
+      expect(shapes.map((shape) => shape.value).includes(shapeSubject)).toBe(true);
+      expect(blanks.length).toBe(0);
+      expect(targets.size).toBe(1);
+      expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
     });
 
     it('should identify named PropertyShapes in namedShapesIndex', async () => {
       const shapeSubject = 'http://example.org/NamePropertyShape';
       const content = await new StoreBuilder().shape(shapeSubject, SHACL_PROPERTY_SHAPE).write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.shapes.length).toBe(1);
-      expect(index.shapes.map((shape) => shape.value).includes(shapeSubject)).toBe(true);
+      expect(quads.size).toBe(1);
+      expect(blanks.length).toBe(0);
+      expect(shapes.length).toBe(1);
+      expect(shapes.map((shape) => shape.value).includes(shapeSubject)).toBe(true);
+      expect(targets.size).toBe(1);
+      expect(targets.get(getKey(shapes, 'NamePropertyShape')[0])).toEqual(['NameProperty']);
     });
 
     it('should identify multiple named shapes', async () => {
@@ -103,10 +127,15 @@ describe('Indexer', () => {
         .shape(propertyShape, SHACL_PROPERTY_SHAPE)
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.shapes.length).toBe(2);
-      expect(index.shapes.map((s) => s.value)).toStrictEqual([nodeShape, propertyShape]);
+      expect(quads.size).toBe(2);
+      expect(shapes.length).toBe(2);
+      expect(shapes.map((s) => s.value)).toStrictEqual([nodeShape, propertyShape]);
+      expect(blanks.length).toBe(0);
+      expect(targets.size).toBe(2);
+      expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
+      expect(targets.get(getKey(shapes, 'NameShape')[0])).toEqual(['Name']);
     });
 
     it('should NOT include blank node shapes in namedShapesIndex', async () => {
@@ -114,11 +143,13 @@ describe('Indexer', () => {
         .blank('b1', SHACL_PATH, 'https://example.org/name')
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.shapes.length).toBe(0);
-      expect(index.blanks.length).toBe(1);
-      expect(index.blanks.map((b) => b.value)).toContain('b1');
+      expect(quads.size).toBe(1);
+      expect(shapes.length).toBe(0);
+      expect(blanks.length).toBe(1);
+      expect(blanks.map((b) => b.value)).toContain('b1');
+      expect(targets.size).toBe(0);
     });
 
     it('should recognize shape types with different namespace prefixes', async () => {
@@ -129,10 +160,15 @@ describe('Indexer', () => {
         .shape(shape2, SHACL_PROPERTY_SHAPE)
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.shapes.length).toBe(2);
-      expect(index.shapes.map((s) => s.value)).toStrictEqual([shape1, shape2]);
+      expect(quads.size).toBe(2);
+      expect(blanks.length).toBe(0);
+      expect(shapes.length).toBe(2);
+      expect(shapes.map((s) => s.value)).toStrictEqual([shape1, shape2]);
+      expect(targets.size).toBe(2);
+      expect(targets.get(getKey(shapes, 'Shape1')[0])).toEqual(['Shape1']);
+      expect(targets.get(getKey(shapes, 'Shape2')[0])).toEqual(['Shape2']);
     });
 
     it('should handle mixed named nodes and blank nodes', async () => {
@@ -143,16 +179,16 @@ describe('Indexer', () => {
         .blank('b1', SHACL_PATH, 'http://example.org/name')
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.quads.size).toBe(2);
-      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([namedShape, 'b1']);
-
-      expect(index.shapes.length).toBe(1);
-      expect(index.shapes.map((s) => s.value).includes(namedShape)).toBe(true);
-
-      expect(index.blanks.length).toBe(1);
-      expect(index.blanks.map((b) => b.value)).toContain('b1');
+      expect(quads.size).toBe(2);
+      expect([...quads.keys()].map((term) => term.value)).toStrictEqual([namedShape, 'b1']);
+      expect(shapes.length).toBe(1);
+      expect(shapes.map((s) => s.value).includes(namedShape)).toBe(true);
+      expect(blanks.length).toBe(1);
+      expect(blanks.map((b) => b.value)).toContain('b1');
+      expect(targets.size).toBe(1);
+      expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
     });
 
     it('should index quads from multiple subjects', async () => {
@@ -163,10 +199,16 @@ describe('Indexer', () => {
         .triple(subject2, SHACL_NAME, 'Second', false)
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.quads.size).toBe(2);
-      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([subject1, subject2]);
+      expect(quads.size).toBe(2);
+      expect([...quads.keys()].map((term) => term.value)).toStrictEqual([subject1, subject2]);
+      expect(shapes.length).toBe(2);
+      expect(shapes.map((s) => s.value)).toStrictEqual([subject1, subject2]);
+      expect(blanks.length).toBe(0);
+      expect(targets.size).toBe(2);
+      expect(targets.get(getKey(shapes, 'Subject1')[0])).toEqual(['Subject1']);
+      expect(targets.get(getKey(shapes, 'Subject2')[0])).toEqual(['Subject2']);
     });
 
     it('should handle complex SHACL document with all types of nodes', async () => {
@@ -182,21 +224,19 @@ describe('Indexer', () => {
         .blank('b2', SHACL_PATH, 'http://example.org/age')
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      // Should have 4 subjects in quads index
-      expect(index.quads.size).toBe(4);
-      expect([...index.quads.keys()].map((term) => term.value).sort()).toStrictEqual(
+      expect(quads.size).toBe(4);
+      expect([...quads.keys()].map((term) => term.value).sort()).toStrictEqual(
         [personShape, companyShape, 'b1', 'b2'].sort()
       );
-
-      // Should have 2 named shapes
-      expect(index.shapes.length).toBe(2);
-      expect(index.shapes.map((s) => s.value)).toStrictEqual([personShape, companyShape]);
-
-      // Should have 2 blank nodes
-      expect(index.blanks.length).toBe(2);
-      expect(index.blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2']);
+      expect(shapes.length).toBe(2);
+      expect(shapes.map((s) => s.value)).toStrictEqual([personShape, companyShape]);
+      expect(blanks.length).toBe(2);
+      expect(blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2']);
+      expect(targets.size).toBe(2);
+      expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
+      expect(targets.get(getKey(shapes, 'CompanyShape')[0])).toEqual(['Company']);
     });
 
     it('should handle RDF list nodes as blank nodes', async () => {
@@ -208,13 +248,16 @@ describe('Indexer', () => {
         .bothBlank('l1', RDF_REST, 'l2')
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
-      const index = new Indexer(shaclDocument).build();
+      const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
-      expect(index.blanks.length).toBe(2);
-      expect(index.blanks.map((b) => b.value)).toStrictEqual(['l1', 'l2']);
-
-      expect(index.quads.size).toBe(3);
-      expect([...index.quads.keys()].map((term) => term.value)).toStrictEqual([shape, 'l1', 'l2']);
+      expect(blanks.length).toBe(2);
+      expect(blanks.map((b) => b.value)).toStrictEqual(['l1', 'l2']);
+      expect(quads.size).toBe(3);
+      expect([...quads.keys()].map((term) => term.value)).toStrictEqual([shape, 'l1', 'l2']);
+      expect(shapes.length).toBe(1);
+      expect(shapes.map((s) => s.value)).toStrictEqual([shape]);
+      expect(targets.size).toBe(1);
+      expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
     });
   });
 });
