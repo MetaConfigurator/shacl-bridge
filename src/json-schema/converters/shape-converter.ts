@@ -22,7 +22,7 @@ export class ShapeConverter {
     };
 
     // Set title from nodeKey
-    schema.title = extractName(shape.nodeKey);
+    // schema.title = extractName(shape.nodeKey);
 
     // Handle properties from dependent shapes
     this.convertProperties(shape, schema);
@@ -142,8 +142,8 @@ export class ShapeConverter {
    * Adds SHACL metadata as x-shacl-* extensions
    */
   private addMetadata(shape: ShapeDefinition, schema: JsonSchema): void {
-    if (shape.shape?.targetClass) {
-      schema['x-shacl-targetClass'] = shape.shape.targetClass;
+    if (shape.shape?.targetClasses && shape.shape.targetClasses.length > 0) {
+      schema['x-shacl-targetClass'] = shape.shape.targetClasses;
     }
 
     if (shape.shape?.severity) {

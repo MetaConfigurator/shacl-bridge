@@ -58,7 +58,7 @@ export interface JsonSchema {
   description?: string;
 
   // SHACL extensions (x-shacl-*)
-  'x-shacl-targetClass'?: string;
+  'x-shacl-targetClass'?: string | string[];
   'x-shacl-severity'?: string;
   'x-shacl-message'?: string;
   'x-shacl-nodeKind'?: string;

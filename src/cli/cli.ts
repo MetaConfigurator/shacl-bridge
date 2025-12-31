@@ -4,11 +4,12 @@ import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
-import { ShaclDocument } from '../shacl/shacl-document';
-import { IntermediateRepresentation } from '../ir/intermediate-representation';
+import {
+  IntermediateRepresentation,
+  IntermediateRepresentationBuilder,
+} from '../ir/intermediate-representation-builder';
 import { GeneratorConfig, JsonSchema, Mode } from '../json-schema/types';
 import { match } from 'ts-pattern';
-import { ShapeDefinition } from '../ir/meta-model/shape-definition';
 import JsonSchemaGenerator from '../json-schema/json-schema-generator';
 
 interface CliOptions {
@@ -56,7 +57,7 @@ async function run(file: string, options: CliOptions): Promise<void> {
   const shaclDocument = await new ShaclParser().withPath(file).parse();
 
   // Build IR model
-  const ir = new IntermediateRepresentation(shaclDocument).build();
+  const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
 
   // Configure generator
   const config: GeneratorConfig = {
@@ -67,21 +68,20 @@ async function run(file: string, options: CliOptions): Promise<void> {
 
   match(config.mode)
     .with(Mode.Single, () => {
-      handleSingleMode(config, ir, shaclDocument, options);
+      handleSingleMode(config, ir, options);
     })
     .with(Mode.Multi, () => {
-      handleMultiMode(config, ir, shaclDocument, options);
+      handleMultiMode(config, ir, options);
     })
     .exhaustive();
 }
 
 function handleSingleMode(
   config: GeneratorConfig,
-  ir: ShapeDefinition[],
-  shaclDocument: ShaclDocument,
+  ir: IntermediateRepresentation,
   options: CliOptions
 ): void {
-  const result = new JsonSchemaGenerator(config).generate(ir, shaclDocument) as JsonSchema;
+  const result = new JsonSchemaGenerator(config).generate(ir) as JsonSchema;
   const jsonOutput = JSON.stringify(result, null, 2);
   if (options.output) {
     fs.writeFileSync(options.output, jsonOutput);
@@ -92,11 +92,10 @@ function handleSingleMode(
 
 function handleMultiMode(
   config: GeneratorConfig,
-  ir: ShapeDefinition[],
-  shaclDocument: ShaclDocument,
+  ir: IntermediateRepresentation,
   options: CliOptions
 ) {
-  const result = new JsonSchemaGenerator(config).generate(ir, shaclDocument) as {
+  const result = new JsonSchemaGenerator(config).generate(ir) as {
     schemas: Map<string, JsonSchema>;
   };
   if (options.output) {

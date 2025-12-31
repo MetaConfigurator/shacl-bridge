@@ -25,21 +25,6 @@ describe('ShapeConverter', () => {
 
       expect(result.type).toBe('object');
     });
-
-    it('should extract schema name from nodeKey URI', () => {
-      const converter = new ShapeConverter(defaultConfig);
-      const shape: ShapeDefinition = {
-        nodeKey: 'http://example.org/PersonShape',
-        shape: {
-          type: SHAPE_TYPE.NODE_SHAPE,
-        },
-        coreConstraints: {},
-      };
-
-      const result = converter.convert(shape);
-
-      expect(result.title).toBe('PersonShape');
-    });
   });
 
   describe('property handling', () => {
@@ -226,7 +211,7 @@ describe('ShapeConverter', () => {
   });
 
   describe('metadata handling', () => {
-    it('should include targetClass when includeMetadata is true', () => {
+    it('should include targetClasses when includeMetadata is true', () => {
       const config: GeneratorConfig = {
         ...defaultConfig,
         includeMetadata: true,
@@ -236,14 +221,14 @@ describe('ShapeConverter', () => {
         nodeKey: 'http://example.org/PersonShape',
         shape: {
           type: SHAPE_TYPE.NODE_SHAPE,
-          targetClass: 'http://example.org/Person',
+          targetClasses: ['http://example.org/Person'],
         },
         coreConstraints: {},
       };
 
       const result = converter.convert(shape);
 
-      expect(result['x-shacl-targetClass']).toBe('http://example.org/Person');
+      expect(result['x-shacl-targetClass']).toEqual(['http://example.org/Person']);
     });
 
     it('should include severity when includeMetadata is true', () => {
@@ -292,7 +277,7 @@ describe('ShapeConverter', () => {
         nodeKey: 'http://example.org/PersonShape',
         shape: {
           type: SHAPE_TYPE.NODE_SHAPE,
-          targetClass: 'http://example.org/Person',
+          targetClasses: ['http://example.org/Person'],
           severity: SEVERITY.VIOLATION,
           message: 'Test message',
         },
