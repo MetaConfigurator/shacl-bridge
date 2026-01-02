@@ -1,7 +1,8 @@
 import { ShapeDefinition } from '../../ir/meta-model/shape-definition';
 import { JsonSchema } from '../types';
-import { ConstraintConverter } from './constraint-converter';
 import { DatatypeMapper } from './datatype-mapper';
+import { extractName } from '../../util/helpers';
+import { ConstraintConverter } from './constraints/constraint-converter';
 
 export interface PropertyConversionResult {
   propertyName: string;
@@ -25,7 +26,7 @@ export class PropertyConverter {
    */
   convert(propertyShape: ShapeDefinition): PropertyConversionResult {
     const path = propertyShape.shape?.path ?? '';
-    const propertyName = this.extractPropertyName(path);
+    const propertyName = extractName(path);
     const constraints = propertyShape.coreConstraints ?? {};
 
     // Determine if this is an array property
@@ -45,13 +46,13 @@ export class PropertyConverter {
 
     // Apply class reference
     if (constraints.class) {
-      const className = this.extractPropertyName(constraints.class);
+      const className = extractName(constraints.class);
       valueSchema.$ref = `#/$defs/${className}`;
     }
 
     // Apply sh:node reference (value must conform to a shape)
     if (constraints.node) {
-      const shapeName = this.extractPropertyName(constraints.node);
+      const shapeName = extractName(constraints.node);
       valueSchema.$ref = `#/$defs/${shapeName}`;
     }
 
