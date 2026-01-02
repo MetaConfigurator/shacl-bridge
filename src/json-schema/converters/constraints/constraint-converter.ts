@@ -36,10 +36,20 @@ export class ConstraintConverter {
     this.populateAvailableStrategies();
   }
 
+  array(isArray: boolean): this {
+    this.schema = isArray ? { type: 'array', items: {} } : {};
+    return this;
+  }
+
   convert(constraints: CoreConstraints): JsonSchema {
+    const hasArrayWrapper = this.schema.type === 'array' && this.schema.items !== undefined;
+
     for (const key of Object.keys(constraints) as (keyof CoreConstraints)[]) {
       const strategy = this.registry.get(key) ?? new NoStrategy();
-      strategy.handle(constraints, this.schema);
+      const isArrayLevelConstraint = key === 'minCount' || key === 'maxCount';
+      const target =
+        hasArrayWrapper && !isArrayLevelConstraint ? (this.schema.items ?? {}) : this.schema;
+      strategy.handle(constraints, target);
     }
     return this.schema;
   }

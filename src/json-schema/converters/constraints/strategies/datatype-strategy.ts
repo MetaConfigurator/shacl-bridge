@@ -9,6 +9,7 @@ export class DatatypeStrategy implements ConstraintStrategy {
   handle(constraints: CoreConstraints, schema: JsonSchema): void {
     const datatype = constraints.datatype;
     if (datatype == null) return;
+
     const datatypeSchema = this.datatypeMapper.map(datatype);
     Object.assign(schema, datatypeSchema);
   }
