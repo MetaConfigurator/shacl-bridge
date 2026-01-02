@@ -5,6 +5,9 @@ import { NodeKindStrategy } from './strategies/node-kind-strategy';
 import { EnumStrategy } from './strategies/enum-strategy';
 import { NoStrategy } from './strategies/no-strategy';
 import { JsonSchema } from '../../types';
+import { DefsStrategy } from './strategies/defs-strategy';
+import { DatatypeStrategy } from './strategies/datatype-strategy';
+import { QuantityStrategy } from './strategies/quantity-strategy';
 
 export type ConstraintResult = Pick<
   JsonSchema,
@@ -19,27 +22,31 @@ export type ConstraintResult = Pick<
   | 'format'
   | 'enum'
   | 'x-shacl-nodeKind'
+  | '$ref'
+  | 'minItems'
+  | 'maxItems'
 >;
 
 export class ConstraintConverter {
   private readonly registry;
+  private schema: JsonSchema = {};
 
   constructor() {
     this.registry = new ConstraintRegistry();
     this.populateAvailableStrategies();
   }
 
-  convert(constraints: CoreConstraints): ConstraintResult {
-    const result: ConstraintResult = {};
+  convert(constraints: CoreConstraints): JsonSchema {
     for (const key of Object.keys(constraints) as (keyof CoreConstraints)[]) {
       const strategy = this.registry.get(key) ?? new NoStrategy();
-      strategy.handle(constraints, result);
+      strategy.handle(constraints, this.schema);
     }
-    return result;
+    return this.schema;
   }
 
   private populateAvailableStrategies() {
     this.registry
+      .strategy('datatype', new DatatypeStrategy())
       .strategy('minLength', new DefaultStrategy('minLength', 'minLength'))
       .strategy('maxLength', new DefaultStrategy('maxLength', 'maxLength'))
       .strategy('pattern', new DefaultStrategy('pattern', 'pattern'))
@@ -48,6 +55,10 @@ export class ConstraintConverter {
       .strategy('minExclusive', new DefaultStrategy('minExclusive', 'exclusiveMinimum'))
       .strategy('maxExclusive', new DefaultStrategy('maxExclusive', 'exclusiveMaximum'))
       .strategy('nodeKind', new NodeKindStrategy())
-      .strategy('in', new EnumStrategy('in', 'enum'));
+      .strategy('in', new EnumStrategy('in', 'enum'))
+      .strategy('class', new DefsStrategy('class', '$ref'))
+      .strategy('node', new DefsStrategy('node', '$ref'))
+      .strategy('minCount', new QuantityStrategy('minCount', 'minItems', (val) => val > 0))
+      .strategy('maxCount', new QuantityStrategy('maxCount', 'maxItems'));
   }
 }

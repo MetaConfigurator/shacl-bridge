@@ -2,31 +2,31 @@ import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
 import { ConstraintStrategy } from '../constraint-strategy';
 import { match } from 'ts-pattern';
 import { NodeKind } from '../../../../ir/meta-model/node-kind';
-import { ConstraintResult } from '../constraint-converter';
+import { JsonSchema } from '../../../types';
 
 export class NodeKindStrategy implements ConstraintStrategy {
-  handle(constraints: CoreConstraints, result: ConstraintResult): void {
+  handle(constraints: CoreConstraints, schema: JsonSchema): void {
     const { nodeKind } = constraints;
     if (nodeKind == null) return;
     match(nodeKind)
       .with(NodeKind.IRI, () => {
-        result.type = 'string';
-        result.format = 'uri';
+        schema.type = 'string';
+        schema.format = 'uri';
       })
       .with(NodeKind.LITERAL, () => {
-        result['x-shacl-nodeKind'] = 'sh:Literal';
+        schema['x-shacl-nodeKind'] = 'sh:Literal';
       })
       .with(NodeKind.BLANK_NODE, () => {
-        result['x-shacl-nodeKind'] = 'sh:BlankNode';
+        schema['x-shacl-nodeKind'] = 'sh:BlankNode';
       })
       .with(NodeKind.BLANK_NODE_OR_IRI, () => {
-        result['x-shacl-nodeKind'] = 'sh:BlankNodeOrIRI';
+        schema['x-shacl-nodeKind'] = 'sh:BlankNodeOrIRI';
       })
       .with(NodeKind.IRI_OR_LITERAL, () => {
-        result['x-shacl-nodeKind'] = 'sh:IRIOrLiteral';
+        schema['x-shacl-nodeKind'] = 'sh:IRIOrLiteral';
       })
       .with(NodeKind.BLANK_NODE_OR_LITERAL, () => {
-        result['x-shacl-nodeKind'] = 'sh:BlankNodeOrLiteral';
+        schema['x-shacl-nodeKind'] = 'sh:BlankNodeOrLiteral';
       })
       .exhaustive();
   }

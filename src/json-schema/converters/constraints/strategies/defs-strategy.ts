@@ -1,9 +1,10 @@
-import { ConstraintStrategy } from '../constraint-strategy';
 import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
 import { ConstraintResult } from '../constraint-converter';
+import { ConstraintStrategy } from '../constraint-strategy';
+import { extractStrippedName } from '../../../../util/helpers';
 import { JsonSchema } from '../../../types';
 
-export class DefaultStrategy<K extends keyof CoreConstraints, S extends keyof ConstraintResult>
+export class DefsStrategy<K extends keyof CoreConstraints, S extends keyof ConstraintResult>
   implements ConstraintStrategy
 {
   constructor(
@@ -14,6 +15,7 @@ export class DefaultStrategy<K extends keyof CoreConstraints, S extends keyof Co
   handle(constraints: CoreConstraints, schema: JsonSchema): void {
     const value = constraints[this.constraintKey];
     if (value == null) return;
-    schema[this.schemaKey] = value as ConstraintResult[S];
+    const extractedValue = extractStrippedName(value as string);
+    schema[this.schemaKey] = `#/$defs/${extractedValue}` as ConstraintResult[S];
   }
 }

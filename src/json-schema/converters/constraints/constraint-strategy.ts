@@ -1,6 +1,6 @@
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
-import { ConstraintResult } from './constraint-converter';
+import { JsonSchema } from '../../types';
 
 export interface ConstraintStrategy {
-  handle(constraints: CoreConstraints, result: ConstraintResult): void;
+  handle(constraints: CoreConstraints, result: JsonSchema): void;
 }

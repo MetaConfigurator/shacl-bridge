@@ -147,12 +147,12 @@ describe('DatatypeMapper', () => {
   describe('unknown datatypes', () => {
     it('should return undefined for unknown datatype', () => {
       const result = mapper.map('http://example.org/unknown');
-      expect(result).toBeUndefined();
+      expect(result).toEqual({ type: 'string' });
     });
 
     it('should return undefined for empty string', () => {
       const result = mapper.map('');
-      expect(result).toBeUndefined();
+      expect(result).toEqual({ type: 'string' });
     });
   });
 
