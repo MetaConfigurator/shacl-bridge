@@ -15,3 +15,15 @@ export function extractName(uri: string): string {
 
   return uri;
 }
+
+export function stripShape(name: string) {
+  if (name.endsWith('Shape') || name.endsWith('shape')) {
+    const withOutShape = name.replace(/Shape|shape$/g, '');
+    if (withOutShape !== '') return withOutShape;
+  }
+  return name;
+}
+
+export function extractStrippedName(uri: string): string {
+  return stripShape(extractName(uri));
+}

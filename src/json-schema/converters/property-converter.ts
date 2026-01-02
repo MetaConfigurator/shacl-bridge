@@ -39,9 +39,7 @@ export class PropertyConverter {
     // Apply datatype mapping
     if (constraints.datatype) {
       const datatypeSchema = this.datatypeMapper.map(constraints.datatype);
-      if (datatypeSchema) {
-        valueSchema = { ...valueSchema, ...datatypeSchema };
-      }
+      valueSchema = { ...valueSchema, ...datatypeSchema };
     }
 
     // Apply class reference

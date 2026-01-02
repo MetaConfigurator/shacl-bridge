@@ -5,7 +5,7 @@ import {
   SHACL_TARGET_OBJECTS_OF,
   SHACL_TARGET_SUBJECTS_OF,
 } from '../util/rdf-terms';
-import { extractName } from '../util/helpers';
+import { extractName, extractStrippedName } from '../util/helpers';
 import { ShaclDocument } from '../shacl/shacl-document';
 
 const TARGET_DEFINITIONS = [
@@ -36,14 +36,6 @@ export class TargetResolver {
       .map((quad) => {
         return { predicate: quad.predicate.value, object: quad.object.value };
       });
-  }
-
-  private stripShape(name: string) {
-    if (name.endsWith('Shape') || name.endsWith('shape')) {
-      const withOutShape = name.replace(/Shape|shape$/g, '');
-      if (withOutShape !== '') return withOutShape;
-    }
-    return name;
   }
 
   private findTheBestTargetDeclarations(
@@ -85,7 +77,7 @@ export class TargetResolver {
     );
 
     return noTargets
-      ? [this.stripShape(extractName(subject.value))]
+      ? [extractStrippedName(subject.value)]
       : [...new Set([...targetClasses, ...targetNodes, ...targetSubjects, ...targetObjects])];
   }
 }

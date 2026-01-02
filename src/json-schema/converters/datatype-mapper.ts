@@ -1,7 +1,7 @@
 import { match, P } from 'ts-pattern';
 import { JsonSchema } from '../types';
 
-type DatatypeMapping = Pick<JsonSchema, 'type' | 'format' | 'minimum' | 'maximum'>;
+export type DatatypeMapping = Pick<JsonSchema, 'type' | 'format' | 'minimum' | 'maximum'>;
 
 export class DatatypeMapper {
   /**
@@ -9,11 +9,10 @@ export class DatatypeMapper {
    * @param datatypeUri The full XSD datatype URI
    * @returns JSON Schema type properties or undefined if not mappable
    */
-  map(datatypeUri: string): DatatypeMapping | undefined {
+  map(datatypeUri: string): DatatypeMapping {
     return (
       match(datatypeUri)
         // String types
-        .with(P.string.endsWith('#string'), () => ({ type: 'string' as const }))
         .with(P.string.endsWith('#normalizedString'), () => ({ type: 'string' as const }))
         .with(P.string.endsWith('#token'), () => ({ type: 'string' as const }))
 
@@ -98,7 +97,7 @@ export class DatatypeMapper {
         .with(P.string.endsWith('#hexBinary'), () => ({ type: 'string' as const }))
 
         // Unknown datatype
-        .otherwise(() => undefined)
+        .otherwise(() => ({ type: 'string' as const }))
     );
   }
 }
