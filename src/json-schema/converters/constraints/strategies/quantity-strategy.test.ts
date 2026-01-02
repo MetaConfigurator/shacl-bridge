@@ -184,7 +184,9 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {};
       const schema: JsonSchema = {};
 
-      expect(() => strategy.handle(constraints, schema)).not.toThrow();
+      expect(() => {
+        strategy.handle(constraints, schema);
+      }).not.toThrow();
       expect(schema.minItems).toBeUndefined();
     });
   });
