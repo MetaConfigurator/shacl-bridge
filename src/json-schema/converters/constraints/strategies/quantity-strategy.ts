@@ -1,7 +1,7 @@
 import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
 import { ConstraintResult } from '../constraint-converter';
 import { ConstraintStrategy } from '../constraint-strategy';
-import { JsonSchema } from '../../../types';
+import { JsonSchemaObjectType } from '../../../json-schema-type';
 
 export class QuantityStrategy<K extends keyof CoreConstraints, S extends keyof ConstraintResult>
   implements ConstraintStrategy
@@ -12,9 +12,25 @@ export class QuantityStrategy<K extends keyof CoreConstraints, S extends keyof C
     private readonly condition?: (value: number) => boolean
   ) {}
 
-  handle(constraints: CoreConstraints, schema: JsonSchema): void {
+  handle(constraints: CoreConstraints, schema: JsonSchemaObjectType): void {
     const value = constraints[this.constraintKey] as number;
+
     const shouldApply = this.condition ? this.condition(value) : true;
-    if (shouldApply) schema[this.schemaKey] = value as ConstraintResult[S];
+    if (shouldApply) {
+      schema[this.schemaKey] = value as ConstraintResult[S];
+    }
+
+    const shouldBeArray =
+      (this.constraintKey === 'maxCount' && value !== 1) ||
+      (this.constraintKey === 'minCount' && constraints.maxCount === undefined);
+
+    if (shouldBeArray && schema.type !== 'array') {
+      const existingType = schema.type;
+      if (existingType) {
+        const items = schema.items != null && typeof schema.items === 'object' ? schema.items : {};
+        schema.items = { ...items, type: existingType };
+      }
+      schema.type = 'array';
+    }
   }
 }

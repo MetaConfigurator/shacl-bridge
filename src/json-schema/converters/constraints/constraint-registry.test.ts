@@ -3,6 +3,7 @@ import { ConstraintStrategy } from './constraint-strategy';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 import { NoStrategy } from './strategies/no-strategy';
 import { ConstraintResult } from './constraint-converter';
+import { JsonSchemaObjectType } from '../../json-schema-type';
 
 describe('ConstraintRegistry', () => {
   describe('Strategy Registration', () => {
@@ -181,7 +182,7 @@ describe('ConstraintRegistry', () => {
 
       const mockConstraints: CoreConstraints = { minLength: 5 };
       const mockResult: ConstraintResult = {};
-      retrieved?.handle(mockConstraints, mockResult);
+      retrieved.handle(mockConstraints, mockResult);
 
       expect(mockHandle).toHaveBeenCalledWith(mockConstraints, mockResult);
     });
@@ -191,12 +192,14 @@ describe('ConstraintRegistry', () => {
 
       const stringStrategy: ConstraintStrategy = {
         handle: (constraints, result) => {
+          result = result as JsonSchemaObjectType;
           if (constraints.pattern) result.pattern = constraints.pattern;
         },
       };
 
       const numericStrategy: ConstraintStrategy = {
         handle: (constraints, result) => {
+          result = result as JsonSchemaObjectType;
           if (constraints.minInclusive) result.minimum = constraints.minInclusive;
         },
       };
@@ -234,7 +237,7 @@ describe('ConstraintRegistry', () => {
       const retrieved = registry.get('minLength');
 
       expect(retrieved).toBeDefined();
-      expect(typeof retrieved?.handle).toBe('function');
+      expect(typeof retrieved.handle).toBe('function');
     });
   });
 

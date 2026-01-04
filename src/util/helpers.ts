@@ -27,3 +27,15 @@ export function stripShape(name: string) {
 export function extractStrippedName(uri: string): string {
   return stripShape(extractName(uri));
 }
+
+export function hasKeyAtAnyLevel(obj: unknown, targetKey: string): boolean {
+  if (obj === null || typeof obj !== 'object') {
+    return false;
+  }
+
+  if (targetKey in obj) {
+    return true;
+  }
+
+  return Object.values(obj).some((value) => hasKeyAtAnyLevel(value, targetKey));
+}

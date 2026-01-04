@@ -1,6 +1,6 @@
 import { QuantityStrategy } from './quantity-strategy';
 import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
-import { JsonSchema } from '../../../types';
+import { JsonSchemaObjectType } from '../../../json-schema-type';
 
 describe('QuantityStrategy', () => {
   describe('basic quantity mapping', () => {
@@ -9,7 +9,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 2,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -21,7 +21,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         maxCount: 10,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -33,7 +33,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 0,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -45,7 +45,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         maxCount: 1000000,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -59,7 +59,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 5,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -71,7 +71,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 0,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -83,7 +83,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         maxCount: 0,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -95,7 +95,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 1,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -111,7 +111,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         maxCount: 50,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -127,7 +127,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         maxCount: 200,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -139,7 +139,7 @@ describe('QuantityStrategy', () => {
     it('should handle undefined constraint value', () => {
       const strategy = new QuantityStrategy('minCount', 'minItems');
       const constraints: CoreConstraints = {};
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 
@@ -151,7 +151,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         maxCount: 20,
       };
-      const schema: JsonSchema = {
+      const schema: JsonSchemaObjectType = {
         maxItems: 10,
       };
 
@@ -165,7 +165,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 3,
       };
-      const schema: JsonSchema = {
+      const schema: JsonSchemaObjectType = {
         type: 'array',
         items: { type: 'string' },
         maxItems: 10,
@@ -182,7 +182,7 @@ describe('QuantityStrategy', () => {
     it('should handle condition with null constraint value gracefully', () => {
       const strategy = new QuantityStrategy('minCount', 'minItems', (val) => val > 0);
       const constraints: CoreConstraints = {};
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       expect(() => {
         strategy.handle(constraints, schema);
@@ -197,7 +197,7 @@ describe('QuantityStrategy', () => {
       const constraints: CoreConstraints = {
         minCount: 5,
       };
-      const schema: JsonSchema = {};
+      const schema: JsonSchemaObjectType = {};
 
       strategy.handle(constraints, schema);
 

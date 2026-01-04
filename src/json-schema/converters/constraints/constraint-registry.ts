@@ -8,10 +8,10 @@ export class ConstraintRegistry {
     this.strategies.set(key, strategy);
     return this;
   }
-  get(key: keyof CoreConstraints): ConstraintStrategy | undefined {
+  get(key: keyof CoreConstraints): ConstraintStrategy {
     if (!this.strategies.has(key)) {
       return new NoStrategy();
     }
-    return this.strategies.get(key);
+    return this.strategies.get(key) ?? new NoStrategy();
   }
 }

@@ -2,16 +2,23 @@ import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
 import { ConstraintStrategy } from '../constraint-strategy';
 import { match } from 'ts-pattern';
 import { NodeKind } from '../../../../ir/meta-model/node-kind';
-import { JsonSchema } from '../../../types';
+import { JsonSchemaObjectType } from '../../../json-schema-type';
 
 export class NodeKindStrategy implements ConstraintStrategy {
-  handle(constraints: CoreConstraints, schema: JsonSchema): void {
+  handle(constraints: CoreConstraints, schema: JsonSchemaObjectType): void {
     const { nodeKind } = constraints;
     if (nodeKind == null) return;
+
+    // Skip if there's already a $ref (from sh:class or sh:node)
+    // The $ref takes precedence over nodeKind constraints
+    const hasRef = schema.$ref != null;
+
     match(nodeKind)
       .with(NodeKind.IRI, () => {
-        schema.type = 'string';
-        schema.format = 'uri';
+        if (!hasRef) {
+          schema.type = 'string';
+          schema.format = 'uri';
+        }
       })
       .with(NodeKind.LITERAL, () => {
         schema['x-shacl-nodeKind'] = 'sh:Literal';

@@ -1,7 +1,7 @@
 import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
 import { ConstraintStrategy } from '../constraint-strategy';
 import { ConstraintResult } from '../constraint-converter';
-import { JsonSchema } from '../../../types';
+import { JsonSchemaObjectType } from '../../../json-schema-type';
 
 export class EnumStrategy<K extends keyof CoreConstraints, S extends keyof ConstraintResult>
   implements ConstraintStrategy
@@ -11,7 +11,7 @@ export class EnumStrategy<K extends keyof CoreConstraints, S extends keyof Const
     private readonly schemaKey: S
   ) {}
 
-  handle(constraints: CoreConstraints, schema: JsonSchema): void {
+  handle(constraints: CoreConstraints, schema: JsonSchemaObjectType): void {
     const value = constraints[this.constraintKey];
     if (value == null) return;
     if (!Array.isArray(value) || value.length == 0) return;

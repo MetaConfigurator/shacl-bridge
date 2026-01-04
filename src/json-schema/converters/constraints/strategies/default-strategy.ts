@@ -1,7 +1,7 @@
 import { ConstraintStrategy } from '../constraint-strategy';
 import { CoreConstraints } from '../../../../ir/meta-model/core-constraints';
 import { ConstraintResult } from '../constraint-converter';
-import { JsonSchema } from '../../../types';
+import { JsonSchemaObjectType } from '../../../json-schema-type';
 
 export class DefaultStrategy<K extends keyof CoreConstraints, S extends keyof ConstraintResult>
   implements ConstraintStrategy
@@ -11,7 +11,7 @@ export class DefaultStrategy<K extends keyof CoreConstraints, S extends keyof Co
     private readonly schemaKey: S
   ) {}
 
-  handle(constraints: CoreConstraints, schema: JsonSchema): void {
+  handle(constraints: CoreConstraints, schema: JsonSchemaObjectType): void {
     const value = constraints[this.constraintKey];
     if (value == null) return;
     schema[this.schemaKey] = value as ConstraintResult[S];

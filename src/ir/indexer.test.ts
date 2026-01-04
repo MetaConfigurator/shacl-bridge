@@ -71,7 +71,7 @@ describe('Indexer', () => {
       expect(quads.size).toBe(1);
       expect(blanks.length).toBe(1);
       expect(blanks.map((b) => b.value)).toContain('b1');
-      expect(targets.size).toBe(0);
+      expect(targets.size).toBe(1);
       expect(shapes.length).toBe(0);
     });
 
@@ -87,7 +87,7 @@ describe('Indexer', () => {
       expect(quads.size).toBe(3);
       expect(blanks.length).toBe(3);
       expect(blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2', 'b3']);
-      expect(targets.size).toBe(0);
+      expect(targets.size).toBe(3);
       expect(shapes.length).toBe(0);
     });
 
@@ -149,7 +149,7 @@ describe('Indexer', () => {
       expect(shapes.length).toBe(0);
       expect(blanks.length).toBe(1);
       expect(blanks.map((b) => b.value)).toContain('b1');
-      expect(targets.size).toBe(0);
+      expect(targets.size).toBe(1);
     });
 
     it('should recognize shape types with different namespace prefixes', async () => {
@@ -187,7 +187,7 @@ describe('Indexer', () => {
       expect(shapes.map((s) => s.value).includes(namedShape)).toBe(true);
       expect(blanks.length).toBe(1);
       expect(blanks.map((b) => b.value)).toContain('b1');
-      expect(targets.size).toBe(1);
+      expect(targets.size).toBe(2);
       expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
     });
 
@@ -234,7 +234,7 @@ describe('Indexer', () => {
       expect(shapes.map((s) => s.value)).toStrictEqual([personShape, companyShape]);
       expect(blanks.length).toBe(2);
       expect(blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2']);
-      expect(targets.size).toBe(2);
+      expect(targets.size).toBe(4);
       expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
       expect(targets.get(getKey(shapes, 'CompanyShape')[0])).toEqual(['Company']);
     });
@@ -256,7 +256,7 @@ describe('Indexer', () => {
       expect([...quads.keys()].map((term) => term.value)).toStrictEqual([shape, 'l1', 'l2']);
       expect(shapes.length).toBe(1);
       expect(shapes.map((s) => s.value)).toStrictEqual([shape]);
-      expect(targets.size).toBe(1);
+      expect(targets.size).toBe(3);
       expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
     });
   });

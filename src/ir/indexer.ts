@@ -20,7 +20,7 @@ export class Indexer {
   build(): Index {
     const quads = getQuads(this.shaclDocument);
     const shapes = getShapes(this.shaclDocument.subjects);
-    const targets = this.targetResolver.resolveTargets(shapes, quads);
+    const targets = this.targetResolver.resolveTargets(quads);
     return {
       quads: quads,
       blanks: getBlankNodes(this.shaclDocument.subjects),

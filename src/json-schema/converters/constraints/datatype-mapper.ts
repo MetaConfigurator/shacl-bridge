@@ -1,5 +1,5 @@
 import { match, P } from 'ts-pattern';
-import { JsonSchema } from '../types';
+import { JsonSchema } from '../../types';
 
 export type DatatypeMapping = Pick<JsonSchema, 'type' | 'format' | 'minimum' | 'maximum'>;
 

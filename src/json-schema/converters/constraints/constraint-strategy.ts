@@ -1,6 +1,6 @@
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
-import { JsonSchema } from '../../types';
+import { JsonSchemaObjectType, JsonSchemaType } from '../../json-schema-type';
 
 export interface ConstraintStrategy {
-  handle(constraints: CoreConstraints, result: JsonSchema): void;
+  handle(constraints: CoreConstraints, result: JsonSchemaObjectType | JsonSchemaType): void;
 }
