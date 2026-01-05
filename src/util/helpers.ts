@@ -99,23 +99,27 @@ export function mapDataType(
 }
 
 export function mapNodeKind(nodeKind: NodeKind, builder: JsonSchemaObjectBuilder): void {
-  const X_SHACL_NODE_KIND = 'x-shacl-nodeKind';
   match(nodeKind)
-    .with(
-      NodeKind.IRI,
-      P.when(() => (builder.getKey('$ref') as string | undefined) != null),
-      () => builder.type('string').format('uri')
-    )
-    .with(NodeKind.LITERAL, () => builder.customProperty(X_SHACL_NODE_KIND, 'sh:Literal'))
-    .with(NodeKind.BLANK_NODE, () => builder.customProperty(X_SHACL_NODE_KIND, 'sh:BlankNode'))
+    .with(NodeKind.IRI, () => builder.type('string').format('uri'))
+    .with(NodeKind.LITERAL, () => builder.type(['string', 'number', 'boolean']))
+    .with(NodeKind.BLANK_NODE, () => builder.type('object'))
     .with(NodeKind.BLANK_NODE_OR_IRI, () =>
-      builder.customProperty(X_SHACL_NODE_KIND, 'sh:BlankNodeOrIri')
-    )
-    .with(NodeKind.IRI_OR_LITERAL, () =>
-      builder.customProperty(X_SHACL_NODE_KIND, 'sh:IRIOrLiteral')
+      builder.oneOf([
+        new JsonSchemaObjectBuilder().type('object').build(),
+        new JsonSchemaObjectBuilder().type('string').format('uri').build(),
+      ])
     )
     .with(NodeKind.BLANK_NODE_OR_LITERAL, () =>
-      builder.customProperty(X_SHACL_NODE_KIND, 'sh:BlankNodeOrLiteral')
+      builder.oneOf([
+        new JsonSchemaObjectBuilder().type('object').build(),
+        new JsonSchemaObjectBuilder().type(['string', 'number', 'boolean']).build(),
+      ])
+    )
+    .with(NodeKind.IRI_OR_LITERAL, () =>
+      builder.oneOf([
+        new JsonSchemaObjectBuilder().type('string').format('uri').build(),
+        new JsonSchemaObjectBuilder().type(['string', 'number', 'boolean']).build(),
+      ])
     )
     .exhaustive();
 }

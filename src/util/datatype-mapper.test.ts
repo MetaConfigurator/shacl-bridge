@@ -1,5 +1,5 @@
-import { JsonSchemaObjectBuilder } from '../../meta/json-schema-object-builder';
-import { mapDataType } from '../../../util/helpers';
+import { JsonSchemaObjectBuilder } from '../json-schema/meta/json-schema-object-builder';
+import { mapDataType } from './helpers';
 
 describe('DataType Mapping', () => {
   let builder: JsonSchemaObjectBuilder;

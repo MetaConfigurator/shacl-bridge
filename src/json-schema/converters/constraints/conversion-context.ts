@@ -2,6 +2,7 @@ import { match, P } from 'ts-pattern';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 import logger from '../../../logger';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
+import { NodeKind } from '../../../ir/meta-model/node-kind';
 
 export class ConversionContext {
   isArray = false;
@@ -16,9 +17,7 @@ export class ConversionContext {
     private readonly isLogicalFragment = false
   ) {
     this.constraints = shapeDefinition.coreConstraints ?? {};
-    // Primitive if has datatype, object reference if has node/class
     this.isPrimitive = this.hasPrimitiveElements();
-    // Skip array logic for logical constraint fragments
     if (!this.isLogicalFragment) {
       this.needToBeArray();
     }
@@ -28,10 +27,24 @@ export class ConversionContext {
     return (
       (this.constraints.datatype != null ||
         this.hasLogicalConstraints() ||
-        this.hasStringConstraints()) &&
+        this.hasStringConstraints() ||
+        this.hasPrimitiveNodeKind()) &&
       this.constraints.node == null &&
-      this.constraints.class == null
+      this.constraints.class == null &&
+      this.constraints.qualifiedValueShape == null
     );
+  }
+
+  hasPrimitiveNodeKind() {
+    if (this.constraints.nodeKind == null) return false;
+    const primitiveNodeKinds = [
+      NodeKind.IRI,
+      NodeKind.LITERAL,
+      NodeKind.IRI_OR_LITERAL,
+      NodeKind.BLANK_NODE_OR_IRI,
+      NodeKind.BLANK_NODE_OR_LITERAL,
+    ];
+    return primitiveNodeKinds.includes(this.constraints.nodeKind);
   }
 
   hasLogicalConstraints() {
@@ -52,8 +65,9 @@ export class ConversionContext {
   }
 
   needToBeArray(): void {
-    const minCount = this.constraints.minCount;
-    const maxCount = this.constraints.maxCount;
+    // Prefer qualified counts if they exist, otherwise use regular counts
+    const minCount = this.constraints.qualifiedMinCount ?? this.constraints.minCount;
+    const maxCount = this.constraints.qualifiedMaxCount ?? this.constraints.maxCount;
     match([minCount, maxCount])
       // No constraints - distinguish between primitive and object reference
       .with([undefined, undefined], () => {
@@ -71,7 +85,13 @@ export class ConversionContext {
         this.isArray = false;
       })
       .with([undefined, 1], () => {
-        this.isArray = false;
+        // Qualified value shapes are always arrays, even with maxCount 1
+        if (this.constraints.qualifiedValueShape != null) {
+          this.isArray = true;
+          this.setMaxItems = true;
+        } else {
+          this.isArray = false;
+        }
       })
       // At least one value, unbounded max
       .with([1, undefined], () => {

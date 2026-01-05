@@ -1,4 +1,3 @@
-import { JsonSchema } from '../../meta/types';
 import { JsonSchemaObjectType } from '../../meta/json-schema-type';
 import { match } from 'ts-pattern';
 import { extractStrippedName, mapDataType, mapNodeKind } from '../../../util/helpers';
@@ -9,24 +8,6 @@ import { StackElement } from '../../../stack/stack-element';
 import { StackElementBuilder } from '../../../stack/stack-element-builder';
 import { ConversionContext } from './conversion-context';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
-
-export type ConstraintResult = Pick<
-  JsonSchema,
-  | 'minLength'
-  | 'maxLength'
-  | 'pattern'
-  | 'minimum'
-  | 'maximum'
-  | 'exclusiveMinimum'
-  | 'exclusiveMaximum'
-  | 'type'
-  | 'format'
-  | 'enum'
-  | 'x-shacl-nodeKind'
-  | '$ref'
-  | 'minItems'
-  | 'maxItems'
->;
 
 export class ConstraintConverter {
   private readonly context: ConversionContext;
@@ -125,6 +106,21 @@ export class ConstraintConverter {
             builder.$ref(`#/$defs/${extractStrippedName(this.constraints.node)}`);
           }
         })
+        .with('qualifiedValueShape', () => {
+          if (this.constraints.qualifiedValueShape == null) return;
+          if (this.context.isArray) {
+            const existingItems = builder.getKey('items') as JsonSchemaObjectType;
+            const ref = new JsonSchemaObjectBuilder()
+              .$ref(`#/$defs/${extractStrippedName(this.constraints.qualifiedValueShape)}`)
+              .build();
+            builder.items({
+              ...existingItems,
+              ...ref,
+            });
+          } else {
+            builder.$ref(`#/$defs/${extractStrippedName(this.constraints.qualifiedValueShape)}`);
+          }
+        })
         .with('minCount', () => {
           if (this.constraints.minCount == null || !this.context.setMinItems) return;
           builder.minItems(this.constraints.minCount);
@@ -133,9 +129,21 @@ export class ConstraintConverter {
           if (this.constraints.maxCount == null || !this.context.setMaxItems) return;
           builder.maxItems(this.constraints.maxCount);
         })
+        .with('qualifiedMinCount', () => {
+          if (this.constraints.qualifiedMinCount == null || !this.context.setMinItems) return;
+          builder.minItems(this.constraints.qualifiedMinCount);
+        })
+        .with('qualifiedMaxCount', () => {
+          if (this.constraints.qualifiedMaxCount == null || !this.context.setMaxItems) return;
+          builder.maxItems(this.constraints.qualifiedMaxCount);
+        })
         .with('pattern', () => {
           if (this.constraints.pattern == null) return;
           builder.pattern(this.constraints.pattern);
+        })
+        .with('hasValue', () => {
+          if (this.constraints.hasValue == null) return;
+          builder.const(this.constraints.hasValue);
         })
         .with('or', () => {
           if (this.constraints.or == null) return;

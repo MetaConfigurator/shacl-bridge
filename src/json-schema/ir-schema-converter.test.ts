@@ -811,4 +811,1236 @@ ex:PersonReferenceShape
       });
     });
   });
+
+  describe('Cardinality Edge Cases', () => {
+    it('should handle unbounded array with no constraints (primitives default to single)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:TagShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Item ;
+            sh:property [
+                sh:path ex:tags ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/TagShape',
+        title: 'Item',
+        type: 'object',
+        properties: {
+          tags: {
+            type: 'string',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle optional unbounded array (minCount 0, no maxCount)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:NoteShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Document ;
+            sh:property [
+                sh:path ex:notes ;
+                sh:datatype xsd:string ;
+                sh:minCount 0 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/NoteShape',
+        title: 'Document',
+        type: 'object',
+        properties: {
+          notes: {
+            type: 'string',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle required unbounded array (minCount 1, no maxCount)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:AuthorShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Article ;
+            sh:property [
+                sh:path ex:authors ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/AuthorShape',
+        title: 'Article',
+        type: 'object',
+        properties: {
+          authors: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            minItems: 1,
+          },
+        },
+        required: ['authors'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle bounded array (minCount 2, maxCount 5)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:CategoryShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Product ;
+            sh:property [
+                sh:path ex:categories ;
+                sh:datatype xsd:string ;
+                sh:minCount 2 ;
+                sh:maxCount 5 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/CategoryShape',
+        title: 'Product',
+        type: 'object',
+        properties: {
+          categories: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            minItems: 2,
+            maxItems: 5,
+          },
+        },
+        required: ['categories'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle optional single value (minCount 0, maxCount 1)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:DescriptionShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Item ;
+            sh:property [
+                sh:path ex:description ;
+                sh:datatype xsd:string ;
+                sh:minCount 0 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/DescriptionShape',
+        title: 'Item',
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle object references without constraints as arrays', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ProjectShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Project ;
+            sh:property [
+                sh:path ex:members ;
+                sh:node ex:PersonShape ;
+            ] .
+
+        ex:PersonShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ProjectShape',
+        title: 'Project',
+        type: 'object',
+        properties: {
+          members: {
+            type: 'array',
+            items: {
+              $ref: '#/$defs/Person',
+            },
+          },
+        },
+        additionalProperties: true,
+        $defs: {
+          Person: {
+            type: 'object',
+            title: 'Person',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should handle large minCount values', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:BatchShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Batch ;
+            sh:property [
+                sh:path ex:items ;
+                sh:datatype xsd:string ;
+                sh:minCount 100 ;
+                sh:maxCount 1000 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/BatchShape',
+        title: 'Batch',
+        type: 'object',
+        properties: {
+          items: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            minItems: 100,
+            maxItems: 1000,
+          },
+        },
+        required: ['items'],
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('Qualified Value Shapes', () => {
+    it('should handle qualified value shape with qualifiedMinCount', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:PersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:property [
+                sh:path ex:address ;
+                sh:qualifiedValueShape ex:USAddressShape ;
+                sh:qualifiedMinCount 1 ;
+            ] .
+
+        ex:USAddressShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:state ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[A-Z]{2}$" ;
+            ] ;
+            sh:property [
+                sh:path ex:zipCode ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[0-9]{5}$" ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/PersonShape',
+        title: 'Person',
+        type: 'object',
+        properties: {
+          address: {
+            type: 'array',
+            items: {
+              $ref: '#/$defs/USAddress',
+            },
+            minItems: 1,
+          },
+        },
+        required: ['address'],
+        additionalProperties: true,
+        $defs: {
+          USAddress: {
+            type: 'object',
+            title: 'USAddress',
+            properties: {
+              state: {
+                type: 'string',
+                pattern: '^[A-Z]{2}$',
+              },
+              zipCode: {
+                type: 'string',
+                pattern: '^[0-9]{5}$',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should handle qualified value shape with qualifiedMaxCount', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:CompanyShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Company ;
+            sh:property [
+                sh:path ex:office ;
+                sh:qualifiedValueShape ex:HeadquartersShape ;
+                sh:qualifiedMaxCount 1 ;
+            ] .
+
+        ex:HeadquartersShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:isHeadquarters ;
+                sh:datatype xsd:boolean ;
+                sh:hasValue true ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/CompanyShape',
+        title: 'Company',
+        type: 'object',
+        properties: {
+          office: {
+            type: 'array',
+            items: {
+              $ref: '#/$defs/Headquarters',
+            },
+            maxItems: 1,
+          },
+        },
+        additionalProperties: true,
+        $defs: {
+          Headquarters: {
+            type: 'object',
+            title: 'Headquarters',
+            properties: {
+              isHeadquarters: {
+                type: 'boolean',
+                const: true,
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should handle qualified value shape with both min and max', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:TeamShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Team ;
+            sh:property [
+                sh:path ex:member ;
+                sh:qualifiedValueShape ex:LeaderShape ;
+                sh:qualifiedMinCount 1 ;
+                sh:qualifiedMaxCount 3 ;
+            ] .
+
+        ex:LeaderShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:role ;
+                sh:datatype xsd:string ;
+                sh:in ( "TeamLead" "TechLead" "Manager" ) ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/TeamShape',
+        title: 'Team',
+        type: 'object',
+        properties: {
+          member: {
+            type: 'array',
+            items: {
+              $ref: '#/$defs/Leader',
+            },
+            minItems: 1,
+            maxItems: 3,
+          },
+        },
+        required: ['member'],
+        additionalProperties: true,
+        $defs: {
+          Leader: {
+            type: 'object',
+            title: 'Leader',
+            properties: {
+              role: {
+                type: 'string',
+                enum: ['TeamLead', 'TechLead', 'Manager'],
+              },
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe('Multiple Datatypes in Union', () => {
+    it('should handle product ID as string or number', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ProductShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Product ;
+            sh:property [
+                sh:path ex:productId ;
+                sh:or (
+                    [ sh:datatype xsd:string ; sh:pattern "^[A-Z]{3}-[0-9]{4}$" ]
+                    [ sh:datatype xsd:integer ; sh:minInclusive 1000 ]
+                ) ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ProductShape',
+        title: 'Product',
+        type: 'object',
+        properties: {
+          productId: {
+            anyOf: [
+              { type: 'string', pattern: '^[A-Z]{3}-[0-9]{4}$' },
+              { type: 'integer', minimum: 1000 },
+            ],
+          },
+        },
+        required: ['productId'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle tax identifier as national ID or international format', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:TaxPayerShape
+            a sh:NodeShape ;
+            sh:targetClass ex:TaxPayer ;
+            sh:property [
+                sh:path ex:taxId ;
+                sh:or (
+                    [ sh:datatype xsd:integer ]
+                    [ sh:datatype xsd:anyURI ]
+                ) ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/TaxPayerShape',
+        title: 'TaxPayer',
+        type: 'object',
+        properties: {
+          taxId: {
+            anyOf: [{ type: 'integer' }, { type: 'string', format: 'uri' }],
+          },
+        },
+        required: ['taxId'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle publication date with flexible precision', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:PublicationShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Publication ;
+            sh:property [
+                sh:path ex:publishedDate ;
+                sh:or (
+                    [ sh:datatype xsd:date ]
+                    [ sh:datatype xsd:dateTime ]
+                    [ sh:datatype xsd:gYear ]
+                ) ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/PublicationShape',
+        title: 'Publication',
+        type: 'object',
+        properties: {
+          publishedDate: {
+            anyOf: [
+              { type: 'string', format: 'date' },
+              { type: 'string', format: 'date-time' },
+              { type: 'string' },
+            ],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle API response with multiple value types', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ApiResponseShape
+            a sh:NodeShape ;
+            sh:targetClass ex:ApiResponse ;
+            sh:property [
+                sh:path ex:result ;
+                sh:or (
+                    [ sh:datatype xsd:string ]
+                    [ sh:datatype xsd:integer ]
+                    [ sh:datatype xsd:boolean ]
+                    [ sh:class ex:ErrorObject ]
+                ) ;
+            ] .
+
+        ex:ErrorObject
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:code ;
+                sh:datatype xsd:integer ;
+            ] ;
+            sh:property [
+                sh:path ex:message ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ApiResponseShape',
+        title: 'ApiResponse',
+        type: 'object',
+        properties: {
+          result: {
+            anyOf: [
+              { type: 'string' },
+              { type: 'integer' },
+              { type: 'boolean' },
+              { $ref: '#/$defs/ErrorObject' },
+            ],
+          },
+        },
+        additionalProperties: true,
+        $defs: {
+          ErrorObject: {
+            type: 'object',
+            title: 'ErrorObject',
+            properties: {
+              code: {
+                type: 'integer',
+              },
+              message: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe('Complex Nested Logical Operators', () => {
+    it('should handle email validation with domain restrictions', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:UserShape
+            a sh:NodeShape ;
+            sh:targetClass ex:User ;
+            sh:property [
+                sh:path ex:email ;
+                sh:and (
+                    [ sh:datatype xsd:string ]
+                    [
+                        sh:or (
+                            [ sh:pattern ".*@company\\.com$" ]
+                            [ sh:pattern ".*@partner\\.org$" ]
+                        )
+                    ]
+                ) ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/UserShape',
+        title: 'User',
+        type: 'object',
+        properties: {
+          email: {
+            allOf: [
+              { type: 'string' },
+              {
+                anyOf: [
+                  { pattern: '.*@company.com$' },
+                  { pattern: '.*@partner.org$' },
+                ],
+              },
+            ],
+          },
+        },
+        required: ['email'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle age validation with special cases', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ParticipantShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Participant ;
+            sh:property [
+                sh:path ex:age ;
+                sh:or (
+                    [
+                        sh:and (
+                            [ sh:datatype xsd:integer ]
+                            [ sh:minInclusive 18 ]
+                            [ sh:maxInclusive 65 ]
+                        )
+                    ]
+                    [
+                        sh:and (
+                            [ sh:datatype xsd:string ]
+                            [ sh:in ( "minor-with-guardian" "senior-exempt" ) ]
+                        )
+                    ]
+                ) ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ParticipantShape',
+        title: 'Participant',
+        type: 'object',
+        properties: {
+          age: {
+            anyOf: [
+              {
+                allOf: [
+                  { type: 'integer' },
+                  { minimum: 18 },
+                  { maximum: 65 },
+                ],
+              },
+              {
+                allOf: [
+                  { type: 'string' },
+                  { enum: ['minor-with-guardian', 'senior-exempt'] },
+                ],
+              },
+            ],
+          },
+        },
+        required: ['age'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle file upload with type and size constraints', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:FileUploadShape
+            a sh:NodeShape ;
+            sh:targetClass ex:FileUpload ;
+            sh:property [
+                sh:path ex:mimeType ;
+                sh:not [
+                    sh:or (
+                        [ sh:pattern "^application/x-.*" ]
+                        [ sh:pattern "^application/.*executable.*" ]
+                    )
+                ] ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/FileUploadShape',
+        title: 'FileUpload',
+        type: 'object',
+        properties: {
+          mimeType: {
+            not: {
+              anyOf: [
+                { pattern: '^application/x-.*' },
+                { pattern: '^application/.*executable.*' },
+              ],
+            },
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle address with multiple format options', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:LocationShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Location ;
+            sh:property [
+                sh:path ex:address ;
+                sh:xone (
+                    [
+                        sh:and (
+                            [ sh:class ex:StructuredAddress ]
+                            [
+                                sh:or (
+                                    [ sh:node ex:USAddress ]
+                                    [ sh:node ex:EUAddress ]
+                                )
+                            ]
+                        )
+                    ]
+                    [
+                        sh:and (
+                            [ sh:datatype xsd:string ]
+                            [ sh:minLength 10 ]
+                            [ sh:maxLength 200 ]
+                        )
+                    ]
+                ) ;
+            ] .
+
+        ex:StructuredAddress
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:street ;
+                sh:datatype xsd:string ;
+            ] .
+
+        ex:USAddress
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:zipCode ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[0-9]{5}$" ;
+            ] .
+
+        ex:EUAddress
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:postalCode ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/LocationShape',
+        title: 'Location',
+        type: 'object',
+        properties: {
+          address: {
+            oneOf: [
+              {
+                allOf: [
+                  { $ref: '#/$defs/StructuredAddress' },
+                  {
+                    anyOf: [
+                      { $ref: '#/$defs/USAddress' },
+                      { $ref: '#/$defs/EUAddress' },
+                    ],
+                  },
+                ],
+              },
+              {
+                allOf: [
+                  { type: 'string' },
+                  { minLength: 10 },
+                  { maxLength: 200 },
+                ],
+              },
+            ],
+          },
+        },
+        additionalProperties: true,
+        $defs: {
+          StructuredAddress: {
+            type: 'object',
+            title: 'StructuredAddress',
+            properties: {
+              street: {
+                type: 'string',
+              },
+            },
+          },
+          USAddress: {
+            type: 'object',
+            title: 'USAddress',
+            properties: {
+              zipCode: {
+                type: 'string',
+                pattern: '^[0-9]{5}$',
+              },
+            },
+          },
+          EUAddress: {
+            type: 'object',
+            title: 'EUAddress',
+            properties: {
+              postalCode: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe('String Constraint Combinations', () => {
+    it('should handle username with minLength, maxLength, and pattern', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:AccountShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Account ;
+            sh:property [
+                sh:path ex:username ;
+                sh:datatype xsd:string ;
+                sh:minLength 3 ;
+                sh:maxLength 20 ;
+                sh:pattern "^[a-zA-Z0-9_-]+$" ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/AccountShape',
+        title: 'Account',
+        type: 'object',
+        properties: {
+          username: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 20,
+            pattern: '^[a-zA-Z0-9_-]+$',
+          },
+        },
+        required: ['username'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle email with complex regex pattern', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ContactShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Contact ;
+            sh:property [
+                sh:path ex:email ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[a-zA-Z0-9.!#$%&'*+/=?^_\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$" ;
+                sh:maxLength 254 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ContactShape',
+        title: 'Contact',
+        type: 'object',
+        properties: {
+          email: {
+            type: 'string',
+            pattern:
+              "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+            maxLength: 254,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle URL with validation pattern', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:WebResourceShape
+            a sh:NodeShape ;
+            sh:targetClass ex:WebResource ;
+            sh:property [
+                sh:path ex:url ;
+                sh:datatype xsd:string ;
+                sh:pattern "^https?://[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}(/.*)?$" ;
+                sh:minLength 10 ;
+                sh:maxLength 2048 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/WebResourceShape',
+        title: 'WebResource',
+        type: 'object',
+        properties: {
+          url: {
+            type: 'string',
+            pattern: '^https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/.*)?$',
+            minLength: 10,
+            maxLength: 2048,
+          },
+        },
+        required: ['url'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle UUID with strict pattern validation', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ResourceShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Resource ;
+            sh:property [
+                sh:path ex:id ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" ;
+                sh:minLength 36 ;
+                sh:maxLength 36 ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ResourceShape',
+        title: 'Resource',
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            pattern:
+              '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+            minLength: 36,
+            maxLength: 36,
+          },
+        },
+        required: ['id'],
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('Node Kind Constraints', () => {
+    it('should handle sh:nodeKind sh:IRI for external references', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:DocumentShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Document ;
+            sh:property [
+                sh:path ex:externalLink ;
+                sh:nodeKind sh:IRI ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/DocumentShape',
+        title: 'Document',
+        type: 'object',
+        properties: {
+          externalLink: {
+            type: 'string',
+            format: 'uri',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:nodeKind sh:Literal for primitive values', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:MetadataShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Metadata ;
+            sh:property [
+                sh:path ex:description ;
+                sh:nodeKind sh:Literal ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/MetadataShape',
+        title: 'Metadata',
+        type: 'object',
+        properties: {
+          description: {
+            type: ['string', 'number', 'boolean'],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:nodeKind sh:BlankNode for anonymous nested objects', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ArticleShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Article ;
+            sh:property [
+                sh:path ex:author ;
+                sh:nodeKind sh:BlankNode ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ArticleShape',
+        title: 'Article',
+        type: 'object',
+        properties: {
+          author: {
+            type: 'object',
+          },
+        },
+        required: ['author'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:nodeKind sh:BlankNodeOrIRI for flexible object references', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:EntityShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Entity ;
+            sh:property [
+                sh:path ex:relatedTo ;
+                sh:nodeKind sh:BlankNodeOrIRI ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/EntityShape',
+        title: 'Entity',
+        type: 'object',
+        properties: {
+          relatedTo: {
+            oneOf: [{ type: 'object' }, { type: 'string', format: 'uri' }],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:nodeKind sh:BlankNodeOrLiteral for mixed content', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ContentShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Content ;
+            sh:property [
+                sh:path ex:value ;
+                sh:nodeKind sh:BlankNodeOrLiteral ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ContentShape',
+        title: 'Content',
+        type: 'object',
+        properties: {
+          value: {
+            oneOf: [{ type: 'object' }, { type: ['string', 'number', 'boolean'] }],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:nodeKind sh:IRIOrLiteral for identifiers', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:IdentifierShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Thing ;
+            sh:property [
+                sh:path ex:identifier ;
+                sh:nodeKind sh:IRIOrLiteral ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/IdentifierShape',
+        title: 'Thing',
+        type: 'object',
+        properties: {
+          identifier: {
+            oneOf: [{ type: 'string', format: 'uri' }, { type: ['string', 'number', 'boolean'] }],
+          },
+        },
+        required: ['identifier'],
+        additionalProperties: true,
+      });
+    });
+  });
 });
