@@ -9,7 +9,7 @@ describe('ConstraintConverter', () => {
         minLength: 10,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(10);
     });
@@ -19,7 +19,7 @@ describe('ConstraintConverter', () => {
         maxLength: 100,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.maxLength).toBe(100);
     });
@@ -29,7 +29,7 @@ describe('ConstraintConverter', () => {
         pattern: '^[A-Z]+$',
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.pattern).toBe('^[A-Z]+$');
     });
@@ -41,7 +41,7 @@ describe('ConstraintConverter', () => {
         pattern: '^[a-z]+$',
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(5);
       expect(result.maxLength).toBe(50);
@@ -55,7 +55,7 @@ describe('ConstraintConverter', () => {
         minInclusive: 0,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minimum).toBe(0);
     });
@@ -65,7 +65,7 @@ describe('ConstraintConverter', () => {
         maxInclusive: 100,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.maximum).toBe(100);
     });
@@ -75,7 +75,7 @@ describe('ConstraintConverter', () => {
         minExclusive: 0,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.exclusiveMinimum).toBe(0);
     });
@@ -85,7 +85,7 @@ describe('ConstraintConverter', () => {
         maxExclusive: 1000,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.exclusiveMaximum).toBe(1000);
     });
@@ -98,7 +98,7 @@ describe('ConstraintConverter', () => {
         maxExclusive: 110,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minimum).toBe(10);
       expect(result.maximum).toBe(100);
@@ -112,7 +112,7 @@ describe('ConstraintConverter', () => {
         maxInclusive: -10,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minimum).toBe(-100);
       expect(result.maximum).toBe(-10);
@@ -124,7 +124,7 @@ describe('ConstraintConverter', () => {
         maxInclusive: 99.99,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minimum).toBe(0.5);
       expect(result.maximum).toBe(99.99);
@@ -137,7 +137,7 @@ describe('ConstraintConverter', () => {
         nodeKind: NodeKind.IRI,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.type).toBe('string');
       expect(result.format).toBe('uri');
@@ -148,7 +148,7 @@ describe('ConstraintConverter', () => {
         nodeKind: NodeKind.LITERAL,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result['x-shacl-nodeKind']).toBe('sh:Literal');
     });
@@ -158,7 +158,7 @@ describe('ConstraintConverter', () => {
         nodeKind: NodeKind.BLANK_NODE,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result['x-shacl-nodeKind']).toBe('sh:BlankNode');
     });
@@ -181,7 +181,7 @@ describe('ConstraintConverter', () => {
       testCases.forEach(({ nodeKind, expectedType, expectedFormat, expectedExtension }) => {
         const constraints: CoreConstraints = { nodeKind };
 
-        const result = new ConstraintConverter().convert(constraints);
+        const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
         if (expectedType) {
           expect(result.type).toBe(expectedType);
@@ -202,7 +202,7 @@ describe('ConstraintConverter', () => {
         in: ['red', 'green', 'blue'],
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.enum).toEqual(['red', 'green', 'blue']);
     });
@@ -212,7 +212,7 @@ describe('ConstraintConverter', () => {
         in: [],
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.enum).toBeUndefined();
     });
@@ -222,7 +222,7 @@ describe('ConstraintConverter', () => {
         in: ['single'],
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.enum).toEqual(['single']);
     });
@@ -232,7 +232,7 @@ describe('ConstraintConverter', () => {
     it('should return empty result for empty constraints', () => {
       const constraints: CoreConstraints = {};
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result).toEqual({});
     });
@@ -244,7 +244,7 @@ describe('ConstraintConverter', () => {
         pattern: undefined,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBeUndefined();
       expect(result.maxLength).toBeUndefined();
@@ -264,7 +264,7 @@ describe('ConstraintConverter', () => {
         in: ['option1', 'option2'],
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(5);
       expect(result.maxLength).toBe(100);
@@ -282,7 +282,7 @@ describe('ConstraintConverter', () => {
         maxInclusive: 100,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(10);
       expect(result.maximum).toBe(100);
@@ -305,7 +305,7 @@ describe('ConstraintConverter', () => {
         in: ['a', 'b'],
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       // All registered strategies should work
       expect(result.minLength).toBe(5);
@@ -329,7 +329,9 @@ describe('ConstraintConverter', () => {
       };
 
       // Should not throw error, NoStrategy handles unmapped constraints
-      expect(() => new ConstraintConverter().convert(constraints)).not.toThrow();
+      expect(() =>
+        new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints)
+      ).not.toThrow();
     });
 
     it('should still process mapped constraints when unmapped ones exist', () => {
@@ -339,7 +341,7 @@ describe('ConstraintConverter', () => {
         maxLength: 100,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(5);
       expect(result.maxLength).toBe(100);
@@ -354,7 +356,7 @@ describe('ConstraintConverter', () => {
         pattern: '^test$',
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       // All constraints should be present
       expect(result.minLength).toBe(5);
@@ -370,7 +372,7 @@ describe('ConstraintConverter', () => {
         minInclusive: 0,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(0);
       expect(result.minimum).toBe(0);
@@ -382,7 +384,7 @@ describe('ConstraintConverter', () => {
         minInclusive: Number.MIN_SAFE_INTEGER,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.maximum).toBe(Number.MAX_SAFE_INTEGER);
       expect(result.minimum).toBe(Number.MIN_SAFE_INTEGER);
@@ -393,7 +395,7 @@ describe('ConstraintConverter', () => {
         pattern: '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$',
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.pattern).toBe('^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$');
     });
@@ -409,7 +411,7 @@ describe('ConstraintConverter', () => {
         maxInclusive: 100,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       const expectedKeys = ['minLength', 'maxLength', 'pattern', 'minimum', 'maximum'];
       expectedKeys.forEach((key) => {
@@ -421,8 +423,8 @@ describe('ConstraintConverter', () => {
       const constraints1: CoreConstraints = { minLength: 5 };
       const constraints2: CoreConstraints = { maxLength: 100 };
 
-      const result1 = new ConstraintConverter().convert(constraints1);
-      const result2 = new ConstraintConverter().convert(constraints2);
+      const result1 = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints1);
+      const result2 = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints2);
 
       expect(result1.minLength).toBe(5);
       expect(result1.maxLength).toBeUndefined();
@@ -435,17 +437,19 @@ describe('ConstraintConverter', () => {
     it('should accept constraints in constructor', () => {
       const constraints: CoreConstraints = { minLength: 5 };
 
-      expect(() => new ConstraintConverter().convert(constraints)).not.toThrow();
+      expect(() =>
+        new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints)
+      ).not.toThrow();
     });
 
     it('should accept empty constraints in constructor', () => {
-      expect(() => new ConstraintConverter().convert({})).not.toThrow();
+      expect(() => new ConstraintConverter(this.jsonSchemaObjectBuilder).convert({})).not.toThrow();
     });
 
     it('should initialize registry on construction', () => {
       const constraints: CoreConstraints = { minLength: 5 };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       // Registry should be populated with default strategies
       expect(result.minLength).toBe(5);
@@ -460,9 +464,9 @@ describe('ConstraintConverter', () => {
         pattern: '^test$',
       };
 
-      const result1 = new ConstraintConverter().convert(constraints);
-      const result2 = new ConstraintConverter().convert(constraints);
-      const result3 = new ConstraintConverter().convert(constraints);
+      const result1 = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
+      const result2 = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
+      const result3 = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result1).toEqual(result2);
       expect(result2).toEqual(result3);
@@ -477,7 +481,7 @@ describe('ConstraintConverter', () => {
         pattern: '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]+$',
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minLength).toBe(8);
       expect(result.maxLength).toBe(128);
@@ -492,7 +496,7 @@ describe('ConstraintConverter', () => {
         maxExclusive: 100.1,
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.minimum).toBe(0);
       expect(result.maximum).toBe(100);
@@ -507,7 +511,7 @@ describe('ConstraintConverter', () => {
         in: ['http://example.org', 'https://example.com'],
       };
 
-      const result = new ConstraintConverter().convert(constraints);
+      const result = new ConstraintConverter(this.jsonSchemaObjectBuilder).convert(constraints);
 
       expect(result.type).toBe('string');
       expect(result.format).toBe('uri');

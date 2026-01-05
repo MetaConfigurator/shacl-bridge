@@ -8,7 +8,7 @@ import {
   IntermediateRepresentation,
   IntermediateRepresentationBuilder,
 } from '../ir/intermediate-representation-builder';
-import { GeneratorConfig, JsonSchema, Mode } from '../json-schema/types';
+import { GeneratorConfig, JsonSchema, Mode } from '../json-schema/meta/types';
 import { match } from 'ts-pattern';
 import JsonSchemaGenerator from '../json-schema/json-schema-generator';
 

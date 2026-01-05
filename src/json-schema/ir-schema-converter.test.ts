@@ -14,7 +14,7 @@ describe('ir-schema-converter', () => {
   it('should give empty json schema for empty shacl document', async () => {
     const ir = await getIr('');
     const schema = new IrSchemaConverter(ir).convert();
-    expect(schema).toBeUndefined();
+    expect(schema).toEqual({});
   });
 
   it('should give a valid json schema without defs and refs for a shacl document with single base shape', async () => {
@@ -196,7 +196,6 @@ ex:PersonReferenceShape
               type: 'boolean',
             },
           },
-          required: [],
           title: 'Email',
           type: 'object',
         },
@@ -482,8 +481,334 @@ ex:PersonReferenceShape
           },
         },
       },
-      required: [],
       additionalProperties: false,
+    });
+  });
+
+  describe('Logical Constraints', () => {
+    it('should handle sh:or mapping to anyOf', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:FlexibleShape
+            a sh:NodeShape ;
+            sh:targetClass ex:FlexibleType ;
+            sh:property [
+                sh:path ex:identifier ;
+                sh:or (
+                    [ sh:datatype xsd:string ; sh:minLength 5 ]
+                    [ sh:datatype xsd:integer ; sh:minInclusive 1000 ]
+                )
+            ] ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/FlexibleShape',
+        title: 'FlexibleType',
+        type: 'object',
+        properties: {
+          identifier: {
+            anyOf: [
+              {
+                type: 'string',
+                minLength: 5,
+              },
+              {
+                type: 'integer',
+                minimum: 1000,
+              },
+            ],
+          },
+          name: {
+            type: 'string',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:and mapping to allOf', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:RestrictedShape
+            a sh:NodeShape ;
+            sh:targetClass ex:RestrictedType ;
+            sh:property [
+                sh:path ex:code ;
+                sh:and (
+                    [ sh:datatype xsd:string ; sh:pattern "^[A-Z]{3}$" ]
+                    [ sh:minLength 3 ; sh:maxLength 3 ]
+                )
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/RestrictedShape',
+        title: 'RestrictedType',
+        type: 'object',
+        properties: {
+          code: {
+            allOf: [
+              {
+                type: 'string',
+                pattern: '^[A-Z]{3}$',
+              },
+              {
+                minLength: 3,
+                maxLength: 3,
+              },
+            ],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:xone mapping to oneOf', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ExclusiveShape
+            a sh:NodeShape ;
+            sh:targetClass ex:ExclusiveType ;
+            sh:property [
+                sh:path ex:contact ;
+                sh:xone (
+                    [ sh:datatype xsd:string ; sh:pattern "^[\\\\w.-]+@[\\\\w.-]+\\\\.[\\\\w]+$" ]
+                    [ sh:datatype xsd:string ; sh:pattern "^\\\\+?[1-9]\\\\d{1,14}$" ]
+                )
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ExclusiveShape',
+        title: 'ExclusiveType',
+        type: 'object',
+        properties: {
+          contact: {
+            oneOf: [
+              {
+                type: 'string',
+                pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+              },
+              {
+                type: 'string',
+                pattern: '^\\+?[1-9]\\d{1,14}$',
+              },
+            ],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:not mapping to not', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:NegativeShape
+            a sh:NodeShape ;
+            sh:targetClass ex:NegativeType ;
+            sh:property [
+                sh:path ex:username ;
+                sh:datatype xsd:string ;
+                sh:not [
+                    sh:pattern "^admin.*"
+                ]
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/NegativeShape',
+        title: 'NegativeType',
+        type: 'object',
+        properties: {
+          username: {
+            type: 'string',
+            not: {
+              pattern: '^admin.*',
+            },
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle nested logical operators', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ComplexLogicShape
+            a sh:NodeShape ;
+            sh:targetClass ex:ComplexType ;
+            sh:property [
+                sh:path ex:value ;
+                sh:or (
+                    [
+                        sh:and (
+                            [ sh:datatype xsd:string ]
+                            [ sh:minLength 10 ]
+                        )
+                    ]
+                    [
+                        sh:and (
+                            [ sh:datatype xsd:integer ]
+                            [ sh:minInclusive 0 ; sh:maxInclusive 100 ]
+                        )
+                    ]
+                )
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ComplexLogicShape',
+        title: 'ComplexType',
+        type: 'object',
+        properties: {
+          value: {
+            anyOf: [
+              {
+                allOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    minLength: 10,
+                  },
+                ],
+              },
+              {
+                allOf: [
+                  {
+                    type: 'integer',
+                  },
+                  {
+                    minimum: 0,
+                    maximum: 100,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle logical operators with object references', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:PaymentShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Payment ;
+            sh:property [
+                sh:path ex:method ;
+                sh:xone (
+                    [ sh:node ex:CreditCardShape ]
+                    [ sh:node ex:BankTransferShape ]
+                    [ sh:node ex:PayPalShape ]
+                )
+            ] .
+
+        ex:CreditCardShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:cardNumber ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[0-9]{16}$" ;
+            ] .
+
+        ex:BankTransferShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:iban ;
+                sh:datatype xsd:string ;
+            ] .
+
+        ex:PayPalShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:email ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $defs: {
+          CreditCard: {
+            type: 'object',
+            title: 'CreditCard',
+            properties: {
+              cardNumber: {
+                type: 'string',
+                pattern: '^[0-9]{16}$',
+              },
+            },
+          },
+          BankTransfer: {
+            type: 'object',
+            title: 'BankTransfer',
+            properties: {
+              iban: {
+                type: 'string',
+              },
+            },
+          },
+          PayPal: {
+            type: 'object',
+            title: 'PayPal',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/PaymentShape',
+        title: 'Payment',
+        type: 'object',
+        properties: {
+          method: {
+            oneOf: [
+              { $ref: '#/$defs/CreditCard' },
+              { $ref: '#/$defs/BankTransfer' },
+              { $ref: '#/$defs/PayPal' },
+            ],
+          },
+        },
+        additionalProperties: true,
+      });
     });
   });
 });

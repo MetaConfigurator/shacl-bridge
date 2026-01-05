@@ -8,6 +8,7 @@ import type { Term } from 'n3';
 
 export class ShapeDefinitionBuilder {
   private readonly nodeKey: string;
+  private targets: string[] = [];
   private shape: Partial<Shape> = {};
   private coreConstraints: Partial<CoreConstraints> = {};
   private dependentShapeDefinitions: ShapeDefinition[] = [];
@@ -19,6 +20,11 @@ export class ShapeDefinitionBuilder {
 
   setNode(node: string) {
     this.coreConstraints.node = node;
+    return this;
+  }
+
+  setTargets(targets: string[]) {
+    this.targets = targets;
     return this;
   }
 
@@ -327,6 +333,7 @@ export class ShapeDefinitionBuilder {
 
     return {
       nodeKey: this.nodeKey,
+      targets: this.targets,
       shape: this.shape as Shape,
       coreConstraints: this.coreConstraints as CoreConstraints,
       dependentShapes: this.dependentShapeDefinitions,

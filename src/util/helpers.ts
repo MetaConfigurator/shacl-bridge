@@ -1,3 +1,7 @@
+import { JsonSchemaObjectBuilder } from '../json-schema/meta/json-schema-object-builder';
+import { match, P } from 'ts-pattern';
+import { NodeKind } from '../ir/meta-model/node-kind';
+
 export function extractName(uri: string): string {
   if (!uri) {
     return '';
@@ -38,4 +42,75 @@ export function hasKeyAtAnyLevel(obj: unknown, targetKey: string): boolean {
   }
 
   return Object.values(obj).some((value) => hasKeyAtAnyLevel(value, targetKey));
+}
+
+export function mapDataType(
+  datatypeUri: string | undefined,
+  builder: JsonSchemaObjectBuilder
+): void {
+  if (!datatypeUri) return;
+  match(datatypeUri)
+    .with(
+      P.when((datatypeUri) =>
+        [
+          '#nonNegativeInteger',
+          '#unsignedInt',
+          '#unsignedLong',
+          '#unsignedShort',
+          '#unsignedByte',
+        ].some((val) => datatypeUri.endsWith(val))
+      ),
+      () => builder.type('integer').minimum(0)
+    )
+    .with(P.string.endsWith('#positiveInteger'), () => builder.type('integer').minimum(1))
+    .with(P.string.endsWith('#nonPositiveInteger'), () => builder.type('integer').maximum(0))
+    .with(P.string.endsWith('#negativeInteger'), () => builder.type('integer').maximum(-1))
+    .with(
+      P.when((datatypeUri) =>
+        ['#integer', '#int', '#long', '#short', '#byte'].some((val) => datatypeUri.endsWith(val))
+      ),
+      () => builder.type('integer')
+    )
+    // Floating point types
+    .with(P.union('#decimal', '#float', '#double'), () => builder.type('number'))
+    // Boolean
+    .with(P.string.endsWith('#boolean'), () => builder.type('boolean'))
+    // Date and time types
+    .with(P.string.endsWith('#dateTime'), () => builder.type('string').format('date-time'))
+    .with(P.string.endsWith('#date'), () => builder.type('string').format('date'))
+    .with(P.string.endsWith('#time'), () => builder.type('string').format('time'))
+    .with(P.string.endsWith('#duration'), () => builder.type('string').format('duration'))
+    // URI type
+    .with(P.string.endsWith('#anyURI'), () => builder.type('string').format('uri'))
+    // All String types
+    // Binary types, Unknown datatype, #gYearMonth
+    // #gYear
+    // #gMonthDay
+    // #gMonth
+    // #gDay
+    // #normalizedString
+    // #token
+    .otherwise(() => builder.type('string'));
+}
+
+export function mapNodeKind(nodeKind: NodeKind, builder: JsonSchemaObjectBuilder): void {
+  const X_SHACL_NODE_KIND = 'x-shacl-nodeKind';
+  match(nodeKind)
+    .with(
+      NodeKind.IRI,
+      P.when(() => (builder.getKey('$ref') as string | undefined) != null),
+      () => builder.type('string').format('uri')
+    )
+    .with(NodeKind.LITERAL, () => builder.customProperty(X_SHACL_NODE_KIND, 'sh:Literal'))
+    .with(NodeKind.BLANK_NODE, () => builder.customProperty(X_SHACL_NODE_KIND, 'sh:BlankNode'))
+    .with(NodeKind.BLANK_NODE_OR_IRI, () =>
+      builder.customProperty(X_SHACL_NODE_KIND, 'sh:BlankNodeOrIri')
+    )
+    .with(NodeKind.IRI_OR_LITERAL, () =>
+      builder.customProperty(X_SHACL_NODE_KIND, 'sh:IRIOrLiteral')
+    )
+    .with(NodeKind.BLANK_NODE_OR_LITERAL, () =>
+      builder.customProperty(X_SHACL_NODE_KIND, 'sh:BlankNodeOrLiteral')
+    )
+    .exhaustive();
 }

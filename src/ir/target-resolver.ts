@@ -22,7 +22,7 @@ export function getTarget(targets: Map<Term, string[]>, search: string) {
   return [...targets.entries()]
     .filter(([key]) => key.value === search)
     .map(([, val]) => val)
-    .flat(1)[0];
+    .flat(1);
 }
 
 export class TargetResolver {

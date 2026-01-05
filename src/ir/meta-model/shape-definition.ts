@@ -13,6 +13,7 @@ export interface AdditionalProperty {
 
 export interface ShapeDefinition {
   nodeKey: string;
+  targets: string[];
   shape?: Shape;
   coreConstraints?: CoreConstraints;
   dependentShapes?: ShapeDefinition[];

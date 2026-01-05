@@ -7,6 +7,7 @@ import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { Index } from './indexer';
 import { ShaclDocument } from '../shacl/shacl-document';
 import logger from '../logger';
+import { getTarget } from './target-resolver';
 import isBlankNode = Util.isBlankNode;
 
 export class ShapeBuilder {
@@ -89,6 +90,8 @@ export class ShapeBuilder {
 
   private buildShapeFromQuads(nodeKey: string, quads: Quad[]): ShapeDefinition {
     const builder = new ShapeDefinitionBuilder(nodeKey);
+    builder.setTargets(getTarget(this.index.targets, nodeKey));
+
     const lists = this.shaclDocument.lists;
     quads.forEach((quad) => {
       const predicate = quad.predicate.value;

@@ -6,6 +6,9 @@
 export type JsonSchemaType = boolean | JsonSchemaObjectType;
 
 export interface JsonSchemaObjectType {
+  $schema?: string;
+  $id?: string;
+  $vocabulary?: Record<string, boolean>;
   $ref?: string;
   $anchor?: string;
   $dynamicRef?: string;
@@ -78,15 +81,6 @@ export interface JsonSchemaObjectType {
   $recursiveRef?: string;
   [k: string]: unknown;
 }
-
-export type TopLevelSchema = JsonSchemaType & {
-  $schema?: string;
-  $id?: string;
-  $vocabulary?: Record<string, boolean>;
-  $defs?: Record<string, JsonSchemaType>;
-  properties?: Record<string, JsonSchemaType>;
-  definitions?: Record<string, JsonSchemaType>;
-};
 
 export type SchemaPropertyType =
   | 'array'
