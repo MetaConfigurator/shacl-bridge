@@ -1,24 +1,25 @@
 import { ShapeDefinition } from '../../ir/meta-model/shape-definition';
 import { JsonSchemaType } from '../meta/json-schema-type';
-import { JsonSchemaObjectBuilder } from '../meta/json-schema-object-builder';
 import { ConstraintConverter } from './constraints/constraint-converter';
-import { ConversionContext } from './constraints/conversion-context';
-import { StackElement } from '../../stack/stack';
+
+import { StackElement } from '../../stack/stack-element';
+import { StackElementBuilder } from '../../stack/stack-element-builder';
+import { JsonSchemaObjectBuilder } from '../meta/json-schema-object-builder';
 
 export class ShapeConverter {
+  private readonly shape: ShapeDefinition;
+  private readonly builder: JsonSchemaObjectBuilder;
+
   constructor(
-    private builder: JsonSchemaObjectBuilder,
-    private readonly shape: ShapeDefinition,
-    private readonly context: ConversionContext,
+    private readonly sb: StackElementBuilder,
     private readonly processed: Map<ShapeDefinition, StackElement>
-  ) {}
+  ) {
+    this.builder = sb.getBuilder();
+    this.shape = sb.getShape();
+  }
 
   convert() {
-    const schema = new ConstraintConverter(
-      this.shape.coreConstraints ?? {},
-      this.context,
-      this.processed
-    ).convert();
+    const schema = new ConstraintConverter(this.sb, this.processed).convert();
     const possibleTargets = this.shape.targets;
     if (possibleTargets.length > 0) {
       const target = possibleTargets[0];

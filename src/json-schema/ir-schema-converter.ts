@@ -1,13 +1,15 @@
 import { IntermediateRepresentation } from '../ir/intermediate-representation-builder';
 import { JsonSchemaObjectType, JsonSchemaType } from './meta/json-schema-type';
 import { ShapeDefinition } from '../ir/meta-model/shape-definition';
-import { Stack, StackElement } from '../stack/stack';
+import { Stack } from '../stack/stack';
 import { ShapeConverter } from './converters/shape-converter';
 import { JsonSchemaObjectBuilder } from './meta/json-schema-object-builder';
 import { ConversionContext } from './converters/constraints/conversion-context';
 import { JSON_SCHEMA_DRAFT } from '../util/json-schema-terms';
 import { hasKeyAtAnyLevel } from '../util/helpers';
 import logger from '../logger';
+import { StackElement } from '../stack/stack-element';
+import { StackElementBuilder } from '../stack/stack-element-builder';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
@@ -81,64 +83,53 @@ export class IrSchemaConverter {
 
   private processBottomUp(shapeDef: ShapeDefinition): JsonSchemaObjectType {
     const stack = new Stack();
-    stack.push(
-      shapeDef,
-      false,
-      new JsonSchemaObjectBuilder(),
-      new ConversionContext(shapeDef, false),
-      true,
-      false
-    );
+    stack.push(new StackElementBuilder().shape(shapeDef).builder().context().isRoot(true));
     while (!stack.isEmpty()) {
-      const { shape, dependentsProcessed } = stack.peek() ?? Stack.default();
-      if (!dependentsProcessed && (shape.dependentShapes?.length ?? 0) > 0) {
-        stack.toggle(stack.peek() ?? Stack.default());
-        shape.dependentShapes?.forEach((dependentShape) => {
+      const sb = stack.peek() ?? new StackElementBuilder();
+      if (!sb.getDependentsProcessed() && (sb.getShape().dependentShapes?.length ?? 0) > 0) {
+        stack.toggle(sb);
+        sb.getShape().dependentShapes?.forEach((dependentShape) => {
           // Check if this dependent is a logical constraint fragment
-          const isLogicalFragment = this.isLogicalConstraintFragment(shape, dependentShape.nodeKey);
-
+          const isLogicalFragment = this.isLogicalConstraintFragment(
+            sb.getShape(),
+            dependentShape.nodeKey
+          );
           stack.push(
-            dependentShape,
-            false,
-            new JsonSchemaObjectBuilder(),
-            new ConversionContext(dependentShape, isLogicalFragment),
-            false,
-            isLogicalFragment
+            new StackElementBuilder()
+              .shape(dependentShape)
+              .context(new ConversionContext(dependentShape, isLogicalFragment))
+              .isLogicalFragment(isLogicalFragment)
           );
         });
       } else {
         const top = stack.pop();
         if (top == null) continue;
-        const { shape, context, builder, isRoot } = top;
-        if (!isRoot) new ShapeConverter(builder, shape, context, this.processed).convert();
-        else builder.title(shapeDef.targets[0]).type('object');
-        if ((shape.dependentShapes?.length ?? 0) > 0) {
-          shape.dependentShapes?.forEach((dependentShape) => {
+        if (!top.getIsRoot()) new ShapeConverter(top, this.processed).convert();
+        else top.getBuilder().title(shapeDef.targets[0]).type('object');
+        if ((top.getShape().dependentShapes?.length ?? 0) > 0) {
+          top.getShape().dependentShapes?.forEach((dependentShape) => {
             const dependent = this.processed.get(dependentShape);
             if (dependent != null) {
               // Skip property merging for logical constraint fragments
               if (dependent.isLogicalFragment) return;
 
-              builder.properties({
-                ...(top.builder.getKey('properties') as Record<string, JsonSchemaType>),
+              top.getBuilder().properties({
+                ...(top.getBuilder().getKey('properties') as Record<string, JsonSchemaType>),
                 ...(dependent.builder.getKey('properties') as Record<string, JsonSchemaType>),
               });
               // Track required properties for all shapes, not just root
-              if (dependent.context.required) builder.requiredElement(dependent.shape.targets[0]);
+              if (dependent.context.required)
+                top.getBuilder().requiredElement(dependent.shape.targets[0]);
             }
           });
         }
-        if (isRoot) {
-          builder.type('object').additionalProperties(!shape.coreConstraints?.closed);
+        if (top.getIsRoot()) {
+          top
+            .getBuilder()
+            .type('object')
+            .additionalProperties(!top.getShape().coreConstraints?.closed);
         }
-        this.processed.set(shape, {
-          shape,
-          builder,
-          isRoot,
-          dependentsProcessed,
-          context,
-          isLogicalFragment: top.isLogicalFragment,
-        });
+        this.processed.set(top.getShape(), top.build());
       }
     }
     return this.processed.get(shapeDef)?.builder.build() ?? {};

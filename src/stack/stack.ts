@@ -1,36 +1,21 @@
-import { ShapeDefinition } from '../ir/meta-model/shape-definition';
 import { JsonSchemaObjectBuilder } from '../json-schema/meta/json-schema-object-builder';
 import { ShapeDefinitionBuilder } from '../ir/shape-definition-builder';
 import { ConversionContext } from '../json-schema/converters/constraints/conversion-context';
-
-export interface StackElement {
-  shape: ShapeDefinition;
-  dependentsProcessed: boolean;
-  builder: JsonSchemaObjectBuilder;
-  context: ConversionContext;
-  isRoot: boolean;
-  isLogicalFragment: boolean;
-}
+import { StackElement } from './stack-element';
+import { StackElementBuilder } from './stack-element-builder';
 
 export class Stack {
-  private items: StackElement[] = [];
+  private items: StackElementBuilder[] = [];
 
-  push(
-    shape: ShapeDefinition,
-    dependentsProcessed: boolean,
-    builder: JsonSchemaObjectBuilder,
-    context: ConversionContext,
-    isRoot = false,
-    isLogicalFragment = false
-  ): void {
-    this.items.push({ shape, dependentsProcessed, builder, context, isRoot, isLogicalFragment });
+  push(builder: StackElementBuilder): void {
+    this.items.push(builder);
   }
 
-  pop(): StackElement | undefined {
+  pop(): StackElementBuilder | undefined {
     return this.items.pop();
   }
 
-  peek(): StackElement | undefined {
+  peek(): StackElementBuilder | undefined {
     return this.items[this.items.length - 1];
   }
 
@@ -38,14 +23,16 @@ export class Stack {
     return this.items.length === 0;
   }
 
-  includes(element: StackElement): boolean {
-    return this.items.filter((item) => item.shape.nodeKey == element.shape.nodeKey).length > 0;
+  includes(element: StackElementBuilder): boolean {
+    return (
+      this.items
+        .map((sb) => sb.build())
+        .filter((item) => item.shape.nodeKey == element.build().shape.nodeKey).length > 0
+    );
   }
 
-  toggle(element: StackElement): void {
-    this.pop();
-    const { shape, dependentsProcessed, builder, context, isRoot, isLogicalFragment } = element;
-    this.push(shape, !dependentsProcessed, builder, context, isRoot, isLogicalFragment);
+  toggle(element: StackElementBuilder): void {
+    element.toggle();
   }
 
   static default(): StackElement {

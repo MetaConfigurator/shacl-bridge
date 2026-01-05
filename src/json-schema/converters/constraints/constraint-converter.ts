@@ -1,12 +1,14 @@
 import { JsonSchema } from '../../meta/types';
 import { JsonSchemaObjectType } from '../../meta/json-schema-type';
-import { ConversionContext } from './conversion-context';
 import { match } from 'ts-pattern';
 import { extractStrippedName, mapDataType, mapNodeKind } from '../../../util/helpers';
-import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 import { JsonSchemaObjectBuilder } from '../../meta/json-schema-object-builder';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
-import { StackElement } from '../../../stack/stack';
+
+import { StackElement } from '../../../stack/stack-element';
+import { StackElementBuilder } from '../../../stack/stack-element-builder';
+import { ConversionContext } from './conversion-context';
+import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 
 export type ConstraintResult = Pick<
   JsonSchema,
@@ -27,11 +29,16 @@ export type ConstraintResult = Pick<
 >;
 
 export class ConstraintConverter {
+  private readonly context: ConversionContext;
+  private readonly constraints: CoreConstraints;
+
   constructor(
-    private readonly constraints: CoreConstraints,
-    private readonly context: ConversionContext,
+    private readonly sb: StackElementBuilder,
     private readonly processed: Map<ShapeDefinition, StackElement>
-  ) {}
+  ) {
+    this.context = sb.getContext();
+    this.constraints = sb.getShape().coreConstraints ?? {};
+  }
 
   convert(): JsonSchemaObjectType {
     const builder = new JsonSchemaObjectBuilder();

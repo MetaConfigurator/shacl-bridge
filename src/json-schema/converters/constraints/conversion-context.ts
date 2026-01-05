@@ -19,7 +19,7 @@ export class ConversionContext {
     // Primitive if has datatype, object reference if has node/class
     this.isPrimitive = this.hasPrimitiveElements();
     // Skip array logic for logical constraint fragments
-    if (!isLogicalFragment) {
+    if (!this.isLogicalFragment) {
       this.needToBeArray();
     }
   }
