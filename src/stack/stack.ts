@@ -9,6 +9,7 @@ export interface StackElement {
   builder: JsonSchemaObjectBuilder;
   context: ConversionContext;
   isRoot: boolean;
+  isLogicalFragment: boolean;
 }
 
 export class Stack {
@@ -19,9 +20,10 @@ export class Stack {
     dependentsProcessed: boolean,
     builder: JsonSchemaObjectBuilder,
     context: ConversionContext,
-    isRoot = false
+    isRoot = false,
+    isLogicalFragment = false
   ): void {
-    this.items.push({ shape, dependentsProcessed, builder, context, isRoot });
+    this.items.push({ shape, dependentsProcessed, builder, context, isRoot, isLogicalFragment });
   }
 
   pop(): StackElement | undefined {
@@ -42,8 +44,8 @@ export class Stack {
 
   toggle(element: StackElement): void {
     this.pop();
-    const { shape, dependentsProcessed, builder, context, isRoot } = element;
-    this.push(shape, !dependentsProcessed, builder, context, isRoot);
+    const { shape, dependentsProcessed, builder, context, isRoot, isLogicalFragment } = element;
+    this.push(shape, !dependentsProcessed, builder, context, isRoot, isLogicalFragment);
   }
 
   static default(): StackElement {
@@ -53,6 +55,7 @@ export class Stack {
       builder: new JsonSchemaObjectBuilder(),
       context: new ConversionContext(new ShapeDefinitionBuilder('').build()),
       isRoot: false,
+      isLogicalFragment: false,
     };
   }
 }

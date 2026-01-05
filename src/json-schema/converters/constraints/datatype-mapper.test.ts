@@ -1,165 +1,166 @@
-import { DatatypeMapper } from './datatype-mapper';
+import { JsonSchemaObjectBuilder } from '../../meta/json-schema-object-builder';
+import { mapDataType } from '../../../util/helpers';
 
-describe('DatatypeMapper', () => {
-  let mapper: DatatypeMapper;
+describe('DataType Mapping', () => {
+  let builder: JsonSchemaObjectBuilder;
 
   beforeEach(() => {
-    mapper = new DatatypeMapper();
+    builder = new JsonSchemaObjectBuilder();
   });
 
   describe('XSD string types', () => {
     it('should map xsd:string to string type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#string');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#string', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
 
     it('should map xsd:normalizedString to string type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#normalizedString');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#normalizedString', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
 
     it('should map xsd:token to string type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#token');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#token', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
   });
 
   describe('XSD numeric types', () => {
     it('should map xsd:integer to integer type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#integer');
-      expect(result).toEqual({ type: 'integer' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#integer', builder);
+      expect(builder.build()).toEqual({ type: 'integer' });
     });
 
     it('should map xsd:int to integer type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#int');
-      expect(result).toEqual({ type: 'integer' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#int', builder);
+      expect(builder.build()).toEqual({ type: 'integer' });
     });
 
     it('should map xsd:long to integer type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#long');
-      expect(result).toEqual({ type: 'integer' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#long', builder);
+      expect(builder.build()).toEqual({ type: 'integer' });
     });
 
     it('should map xsd:short to integer type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#short');
-      expect(result).toEqual({ type: 'integer' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#short', builder);
+      expect(builder.build()).toEqual({ type: 'integer' });
     });
 
     it('should map xsd:byte to integer type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#byte');
-      expect(result).toEqual({ type: 'integer' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#byte', builder);
+      expect(builder.build()).toEqual({ type: 'integer' });
     });
 
     it('should map xsd:nonNegativeInteger to integer with minimum 0', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#nonNegativeInteger');
-      expect(result).toEqual({ type: 'integer', minimum: 0 });
+      mapDataType('http://www.w3.org/2001/XMLSchema#nonNegativeInteger', builder);
+      expect(builder.build()).toEqual({ type: 'integer', minimum: 0 });
     });
 
     it('should map xsd:positiveInteger to integer with minimum 1', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#positiveInteger');
-      expect(result).toEqual({ type: 'integer', minimum: 1 });
+      mapDataType('http://www.w3.org/2001/XMLSchema#positiveInteger', builder);
+      expect(builder.build()).toEqual({ type: 'integer', minimum: 1 });
     });
 
     it('should map xsd:nonPositiveInteger to integer with maximum 0', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#nonPositiveInteger');
-      expect(result).toEqual({ type: 'integer', maximum: 0 });
+      mapDataType('http://www.w3.org/2001/XMLSchema#nonPositiveInteger', builder);
+      expect(builder.build()).toEqual({ type: 'integer', maximum: 0 });
     });
 
     it('should map xsd:negativeInteger to integer with maximum -1', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#negativeInteger');
-      expect(result).toEqual({ type: 'integer', maximum: -1 });
+      mapDataType('http://www.w3.org/2001/XMLSchema#negativeInteger', builder);
+      expect(builder.build()).toEqual({ type: 'integer', maximum: -1 });
     });
 
     it('should map xsd:decimal to number type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#decimal');
-      expect(result).toEqual({ type: 'number' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#decimal', builder);
+      expect(builder.build()).toEqual({ type: 'number' });
     });
 
     it('should map xsd:float to number type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#float');
-      expect(result).toEqual({ type: 'number' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#float', builder);
+      expect(builder.build()).toEqual({ type: 'number' });
     });
 
     it('should map xsd:double to number type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#double');
-      expect(result).toEqual({ type: 'number' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#double', builder);
+      expect(builder.build()).toEqual({ type: 'number' });
     });
   });
 
   describe('XSD boolean type', () => {
     it('should map xsd:boolean to boolean type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#boolean');
-      expect(result).toEqual({ type: 'boolean' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#boolean', builder);
+      expect(builder.build()).toEqual({ type: 'boolean' });
     });
   });
 
   describe('XSD date and time types', () => {
     it('should map xsd:date to string with date format', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#date');
-      expect(result).toEqual({ type: 'string', format: 'date' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#date', builder);
+      expect(builder.build()).toEqual({ type: 'string', format: 'date' });
     });
 
     it('should map xsd:dateTime to string with date-time format', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#dateTime');
-      expect(result).toEqual({ type: 'string', format: 'date-time' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#dateTime', builder);
+      expect(builder.build()).toEqual({ type: 'string', format: 'date-time' });
     });
 
     it('should map xsd:time to string with time format', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#time');
-      expect(result).toEqual({ type: 'string', format: 'time' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#time', builder);
+      expect(builder.build()).toEqual({ type: 'string', format: 'time' });
     });
 
     it('should map xsd:duration to string with duration format', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#duration');
-      expect(result).toEqual({ type: 'string', format: 'duration' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#duration', builder);
+      expect(builder.build()).toEqual({ type: 'string', format: 'duration' });
     });
 
     it('should map xsd:gYear to string type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#gYear');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#gYear', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
 
     it('should map xsd:gYearMonth to string type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#gYearMonth');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#gYearMonth', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
   });
 
   describe('XSD URI types', () => {
     it('should map xsd:anyURI to string with uri format', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#anyURI');
-      expect(result).toEqual({ type: 'string', format: 'uri' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#anyURI', builder);
+      expect(builder.build()).toEqual({ type: 'string', format: 'uri' });
     });
   });
 
   describe('XSD binary types', () => {
     it('should map xsd:base64Binary to string with contentEncoding', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#base64Binary');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#base64Binary', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
 
     it('should map xsd:hexBinary to string type', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#hexBinary');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#hexBinary', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
   });
 
   describe('unknown datatypes', () => {
-    it('should return undefined for unknown datatype', () => {
-      const result = mapper.map('http://example.org/unknown');
-      expect(result).toEqual({ type: 'string' });
+    it('should return string for unknown datatype', () => {
+      mapDataType('http://example.org/unknown', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
 
-    it('should return undefined for empty string', () => {
-      const result = mapper.map('');
-      expect(result).toEqual({ type: 'string' });
+    it('should not set type for empty string', () => {
+      mapDataType('', builder);
+      expect(builder.build()).toEqual({});
     });
   });
 
   describe('prefix handling', () => {
     it('should handle full XSD URI', () => {
-      const result = mapper.map('http://www.w3.org/2001/XMLSchema#string');
-      expect(result).toEqual({ type: 'string' });
+      mapDataType('http://www.w3.org/2001/XMLSchema#string', builder);
+      expect(builder.build()).toEqual({ type: 'string' });
     });
   });
 });

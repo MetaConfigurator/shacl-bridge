@@ -11,11 +11,17 @@ export class ConversionContext {
   constraints: CoreConstraints;
   private isPrimitive: boolean;
 
-  constructor(private readonly shapeDefinition: ShapeDefinition) {
+  constructor(
+    private readonly shapeDefinition: ShapeDefinition,
+    private readonly isLogicalFragment = false
+  ) {
     this.constraints = shapeDefinition.coreConstraints ?? {};
     // Primitive if has datatype, object reference if has node/class
     this.isPrimitive = this.hasPrimitiveElements();
-    this.needToBeArray();
+    // Skip array logic for logical constraint fragments
+    if (!isLogicalFragment) {
+      this.needToBeArray();
+    }
   }
 
   hasPrimitiveElements() {

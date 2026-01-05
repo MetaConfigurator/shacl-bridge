@@ -14,6 +14,19 @@ export class IrSchemaConverter {
 
   constructor(private readonly ir: IntermediateRepresentation) {}
 
+  private isLogicalConstraintFragment(parentShape: ShapeDefinition, childNodeKey: string): boolean {
+    const constraints = parentShape.coreConstraints;
+    if (!constraints) return false;
+
+    return (
+      constraints.or?.some((ref) => ref.includes(childNodeKey)) ??
+      constraints.and?.some((ref) => ref.includes(childNodeKey)) ??
+      constraints.xone?.some((ref) => ref.includes(childNodeKey)) ??
+      constraints.not?.includes(childNodeKey) ??
+      false
+    );
+  }
+
   convert(): JsonSchemaObjectType {
     let builder = new JsonSchemaObjectBuilder();
     const { shapeDefinitions } = this.ir;
@@ -72,20 +85,25 @@ export class IrSchemaConverter {
       shapeDef,
       false,
       new JsonSchemaObjectBuilder(),
-      new ConversionContext(shapeDef),
-      true
+      new ConversionContext(shapeDef, false),
+      true,
+      false
     );
     while (!stack.isEmpty()) {
       const { shape, dependentsProcessed } = stack.peek() ?? Stack.default();
       if (!dependentsProcessed && (shape.dependentShapes?.length ?? 0) > 0) {
         stack.toggle(stack.peek() ?? Stack.default());
         shape.dependentShapes?.forEach((dependentShape) => {
+          // Check if this dependent is a logical constraint fragment
+          const isLogicalFragment = this.isLogicalConstraintFragment(shape, dependentShape.nodeKey);
+
           stack.push(
             dependentShape,
             false,
             new JsonSchemaObjectBuilder(),
-            new ConversionContext(dependentShape),
-            false
+            new ConversionContext(dependentShape, isLogicalFragment),
+            false,
+            isLogicalFragment
           );
         });
       } else {
@@ -98,6 +116,9 @@ export class IrSchemaConverter {
           shape.dependentShapes?.forEach((dependentShape) => {
             const dependent = this.processed.get(dependentShape);
             if (dependent != null) {
+              // Skip property merging for logical constraint fragments
+              if (dependent.isLogicalFragment) return;
+
               builder.properties({
                 ...(top.builder.getKey('properties') as Record<string, JsonSchemaType>),
                 ...(dependent.builder.getKey('properties') as Record<string, JsonSchemaType>),
@@ -110,7 +131,14 @@ export class IrSchemaConverter {
         if (isRoot) {
           builder.type('object').additionalProperties(!shape.coreConstraints?.closed);
         }
-        this.processed.set(shape, { shape, builder, isRoot, dependentsProcessed, context });
+        this.processed.set(shape, {
+          shape,
+          builder,
+          isRoot,
+          dependentsProcessed,
+          context,
+          isLogicalFragment: top.isLogicalFragment,
+        });
       }
     }
     return this.processed.get(shapeDef)?.builder.build() ?? {};

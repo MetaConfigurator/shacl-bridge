@@ -72,7 +72,12 @@ export function mapDataType(
       () => builder.type('integer')
     )
     // Floating point types
-    .with(P.union('#decimal', '#float', '#double'), () => builder.type('number'))
+    .with(
+      P.when((datatypeUri) =>
+        ['#decimal', '#float', '#double'].some((val) => datatypeUri.endsWith(val))
+      ),
+      () => builder.type('number')
+    )
     // Boolean
     .with(P.string.endsWith('#boolean'), () => builder.type('boolean'))
     // Date and time types
