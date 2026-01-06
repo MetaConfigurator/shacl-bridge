@@ -617,12 +617,9 @@ describe('ShapeDefinitionBuilder', () => {
   describe('setDependentShapeDefinition', () => {
     it('should add single dependent shape definition', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      const dependentShape = {
-        nodeKey: 'n3-1',
-        shape: { type: SHAPE_TYPE.PROPERTY_SHAPE },
-        coreConstraints: {},
-        dependentShapes: [],
-      };
+      const dependentShape = new ShapeDefinitionBuilder('n3-1')
+        .setType(SHAPE_TYPE.PROPERTY_SHAPE)
+        .build();
       builder.setDependentShapeDefinition(dependentShape);
       const result = builder.build();
 
@@ -632,18 +629,12 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple dependent shape definitions', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      const dependent1 = {
-        nodeKey: 'n3-1',
-        shape: { type: SHAPE_TYPE.PROPERTY_SHAPE },
-        coreConstraints: {},
-        dependentShapes: [],
-      };
-      const dependent2 = {
-        nodeKey: 'n3-2',
-        shape: { type: SHAPE_TYPE.PROPERTY_SHAPE },
-        coreConstraints: {},
-        dependentShapes: [],
-      };
+      const dependent1 = new ShapeDefinitionBuilder('n3-1')
+        .setType(SHAPE_TYPE.PROPERTY_SHAPE)
+        .build();
+      const dependent2 = new ShapeDefinitionBuilder('n3-2')
+        .setType(SHAPE_TYPE.PROPERTY_SHAPE)
+        .build();
       builder.setDependentShapeDefinition(dependent1).setDependentShapeDefinition(dependent2);
       const result = builder.build();
 
