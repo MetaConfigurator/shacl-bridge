@@ -11,6 +11,7 @@ import logger from '../logger';
 import { StackElement } from '../stack/stack-element';
 import { StackElementBuilder } from '../stack/stack-element-builder';
 import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
+import { ConstraintConverter } from './converters/constraints/constraint-converter';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
@@ -132,6 +133,7 @@ export class IrSchemaConverter {
 
           // Apply shape metadata to root shape
           new ShapeMetadataConverter(top.getShape().shape).applyToBuilder(top.getBuilder());
+          top.getBuilder().mergeFrom(new ConstraintConverter(top, this.processed).convert());
         }
         this.processed.set(top.getShape(), top.build());
       }

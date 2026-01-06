@@ -257,7 +257,22 @@ export class ConstraintConverter {
             builder.customProperty(`${PREFIX}-disjoint`, disjointPaths);
           }
         })
+        .with('ignoredProperties', () => {
+          if (
+            this.constraints.ignoredProperties == null ||
+            this.constraints.ignoredProperties.length === 0
+          )
+            return;
+          const ignoredPropertiesPath = this.constraints.ignoredProperties;
+          if (ignoredPropertiesPath.length === 0) return;
+          builder.customProperty(`${PREFIX}-ignoredProperties`, ignoredPropertiesPath);
+        })
+        .with('closed', () => {
+          if (this.constraints.closed == null) return;
+          builder.additionalProperties(false);
+        })
         .otherwise((key) => {
+          if (key == 'property') return;
           const value = this.constraints[key as keyof CoreConstraints];
           if (value == null) return;
           builder.customProperty(`${PREFIX}-${key}`, value);

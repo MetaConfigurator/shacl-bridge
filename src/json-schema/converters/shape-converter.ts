@@ -26,7 +26,6 @@ export class ShapeConverter {
     const propertyBuilder = JsonSchemaObjectBuilder.from(schema);
     new ShapeMetadataConverter(this.shape.shape).applyToBuilder(propertyBuilder);
     const schemaWithMetadata = propertyBuilder.build();
-
     const possibleTargets = this.shape.targets;
     if (possibleTargets.length > 0) {
       const target = possibleTargets[0];

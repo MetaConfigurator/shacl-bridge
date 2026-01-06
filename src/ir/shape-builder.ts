@@ -128,7 +128,9 @@ export class ShapeBuilder {
         .with(P.string.endsWith('uniqueLang'), () => builder.setUniqueLang(object))
         .with(P.string.endsWith('first'), () => builder.setFirst(object))
         .with(P.string.endsWith('rest'), () => builder.setRest(object))
-        .with(P.string.endsWith('ignoredProperties'), () => builder.setIgnoredProperties(object))
+        .with(P.string.endsWith('ignoredProperties'), () =>
+          builder.setIgnoredProperties(object, lists)
+        )
         .with(P.string.endsWith('in'), () => builder.in(object, lists))
         .with(P.string.endsWith('and'), () => builder.and(object, lists))
         .with(P.string.endsWith('or'), () => builder.or(object, lists))

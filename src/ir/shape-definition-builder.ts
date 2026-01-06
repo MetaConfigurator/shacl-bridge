@@ -222,9 +222,17 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  setIgnoredProperties(dependentShape: string) {
+  setIgnoredProperties(property: string, lists: Record<string, Term[]>) {
     this.coreConstraints.ignoredProperties ??= [];
-    this.coreConstraints.ignoredProperties.push(dependentShape);
+    // Check if this is a list or a single value
+    if (property in lists) {
+      // Extract values from RDF list if this is a list head
+      const values = this.extractListValues(property, lists);
+      this.coreConstraints.ignoredProperties.push(...values);
+    } else {
+      // Single property value
+      this.coreConstraints.ignoredProperties.push(property);
+    }
     return this;
   }
 
