@@ -10,6 +10,7 @@ import { hasKeyAtAnyLevel } from '../util/helpers';
 import logger from '../logger';
 import { StackElement } from '../stack/stack-element';
 import { StackElementBuilder } from '../stack/stack-element-builder';
+import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
@@ -128,6 +129,9 @@ export class IrSchemaConverter {
             .getBuilder()
             .type('object')
             .additionalProperties(!top.getShape().coreConstraints?.closed);
+
+          // Apply shape metadata to root shape
+          new ShapeMetadataConverter(top.getShape().shape).applyToBuilder(top.getBuilder());
         }
         this.processed.set(top.getShape(), top.build());
       }

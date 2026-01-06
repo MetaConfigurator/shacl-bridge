@@ -247,6 +247,16 @@ export class ConstraintConverter {
             extractStrippedName(this.constraints.lessThanOrEquals)
           );
         })
+        .with('disjoint', () => {
+          if (this.constraints.disjoint == null || this.constraints.disjoint.length === 0) return;
+          const disjointPaths = this.constraints.disjoint.map((path) => extractStrippedName(path));
+          if (disjointPaths.length === 0) return;
+          if (disjointPaths.length === 1) {
+            builder.customProperty(`${PREFIX}-disjoint`, disjointPaths[0]);
+          } else {
+            builder.customProperty(`${PREFIX}-disjoint`, disjointPaths);
+          }
+        })
         .otherwise((key) => {
           const value = this.constraints[key as keyof CoreConstraints];
           if (value == null) return;

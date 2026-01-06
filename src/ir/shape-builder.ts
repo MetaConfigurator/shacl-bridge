@@ -142,6 +142,7 @@ export class ShapeBuilder {
         .with(P.string.endsWith('lessThan'), () => builder.setLessThan(object))
         .with(P.string.endsWith('defaultValue'), () => builder.setDefaultValue(object))
         .with(P.string.endsWith('lessThanOrEquals'), () => builder.setLessThanOrEquals(object))
+        .with(P.string.endsWith('disjoint'), () => builder.setDisjoint(object, lists))
         .otherwise(() => {
           // Capture non-SHACL predicates as additional properties
           builder.setAdditionalProperty(predicate, quad.object);

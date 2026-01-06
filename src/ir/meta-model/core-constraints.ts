@@ -1,4 +1,3 @@
-import { ShapeDefinition } from './shape-definition';
 import { NodeKind } from './node-kind';
 
 export interface CoreConstraints {
@@ -7,7 +6,7 @@ export interface CoreConstraints {
   closed?: boolean;
   datatype?: string;
   equals?: string; // TODO: Maybe move to Shape
-  hasValue?: boolean;
+  hasValue?: string | boolean;
   lessThan?: string;
   lessThanOrEquals?: string;
   maxCount?: number;
@@ -35,6 +34,6 @@ export interface CoreConstraints {
   not?: string[];
   xone?: string[];
   languageIn?: string[]; // TODO
-  disjoint?: ShapeDefinition[]; // TODO: Verify
+  disjoint?: string[]; // TODO: Verify
   defaultValue?: string;
 }

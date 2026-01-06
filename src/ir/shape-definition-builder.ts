@@ -201,8 +201,14 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  setHasValue(flag: string) {
-    this.coreConstraints.hasValue = flag.endsWith('true');
+  setHasValue(value: string) {
+    // sh:hasValue can be any value (string, number, URI, etc.)
+    // Store the value as-is, not as a boolean
+    if (value === 'true' || value === 'false') {
+      this.coreConstraints.hasValue = value === 'true';
+    } else {
+      this.coreConstraints.hasValue = value;
+    }
     return this;
   }
 
@@ -347,6 +353,20 @@ export class ShapeDefinitionBuilder {
 
   setLessThanOrEquals(property: string) {
     this.coreConstraints.lessThanOrEquals = property;
+    return this;
+  }
+
+  setDisjoint(property: string, lists: Record<string, Term[]>) {
+    this.coreConstraints.disjoint ??= [];
+    // Check if this is a list or a single value
+    if (property in lists) {
+      // Extract values from RDF list if this is a list head
+      const values = this.extractListValues(property, lists);
+      this.coreConstraints.disjoint.push(...values);
+    } else {
+      // Single property value
+      this.coreConstraints.disjoint.push(property);
+    }
     return this;
   }
 

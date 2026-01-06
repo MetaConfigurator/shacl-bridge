@@ -46,7 +46,7 @@ describe('CLI', () => {
   //     const output = runCli(simpleShaclPath);
   //     const schema = JSON.parse(output) as JsonSchemaObjectType;
   //
-  //     expect(schema.$defs?.Person['x-shacl-targetClass']).toBeUndefined();
+  //     expect(schema.Person['x-shacl-targetClass']).toBeUndefined();
   //   });
   //
   //   it('should include metadata when flag is set', () => {

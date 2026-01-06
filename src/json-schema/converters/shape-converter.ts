@@ -1,6 +1,7 @@
 import { ShapeDefinition } from '../../ir/meta-model/shape-definition';
 import { JsonSchemaType } from '../meta/json-schema-type';
 import { ConstraintConverter } from './constraints/constraint-converter';
+import { ShapeMetadataConverter } from './shape-metadata-converter';
 
 import { StackElement } from '../../stack/stack-element';
 import { StackElementBuilder } from '../../stack/stack-element-builder';
@@ -20,15 +21,21 @@ export class ShapeConverter {
 
   convert() {
     const schema = new ConstraintConverter(this.sb, this.processed).convert();
+
+    // Apply shape metadata (message, severity, deactivated, etc.) to the schema
+    const propertyBuilder = JsonSchemaObjectBuilder.from(schema);
+    new ShapeMetadataConverter(this.shape.shape).applyToBuilder(propertyBuilder);
+    const schemaWithMetadata = propertyBuilder.build();
+
     const possibleTargets = this.shape.targets;
     if (possibleTargets.length > 0) {
       const target = possibleTargets[0];
       this.builder.properties({
         ...(this.builder.getKey('properties') as Record<string, JsonSchemaType>),
-        [target]: schema,
+        [target]: schemaWithMetadata,
       });
     } else {
-      this.builder.mergeFrom(schema);
+      this.builder.mergeFrom(schemaWithMetadata);
     }
   }
 }
