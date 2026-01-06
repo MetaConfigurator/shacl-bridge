@@ -16,19 +16,6 @@ export class IrSchemaConverter {
 
   constructor(private readonly ir: IntermediateRepresentation) {}
 
-  private isLogicalConstraintFragment(parentShape: ShapeDefinition, childNodeKey: string): boolean {
-    const constraints = parentShape.coreConstraints;
-    if (!constraints) return false;
-
-    return (
-      constraints.or?.some((ref) => ref.includes(childNodeKey)) ??
-      constraints.and?.some((ref) => ref.includes(childNodeKey)) ??
-      constraints.xone?.some((ref) => ref.includes(childNodeKey)) ??
-      constraints.not?.includes(childNodeKey) ??
-      false
-    );
-  }
-
   convert(): JsonSchemaObjectType {
     let builder = new JsonSchemaObjectBuilder();
     const { shapeDefinitions } = this.ir;
@@ -79,6 +66,19 @@ export class IrSchemaConverter {
       builder.$id(shapeDefinitions[0].nodeKey).$schema(JSON_SCHEMA_DRAFT);
     }
     return builder.build();
+  }
+
+  private isLogicalConstraintFragment(parentShape: ShapeDefinition, childNodeKey: string): boolean {
+    const constraints = parentShape.coreConstraints;
+    if (!constraints) return false;
+
+    return (
+      constraints.or?.some((ref) => ref.includes(childNodeKey)) ??
+      constraints.and?.some((ref) => ref.includes(childNodeKey)) ??
+      constraints.xone?.some((ref) => ref.includes(childNodeKey)) ??
+      constraints.not?.includes(childNodeKey) ??
+      false
+    );
   }
 
   private processBottomUp(shapeDef: ShapeDefinition): JsonSchemaObjectType {

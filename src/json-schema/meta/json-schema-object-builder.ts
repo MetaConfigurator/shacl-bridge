@@ -8,6 +8,16 @@ export class JsonSchemaObjectBuilder {
   private schema: JsonSchemaObjectType = {};
 
   /**
+   * Creates a new builder instance from an existing schema.
+   * Useful for modifying existing schemas.
+   */
+  static from(schema: JsonSchemaObjectType): JsonSchemaObjectBuilder {
+    const builder = new JsonSchemaObjectBuilder();
+    builder.schema = JSON.parse(JSON.stringify(schema)) as JsonSchemaObjectType;
+    return builder;
+  }
+
+  /**
    * Sets the $schema keyword, which declares which dialect of JSON Schema the schema follows.
    * Example: "https://json-schema.org/draft/2020-12/schema"
    */
@@ -25,6 +35,8 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Reference Keywords ====================
+
   /**
    * Sets the $vocabulary keyword, which declares the vocabularies used by the schema.
    * Keys are vocabulary URIs, values indicate whether the vocabulary is required.
@@ -33,8 +45,6 @@ export class JsonSchemaObjectBuilder {
     this.schema.$vocabulary = vocabulary;
     return this;
   }
-
-  // ==================== Reference Keywords ====================
 
   $ref(ref: string): this {
     this.schema.$ref = ref;
@@ -66,12 +76,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Array Keywords ====================
+
   definitions(definitions: Record<string, JsonSchemaType>): this {
     this.schema.definitions = definitions;
     return this;
   }
-
-  // ==================== Array Keywords ====================
 
   prefixItems(prefixItems: JsonSchemaType[]): this {
     this.schema.prefixItems = prefixItems;
@@ -108,12 +118,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Object Keywords ====================
+
   minContains(minContains: number): this {
     this.schema.minContains = minContains;
     return this;
   }
-
-  // ==================== Object Keywords ====================
 
   properties(properties: Record<string, JsonSchemaType>): this {
     this.schema.properties = properties;
@@ -166,12 +176,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Type and Value Keywords ====================
+
   dependencies(dependencies: Record<string, JsonSchemaType | string[]>): this {
     this.schema.dependencies = dependencies;
     return this;
   }
-
-  // ==================== Type and Value Keywords ====================
 
   type(type: SchemaPropertyTypes): this {
     this.schema.type = type;
@@ -183,12 +193,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Numeric Constraints ====================
+
   enum(enumValues: unknown[]): this {
     this.schema.enum = enumValues;
     return this;
   }
-
-  // ==================== Numeric Constraints ====================
 
   multipleOf(multipleOf: number): this {
     this.schema.multipleOf = multipleOf;
@@ -210,12 +220,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== String Constraints ====================
+
   exclusiveMinimum(exclusiveMinimum: number): this {
     this.schema.exclusiveMinimum = exclusiveMinimum;
     return this;
   }
-
-  // ==================== String Constraints ====================
 
   maxLength(maxLength: number): this {
     this.schema.maxLength = maxLength;
@@ -232,12 +242,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Composition Keywords ====================
+
   format(format: string): this {
     this.schema.format = format;
     return this;
   }
-
-  // ==================== Composition Keywords ====================
 
   allOf(allOf: JsonSchemaType[]): this {
     this.schema.allOf = allOf;
@@ -254,12 +264,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Conditional Keywords ====================
+
   not(not: JsonSchemaType): this {
     this.schema.not = not;
     return this;
   }
-
-  // ==================== Conditional Keywords ====================
 
   if(ifSchema: JsonSchemaType): this {
     this.schema.if = ifSchema;
@@ -271,24 +281,24 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Unevaluated Keywords ====================
+
   else(elseSchema: JsonSchemaType): this {
     this.schema.else = elseSchema;
     return this;
   }
-
-  // ==================== Unevaluated Keywords ====================
 
   unevaluatedItems(unevaluatedItems: JsonSchemaType): this {
     this.schema.unevaluatedItems = unevaluatedItems;
     return this;
   }
 
+  // ==================== Metadata Keywords ====================
+
   unevaluatedProperties(unevaluatedProperties: JsonSchemaType): this {
     this.schema.unevaluatedProperties = unevaluatedProperties;
     return this;
   }
-
-  // ==================== Metadata Keywords ====================
 
   title(title: string): this {
     this.schema.title = title;
@@ -320,12 +330,12 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Content Keywords ====================
+
   examples(examples: unknown[]): this {
     this.schema.examples = examples;
     return this;
   }
-
-  // ==================== Content Keywords ====================
 
   contentEncoding(contentEncoding: string): this {
     this.schema.contentEncoding = contentEncoding;
@@ -337,24 +347,24 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Legacy Keywords ====================
+
   contentSchema(contentSchema: JsonSchemaType): this {
     this.schema.contentSchema = contentSchema;
     return this;
   }
-
-  // ==================== Legacy Keywords ====================
 
   $recursiveAnchor(recursiveAnchor: string): this {
     this.schema.$recursiveAnchor = recursiveAnchor;
     return this;
   }
 
+  // ==================== Custom Properties ====================
+
   $recursiveRef(recursiveRef: string): this {
     this.schema.$recursiveRef = recursiveRef;
     return this;
   }
-
-  // ==================== Custom Properties ====================
 
   /**
    * Add a custom property to the schema.
@@ -365,6 +375,8 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
+  // ==================== Builder Methods ====================
+
   /**
    * Add multiple custom properties at once.
    */
@@ -374,8 +386,6 @@ export class JsonSchemaObjectBuilder {
     });
     return this;
   }
-
-  // ==================== Builder Methods ====================
 
   /**
    * Returns the built JsonSchemaObjectType.
@@ -399,16 +409,6 @@ export class JsonSchemaObjectBuilder {
   reset(): this {
     this.schema = {};
     return this;
-  }
-
-  /**
-   * Creates a new builder instance from an existing schema.
-   * Useful for modifying existing schemas.
-   */
-  static from(schema: JsonSchemaObjectType): JsonSchemaObjectBuilder {
-    const builder = new JsonSchemaObjectBuilder();
-    builder.schema = JSON.parse(JSON.stringify(schema)) as JsonSchemaObjectType;
-    return builder;
   }
 
   getKey(key: keyof JsonSchemaObjectType): unknown {

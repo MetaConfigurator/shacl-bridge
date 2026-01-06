@@ -267,19 +267,6 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  /**
-   * Extracts values from an RDF list if the identifier is a list head.
-   * Otherwise returns the identifier as a single-element array.
-   */
-  private extractListValues(listHeadOrValue: string, lists: Record<string, Term[]>): string[] {
-    if (listHeadOrValue in lists) {
-      // This is a list head - extract all values
-      return lists[listHeadOrValue].map((term) => term.value);
-    }
-    // Not a list - return as single value
-    return [listHeadOrValue];
-  }
-
   setAdditionalProperty(predicate: string, object: Term) {
     // Extract RDF value information from the N3 term
     let rdfValue: AdditionalProperty['value'];
@@ -366,5 +353,18 @@ export class ShapeDefinitionBuilder {
   setDefaultValue(value: string) {
     this.coreConstraints.defaultValue = value;
     return this;
+  }
+
+  /**
+   * Extracts values from an RDF list if the identifier is a list head.
+   * Otherwise returns the identifier as a single-element array.
+   */
+  private extractListValues(listHeadOrValue: string, lists: Record<string, Term[]>): string[] {
+    if (listHeadOrValue in lists) {
+      // This is a list head - extract all values
+      return lists[listHeadOrValue].map((term) => term.value);
+    }
+    // Not a list - return as single value
+    return [listHeadOrValue];
   }
 }

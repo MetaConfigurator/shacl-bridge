@@ -7,6 +7,17 @@ import { StackElementBuilder } from './stack-element-builder';
 export class Stack {
   private items: StackElementBuilder[] = [];
 
+  static default(): StackElement {
+    return {
+      shape: new ShapeDefinitionBuilder('').build(),
+      dependentsProcessed: false,
+      builder: new JsonSchemaObjectBuilder(),
+      context: new ConversionContext(new ShapeDefinitionBuilder('').build()),
+      isRoot: false,
+      isLogicalFragment: false,
+    };
+  }
+
   push(builder: StackElementBuilder): void {
     this.items.push(builder);
   }
@@ -33,16 +44,5 @@ export class Stack {
 
   toggle(element: StackElementBuilder): void {
     element.toggle();
-  }
-
-  static default(): StackElement {
-    return {
-      shape: new ShapeDefinitionBuilder('').build(),
-      dependentsProcessed: false,
-      builder: new JsonSchemaObjectBuilder(),
-      context: new ConversionContext(new ShapeDefinitionBuilder('').build()),
-      isRoot: false,
-      isLogicalFragment: false,
-    };
   }
 }
