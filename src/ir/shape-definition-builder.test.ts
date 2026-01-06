@@ -422,18 +422,28 @@ describe('ShapeDefinitionBuilder', () => {
   describe('array-based constraints', () => {
     it('should add single ignored property', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setIgnoredProperties('n3-6');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
+      builder.setIgnoredProperties('value1', lists);
       const result = builder.build();
 
-      expect(result.coreConstraints?.ignoredProperties).toEqual(['n3-6']);
+      expect(result.coreConstraints?.ignoredProperties).toEqual(['value1']);
     });
 
     it('should add multiple ignored properties', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setIgnoredProperties('n3-6').setIgnoredProperties('n3-7');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
+      builder.setIgnoredProperties('value1', lists).setIgnoredProperties('value2', lists);
       const result = builder.build();
 
-      expect(result.coreConstraints?.ignoredProperties).toEqual(['n3-6', 'n3-7']);
+      expect(result.coreConstraints?.ignoredProperties).toEqual(['value1', 'value2']);
     });
 
     it('should add single property', () => {
@@ -647,6 +657,11 @@ describe('ShapeDefinitionBuilder', () => {
   describe('complex shape building', () => {
     it('should build a complete PersonShape with multiple constraints', () => {
       const builder = new ShapeDefinitionBuilder('http://example.org/PersonShape');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
       const result = builder
         .setType('http://www.w3.org/ns/shacl#NodeShape')
         .setTargetClass('http://xmlns.com/foaf/0.1/Person')
@@ -657,7 +672,7 @@ describe('ShapeDefinitionBuilder', () => {
         .setProperty('n3-4')
         .setProperty('n3-5')
         .setClosed('true')
-        .setIgnoredProperties('n3-6')
+        .setIgnoredProperties('value1', lists)
         .build();
 
       expect(result.nodeKey).toBe('http://example.org/PersonShape');
@@ -668,7 +683,7 @@ describe('ShapeDefinitionBuilder', () => {
       expect(result.shape?.deactivated).toBe(false);
       expect(result.coreConstraints?.property).toEqual(['n3-3', 'n3-4', 'n3-5']);
       expect(result.coreConstraints?.closed).toBe(true);
-      expect(result.coreConstraints?.ignoredProperties).toEqual(['n3-6']);
+      expect(result.coreConstraints?.ignoredProperties).toEqual(['value1']);
     });
 
     it('should build a PropertyShape with string constraints', () => {
