@@ -1467,10 +1467,7 @@ ex:PersonReferenceShape
             allOf: [
               { type: 'string' },
               {
-                anyOf: [
-                  { pattern: '.*@company.com$' },
-                  { pattern: '.*@partner.org$' },
-                ],
+                anyOf: [{ pattern: '.*@company.com$' }, { pattern: '.*@partner.org$' }],
               },
             ],
           },
@@ -1521,17 +1518,10 @@ ex:PersonReferenceShape
           age: {
             anyOf: [
               {
-                allOf: [
-                  { type: 'integer' },
-                  { minimum: 18 },
-                  { maximum: 65 },
-                ],
+                allOf: [{ type: 'integer' }, { minimum: 18 }, { maximum: 65 }],
               },
               {
-                allOf: [
-                  { type: 'string' },
-                  { enum: ['minor-with-guardian', 'senior-exempt'] },
-                ],
+                allOf: [{ type: 'string' }, { enum: ['minor-with-guardian', 'senior-exempt'] }],
               },
             ],
           },
@@ -1570,10 +1560,7 @@ ex:PersonReferenceShape
         properties: {
           mimeType: {
             not: {
-              anyOf: [
-                { pattern: '^application/x-.*' },
-                { pattern: '^application/.*executable.*' },
-              ],
+              anyOf: [{ pattern: '^application/x-.*' }, { pattern: '^application/.*executable.*' }],
             },
           },
         },
@@ -1650,19 +1637,12 @@ ex:PersonReferenceShape
                 allOf: [
                   { $ref: '#/$defs/StructuredAddress' },
                   {
-                    anyOf: [
-                      { $ref: '#/$defs/USAddress' },
-                      { $ref: '#/$defs/EUAddress' },
-                    ],
+                    anyOf: [{ $ref: '#/$defs/USAddress' }, { $ref: '#/$defs/EUAddress' }],
                   },
                 ],
               },
               {
-                allOf: [
-                  { type: 'string' },
-                  { minLength: 10 },
-                  { maxLength: 200 },
-                ],
+                allOf: [{ type: 'string' }, { minLength: 10 }, { maxLength: 200 }],
               },
             ],
           },
@@ -1855,6 +1835,285 @@ ex:PersonReferenceShape
     });
   });
 
+  describe('Value Range Constraints', () => {
+    it('should handle numeric range with minInclusive and maxInclusive', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:TemperatureShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Sensor ;
+            sh:property [
+                sh:path ex:temperature ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive -273.15 ;
+                sh:maxInclusive 1000.0 ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/TemperatureShape',
+        title: 'Sensor',
+        type: 'object',
+        properties: {
+          temperature: {
+            type: 'number',
+            minimum: -273.15,
+            maximum: 1000.0,
+          },
+        },
+        required: ['temperature'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle numeric range with minExclusive and maxExclusive', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:PercentageShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Statistics ;
+            sh:property [
+                sh:path ex:rate ;
+                sh:datatype xsd:decimal ;
+                sh:minExclusive 0.0 ;
+                sh:maxExclusive 100.0 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/PercentageShape',
+        title: 'Statistics',
+        type: 'object',
+        properties: {
+          rate: {
+            type: 'number',
+            exclusiveMinimum: 0.0,
+            exclusiveMaximum: 100.0,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle mixed inclusive and exclusive bounds', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ScoreShape
+            a sh:NodeShape ;
+            sh:targetClass ex:TestResult ;
+            sh:property [
+                sh:path ex:score ;
+                sh:datatype xsd:integer ;
+                sh:minInclusive 0 ;
+                sh:maxExclusive 100 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ScoreShape',
+        title: 'TestResult',
+        type: 'object',
+        properties: {
+          score: {
+            type: 'integer',
+            minimum: 0,
+            exclusiveMaximum: 100,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle date ranges with minInclusive and maxInclusive (filtered out)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:EventShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Event ;
+            sh:property [
+                sh:path ex:eventDate ;
+                sh:datatype xsd:date ;
+                sh:minInclusive "2020-01-01"^^xsd:date ;
+                sh:maxInclusive "2030-12-31"^^xsd:date ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // Note: min/max constraints are filtered out for date types
+      // because JSON Schema minimum/maximum only apply to numeric types
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/EventShape',
+        title: 'Event',
+        type: 'object',
+        properties: {
+          eventDate: {
+            type: 'string',
+            format: 'date',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle zero and negative boundary conditions', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:BalanceShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Account ;
+            sh:property [
+                sh:path ex:balance ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive -1000.0 ;
+                sh:maxInclusive 0.0 ;
+            ] ;
+            sh:property [
+                sh:path ex:creditScore ;
+                sh:datatype xsd:integer ;
+                sh:minExclusive -1 ;
+                sh:maxInclusive 850 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/BalanceShape',
+        title: 'Account',
+        type: 'object',
+        properties: {
+          balance: {
+            type: 'number',
+            minimum: -1000.0,
+            maximum: 0.0,
+          },
+          creditScore: {
+            type: 'integer',
+            exclusiveMinimum: -1,
+            maximum: 850,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('Property Pair Constraints', () => {
+    it('should handle sh:equals constraint (not directly supported in JSON Schema)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:PersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:property [
+                sh:path ex:email ;
+                sh:datatype xsd:string ;
+            ] ;
+            sh:property [
+                sh:path ex:confirmEmail ;
+                sh:datatype xsd:string ;
+                sh:equals ex:email ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // Note: sh:equals has no direct JSON Schema equivalent
+      // Preserved as x-shacl-equals extension
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/PersonShape',
+        title: 'Person',
+        type: 'object',
+        properties: {
+          email: {
+            type: 'string',
+          },
+          confirmEmail: {
+            type: 'string',
+            'x-shacl-equals': 'email',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:lessThan constraint (not directly supported in JSON Schema)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:DateRangeShape
+            a sh:NodeShape ;
+            sh:targetClass ex:DateRange ;
+            sh:property [
+                sh:path ex:startDate ;
+                sh:datatype xsd:date ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:endDate ;
+                sh:datatype xsd:date ;
+                sh:lessThan ex:startDate ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // Note: sh:lessThan has no direct JSON Schema equivalent
+      // Preserved as x-shacl-lessThan extension
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/DateRangeShape',
+        title: 'DateRange',
+        type: 'object',
+        properties: {
+          startDate: {
+            type: 'string',
+            format: 'date',
+          },
+          endDate: {
+            type: 'string',
+            format: 'date',
+            'x-shacl-lessThan': 'startDate',
+          },
+        },
+        required: ['startDate', 'endDate'],
+        additionalProperties: true,
+      });
+    });
+  });
+
   describe('Node Kind Constraints', () => {
     it('should handle sh:nodeKind sh:IRI for external references', async () => {
       const content = `
@@ -2039,6 +2298,908 @@ ex:PersonReferenceShape
           },
         },
         required: ['identifier'],
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('Closed Shapes and additionalProperties', () => {
+    it('should handle sh:closed true to disallow additional properties', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:StrictPersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:StrictPerson ;
+            sh:closed true ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+            ] ;
+            sh:property [
+                sh:path ex:age ;
+                sh:datatype xsd:integer ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/StrictPersonShape',
+        title: 'StrictPerson',
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+          },
+          age: {
+            type: 'integer',
+          },
+        },
+        additionalProperties: false,
+      });
+    });
+
+    it('should handle sh:closed with sh:ignoredProperties', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+        ex:TypedPersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:TypedPerson ;
+            sh:closed true ;
+            sh:ignoredProperties ( rdf:type ) ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // sh:ignoredProperties doesn't have a direct JSON Schema equivalent
+      // The shape is still closed, but RDF validators would allow rdf:type
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/TypedPersonShape',
+        title: 'TypedPerson',
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+          },
+        },
+        additionalProperties: false,
+      });
+    });
+
+    it('should default to additionalProperties true when sh:closed is false or absent', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:FlexiblePersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:FlexiblePerson ;
+            sh:closed false ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/FlexiblePersonShape',
+        title: 'FlexiblePerson',
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('sh:in (Enumeration) Edge Cases', () => {
+    it('should handle single value enumeration', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:SingletonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Singleton ;
+            sh:property [
+                sh:path ex:status ;
+                sh:datatype xsd:string ;
+                sh:in ( "active" ) ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/SingletonShape',
+        title: 'Singleton',
+        type: 'object',
+        properties: {
+          status: {
+            type: 'string',
+            enum: ['active'],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle mixed type enumeration (strings and numbers)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:MixedEnumShape
+            a sh:NodeShape ;
+            sh:targetClass ex:MixedEnum ;
+            sh:property [
+                sh:path ex:value ;
+                sh:in ( "low" "medium" "high" 1 2 3 ) ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/MixedEnumShape',
+        title: 'MixedEnum',
+        type: 'object',
+        properties: {
+          value: {
+            enum: ['low', 'medium', 'high', '1', '2', '3'],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle enumeration with URIs', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:CategoryShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Document ;
+            sh:property [
+                sh:path ex:category ;
+                sh:in ( ex:Science ex:Technology ex:Engineering ex:Mathematics ) ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/CategoryShape',
+        title: 'Document',
+        type: 'object',
+        properties: {
+          category: {
+            enum: [
+              'http://example.org/Science',
+              'http://example.org/Technology',
+              'http://example.org/Engineering',
+              'http://example.org/Mathematics',
+            ],
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle enumeration combined with other constraints', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:PriorityShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Task ;
+            sh:property [
+                sh:path ex:priority ;
+                sh:datatype xsd:string ;
+                sh:in ( "low" "medium" "high" "critical" ) ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/PriorityShape',
+        title: 'Task',
+        type: 'object',
+        properties: {
+          priority: {
+            type: 'string',
+            enum: ['low', 'medium', 'high', 'critical'],
+          },
+        },
+        required: ['priority'],
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('Default Values (sh:defaultValue)', () => {
+    it('should handle default value with string datatype', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:UserShape
+            a sh:NodeShape ;
+            sh:targetClass ex:User ;
+            sh:property [
+                sh:path ex:role ;
+                sh:datatype xsd:string ;
+                sh:defaultValue "user" ;
+            ] ;
+            sh:property [
+                sh:path ex:country ;
+                sh:datatype xsd:string ;
+                sh:defaultValue "USA" ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/UserShape',
+        title: 'User',
+        type: 'object',
+        properties: {
+          role: {
+            type: 'string',
+            default: 'user',
+          },
+          country: {
+            type: 'string',
+            default: 'USA',
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle default value with numeric datatype', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ConfigShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Config ;
+            sh:property [
+                sh:path ex:timeout ;
+                sh:datatype xsd:integer ;
+                sh:defaultValue 30 ;
+                sh:minInclusive 0 ;
+                sh:maxInclusive 300 ;
+            ] ;
+            sh:property [
+                sh:path ex:retryCount ;
+                sh:datatype xsd:integer ;
+                sh:defaultValue 3 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ConfigShape',
+        title: 'Config',
+        type: 'object',
+        properties: {
+          timeout: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 300,
+            default: 30,
+          },
+          retryCount: {
+            type: 'integer',
+            default: 3,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle default value with enumeration', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:TaskShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Task ;
+            sh:property [
+                sh:path ex:status ;
+                sh:datatype xsd:string ;
+                sh:in ( "pending" "active" "completed" "cancelled" ) ;
+                sh:defaultValue "pending" ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:priority ;
+                sh:datatype xsd:string ;
+                sh:in ( "low" "medium" "high" ) ;
+                sh:defaultValue "medium" ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/TaskShape',
+        title: 'Task',
+        type: 'object',
+        properties: {
+          status: {
+            type: 'string',
+            enum: ['pending', 'active', 'completed', 'cancelled'],
+            default: 'pending',
+          },
+          priority: {
+            type: 'string',
+            enum: ['low', 'medium', 'high'],
+            default: 'medium',
+          },
+        },
+        required: ['status'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle default value with boolean datatype', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:SettingsShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Settings ;
+            sh:property [
+                sh:path ex:notificationsEnabled ;
+                sh:datatype xsd:boolean ;
+                sh:defaultValue true ;
+            ] ;
+            sh:property [
+                sh:path ex:darkMode ;
+                sh:datatype xsd:boolean ;
+                sh:defaultValue false ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/SettingsShape',
+        title: 'Settings',
+        type: 'object',
+        properties: {
+          notificationsEnabled: {
+            type: 'boolean',
+            default: true,
+          },
+          darkMode: {
+            type: 'boolean',
+            default: false,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle default value with decimal datatype', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ProductShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Product ;
+            sh:property [
+                sh:path ex:taxRate ;
+                sh:datatype xsd:decimal ;
+                sh:defaultValue 0.08 ;
+                sh:minInclusive 0.0 ;
+                sh:maxInclusive 1.0 ;
+            ] ;
+            sh:property [
+                sh:path ex:discountRate ;
+                sh:datatype xsd:decimal ;
+                sh:defaultValue 0.0 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ProductShape',
+        title: 'Product',
+        type: 'object',
+        properties: {
+          taxRate: {
+            type: 'number',
+            minimum: 0.0,
+            maximum: 1.0,
+            default: 0.08,
+          },
+          discountRate: {
+            type: 'number',
+            default: 0.0,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+  });
+
+  describe('Real-world Complex Scenarios', () => {
+    it('should handle e-commerce product with variants and complex constraints', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ProductShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Product ;
+            sh:closed true ;
+            sh:property [
+                sh:path ex:sku ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[A-Z]{3}-[0-9]{6}$" ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+                sh:minLength 3 ;
+                sh:maxLength 100 ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:price ;
+                sh:datatype xsd:decimal ;
+                sh:minExclusive 0.0 ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:stock ;
+                sh:datatype xsd:integer ;
+                sh:minInclusive 0 ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:variants ;
+                sh:node ex:VariantShape ;
+            ] ;
+            sh:property [
+                sh:path ex:tags ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+            ] .
+
+        ex:VariantShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:color ;
+                sh:datatype xsd:string ;
+                sh:in ( "red" "blue" "green" "black" "white" ) ;
+            ] ;
+            sh:property [
+                sh:path ex:size ;
+                sh:datatype xsd:string ;
+                sh:in ( "XS" "S" "M" "L" "XL" "XXL" ) ;
+            ] ;
+            sh:property [
+                sh:path ex:additionalPrice ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0.0 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ProductShape',
+        title: 'Product',
+        type: 'object',
+        properties: {
+          sku: {
+            type: 'string',
+            pattern: '^[A-Z]{3}-[0-9]{6}$',
+          },
+          name: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 100,
+          },
+          price: {
+            type: 'number',
+            exclusiveMinimum: 0.0,
+          },
+          stock: {
+            type: 'integer',
+            minimum: 0,
+          },
+          variants: {
+            type: 'array',
+            items: {
+              $ref: '#/$defs/Variant',
+            },
+          },
+          tags: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            minItems: 1,
+          },
+        },
+        required: ['sku', 'name', 'price', 'stock', 'tags'],
+        additionalProperties: false,
+        $defs: {
+          Variant: {
+            type: 'object',
+            title: 'Variant',
+            properties: {
+              color: {
+                type: 'string',
+                enum: ['red', 'blue', 'green', 'black', 'white'],
+              },
+              size: {
+                type: 'string',
+                enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+              },
+              additionalPrice: {
+                type: 'number',
+                minimum: 0.0,
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should handle organization hierarchy with departments', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:OrganizationShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Organization ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+                sh:minLength 1 ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:headquarters ;
+                sh:node ex:AddressShape ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:departments ;
+                sh:node ex:DepartmentShape ;
+                sh:minCount 1 ;
+            ] .
+
+        ex:AddressShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:street ;
+                sh:datatype xsd:string ;
+            ] ;
+            sh:property [
+                sh:path ex:city ;
+                sh:datatype xsd:string ;
+            ] ;
+            sh:property [
+                sh:path ex:country ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+
+        ex:DepartmentShape
+            a sh:NodeShape ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:headCount ;
+                sh:datatype xsd:integer ;
+                sh:minInclusive 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:budget ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0.0 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/OrganizationShape',
+        title: 'Organization',
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            minLength: 1,
+          },
+          headquarters: {
+            $ref: '#/$defs/Address',
+          },
+          departments: {
+            type: 'array',
+            items: {
+              $ref: '#/$defs/Department',
+            },
+            minItems: 1,
+          },
+        },
+        required: ['name', 'headquarters', 'departments'],
+        additionalProperties: true,
+        $defs: {
+          Address: {
+            type: 'object',
+            title: 'Address',
+            properties: {
+              street: {
+                type: 'string',
+              },
+              city: {
+                type: 'string',
+              },
+              country: {
+                type: 'string',
+              },
+            },
+            required: ['country'],
+          },
+          Department: {
+            type: 'object',
+            title: 'Department',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              headCount: {
+                type: 'integer',
+                minimum: 1,
+              },
+              budget: {
+                type: 'number',
+                minimum: 0.0,
+              },
+            },
+            required: ['name'],
+          },
+        },
+      });
+    });
+  });
+
+  describe('Language and Comparison Constraints', () => {
+    it('should handle sh:uniqueLang constraint (no direct JSON Schema equivalent)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:MultilingualShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Document ;
+            sh:property [
+                sh:path ex:title ;
+                sh:datatype xsd:string ;
+                sh:uniqueLang true ;
+                sh:minCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // Note: sh:uniqueLang ensures each language tag appears at most once
+      // No direct JSON Schema equivalent, so preserved as extension
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/MultilingualShape',
+        title: 'Document',
+        type: 'object',
+        properties: {
+          title: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            minItems: 1,
+            'x-shacl-uniqueLang': true,
+          },
+        },
+        required: ['title'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:languageIn constraint (restricts language tags)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:LocalizedContentShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Content ;
+            sh:property [
+                sh:path ex:description ;
+                sh:datatype xsd:string ;
+                sh:languageIn ( "en" "de" "fr" "es" ) ;
+                sh:uniqueLang true ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // Note: sh:languageIn restricts language tags to a specific set
+      // No direct JSON Schema equivalent, so preserved as extension
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/LocalizedContentShape',
+        title: 'Content',
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+            'x-shacl-languageIn': ['en', 'de', 'fr', 'es'],
+            'x-shacl-uniqueLang': true,
+          },
+        },
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle sh:lessThanOrEquals constraint', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:VersionRangeShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Version ;
+            sh:property [
+                sh:path ex:minVersion ;
+                sh:datatype xsd:decimal ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] ;
+            sh:property [
+                sh:path ex:maxVersion ;
+                sh:datatype xsd:decimal ;
+                sh:lessThanOrEquals ex:minVersion ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      // Note: sh:lessThanOrEquals has no direct JSON Schema equivalent
+      // Preserved as x-shacl-lessThanOrEquals extension
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/VersionRangeShape',
+        title: 'Version',
+        type: 'object',
+        properties: {
+          minVersion: {
+            type: 'number',
+          },
+          maxVersion: {
+            type: 'number',
+            'x-shacl-lessThanOrEquals': 'minVersion',
+          },
+        },
+        required: ['minVersion', 'maxVersion'],
+        additionalProperties: true,
+      });
+    });
+
+    it('should handle combination of language constraints', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:ProductShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Product ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+                sh:languageIn ( "en" "fr" ) ;
+                sh:uniqueLang true ;
+                sh:minCount 2 ;
+                sh:maxCount 2 ;
+            ] ;
+            sh:property [
+                sh:path ex:description ;
+                sh:datatype xsd:string ;
+                sh:languageIn ( "en" "de" "fr" "es" "it" ) ;
+                sh:uniqueLang true ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'http://example.org/ProductShape',
+        title: 'Product',
+        type: 'object',
+        properties: {
+          name: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            minItems: 2,
+            maxItems: 2,
+            'x-shacl-languageIn': ['en', 'fr'],
+            'x-shacl-uniqueLang': true,
+          },
+          description: {
+            type: 'string',
+            'x-shacl-languageIn': ['en', 'de', 'fr', 'es', 'it'],
+            'x-shacl-uniqueLang': true,
+          },
+        },
+        required: ['name'],
         additionalProperties: true,
       });
     });

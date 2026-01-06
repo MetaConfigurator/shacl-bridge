@@ -138,6 +138,10 @@ export class ShapeBuilder {
           builder.setQualifiedValueShape(object)
         )
         .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object, lists))
+        .with(P.string.endsWith('equals'), () => builder.setEquals(object))
+        .with(P.string.endsWith('lessThan'), () => builder.setLessThan(object))
+        .with(P.string.endsWith('defaultValue'), () => builder.setDefaultValue(object))
+        .with(P.string.endsWith('lessThanOrEquals'), () => builder.setLessThanOrEquals(object))
         .otherwise(() => {
           // Capture non-SHACL predicates as additional properties
           builder.setAdditionalProperty(predicate, quad.object);

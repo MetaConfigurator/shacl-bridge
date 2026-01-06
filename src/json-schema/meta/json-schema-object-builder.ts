@@ -300,7 +300,7 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
-  default(defaultValue: unknown): this {
+  default(defaultValue: number | string | boolean): this {
     this.schema.default = defaultValue;
     return this;
   }

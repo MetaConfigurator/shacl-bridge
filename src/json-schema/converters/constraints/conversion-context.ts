@@ -26,6 +26,7 @@ export class ConversionContext {
   hasPrimitiveElements() {
     return (
       (this.constraints.datatype != null ||
+        this.constraints.in != null ||
         this.hasLogicalConstraints() ||
         this.hasStringConstraints() ||
         this.hasPrimitiveNodeKind()) &&

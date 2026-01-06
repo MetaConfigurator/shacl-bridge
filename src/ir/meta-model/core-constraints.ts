@@ -36,4 +36,5 @@ export interface CoreConstraints {
   xone?: string[];
   languageIn?: string[]; // TODO
   disjoint?: ShapeDefinition[]; // TODO: Verify
+  defaultValue?: string;
 }

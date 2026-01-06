@@ -101,22 +101,22 @@ export class ShapeDefinitionBuilder {
   }
 
   setMinInclusive(count: string) {
-    this.coreConstraints.minInclusive = parseInt(count);
+    this.coreConstraints.minInclusive = parseFloat(count);
     return this;
   }
 
   setMaxInclusive(count: string) {
-    this.coreConstraints.maxInclusive = parseInt(count);
+    this.coreConstraints.maxInclusive = parseFloat(count);
     return this;
   }
 
   setMinExclusive(count: string) {
-    this.coreConstraints.minExclusive = parseInt(count);
+    this.coreConstraints.minExclusive = parseFloat(count);
     return this;
   }
 
   setMaxExclusive(count: string) {
-    this.coreConstraints.maxExclusive = parseInt(count);
+    this.coreConstraints.maxExclusive = parseFloat(count);
     return this;
   }
 
@@ -345,6 +345,26 @@ export class ShapeDefinitionBuilder {
   setProperty(property: string) {
     this.coreConstraints.property ??= [];
     this.coreConstraints.property.push(property);
+    return this;
+  }
+
+  setEquals(property: string) {
+    this.coreConstraints.equals = property;
+    return this;
+  }
+
+  setLessThan(property: string) {
+    this.coreConstraints.lessThan = property;
+    return this;
+  }
+
+  setLessThanOrEquals(property: string) {
+    this.coreConstraints.lessThanOrEquals = property;
+    return this;
+  }
+
+  setDefaultValue(value: string) {
+    this.coreConstraints.defaultValue = value;
     return this;
   }
 }

@@ -44,6 +44,37 @@ export function hasKeyAtAnyLevel(obj: unknown, targetKey: string): boolean {
   return Object.values(obj).some((value) => hasKeyAtAnyLevel(value, targetKey));
 }
 
+/**
+ * Checks if a datatype URI represents a numeric type.
+ * Used to determine if min/max constraints should be applied in JSON Schema.
+ * @param datatypeUri - The XSD datatype URI
+ * @returns true if the datatype is numeric (integer, decimal, float, etc.)
+ */
+export function isNumericDatatype(datatypeUri: string | undefined): boolean {
+  if (!datatypeUri) return false;
+
+  const numericTypes = [
+    '#integer',
+    '#int',
+    '#long',
+    '#short',
+    '#byte',
+    '#decimal',
+    '#float',
+    '#double',
+    '#nonNegativeInteger',
+    '#nonPositiveInteger',
+    '#negativeInteger',
+    '#positiveInteger',
+    '#unsignedLong',
+    '#unsignedInt',
+    '#unsignedShort',
+    '#unsignedByte',
+  ];
+
+  return numericTypes.some((type) => datatypeUri.endsWith(type));
+}
+
 export function mapDataType(
   datatypeUri: string | undefined,
   builder: JsonSchemaObjectBuilder
@@ -122,4 +153,52 @@ export function mapNodeKind(nodeKind: NodeKind, builder: JsonSchemaObjectBuilder
       ])
     )
     .exhaustive();
+}
+
+/**
+ * Converts a string default value to the appropriate JavaScript type based on XSD datatype.
+ * Used to convert SHACL sh:defaultValue to correctly-typed JSON Schema default values.
+ * @param defaultValue - The string value from RDF
+ * @param datatypeUri - The XSD datatype URI
+ * @returns The value converted to the appropriate JavaScript type
+ */
+export function parseDefaultValue(
+  defaultValue: string,
+  datatypeUri: string | undefined
+): string | number | boolean {
+  if (!datatypeUri) return defaultValue;
+
+  // Boolean types
+  if (datatypeUri.endsWith('#boolean')) {
+    return defaultValue === 'true' || defaultValue === '1';
+  }
+
+  // Integer types
+  if (
+    [
+      '#integer',
+      '#int',
+      '#long',
+      '#short',
+      '#byte',
+      '#nonNegativeInteger',
+      '#nonPositiveInteger',
+      '#negativeInteger',
+      '#positiveInteger',
+      '#unsignedLong',
+      '#unsignedInt',
+      '#unsignedShort',
+      '#unsignedByte',
+    ].some((type) => datatypeUri.endsWith(type))
+  ) {
+    return parseInt(defaultValue, 10);
+  }
+
+  // Floating point types
+  if (['#decimal', '#float', '#double'].some((type) => datatypeUri.endsWith(type))) {
+    return parseFloat(defaultValue);
+  }
+
+  // All other types (string, date, dateTime, URI, etc.) - keep as string
+  return defaultValue;
 }

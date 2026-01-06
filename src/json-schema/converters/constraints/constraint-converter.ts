@@ -1,6 +1,12 @@
 import { JsonSchemaObjectType } from '../../meta/json-schema-type';
 import { match } from 'ts-pattern';
-import { extractStrippedName, mapDataType, mapNodeKind } from '../../../util/helpers';
+import {
+  extractStrippedName,
+  isNumericDatatype,
+  mapDataType,
+  mapNodeKind,
+  parseDefaultValue,
+} from '../../../util/helpers';
 import { JsonSchemaObjectBuilder } from '../../meta/json-schema-object-builder';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
 
@@ -8,6 +14,8 @@ import { StackElement } from '../../../stack/stack-element';
 import { StackElementBuilder } from '../../../stack/stack-element-builder';
 import { ConversionContext } from './conversion-context';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
+
+const PREFIX = 'x-shacl';
 
 export class ConstraintConverter {
   private readonly context: ConversionContext;
@@ -46,19 +54,40 @@ export class ConstraintConverter {
           builder.maxLength(this.constraints.maxLength);
         })
         .with('minInclusive', () => {
-          if (this.constraints.minInclusive == null) return;
+          // Skip if value is null, or if datatype exists but is not numeric
+          // (min/max constraints only apply to numeric types in JSON Schema)
+          if (
+            this.constraints.minInclusive == null ||
+            (this.constraints.datatype && !isNumericDatatype(this.constraints.datatype))
+          )
+            return;
           builder.minimum(this.constraints.minInclusive);
         })
         .with('maxInclusive', () => {
-          if (this.constraints.maxInclusive == null) return;
+          // Skip if value is null, or if datatype exists but is not numeric
+          if (
+            this.constraints.maxInclusive == null ||
+            (this.constraints.datatype && !isNumericDatatype(this.constraints.datatype))
+          )
+            return;
           builder.maximum(this.constraints.maxInclusive);
         })
         .with('minExclusive', () => {
-          if (this.constraints.minExclusive == null) return;
+          // Skip if value is null, or if datatype exists but is not numeric
+          if (
+            this.constraints.minExclusive == null ||
+            (this.constraints.datatype && !isNumericDatatype(this.constraints.datatype))
+          )
+            return;
           builder.exclusiveMinimum(this.constraints.minExclusive);
         })
         .with('maxExclusive', () => {
-          if (this.constraints.maxExclusive == null) return;
+          // Skip if value is null, or if datatype exists but is not numeric
+          if (
+            this.constraints.maxExclusive == null ||
+            (this.constraints.datatype && !isNumericDatatype(this.constraints.datatype))
+          )
+            return;
           builder.exclusiveMaximum(this.constraints.maxExclusive);
         })
         .with('nodeKind', () => {
@@ -190,6 +219,38 @@ export class ConstraintConverter {
             .pop();
           if (notSchema == null) return;
           builder.not(notSchema);
+        })
+        .with('lessThan', () => {
+          if (this.constraints.lessThan == null) return;
+          builder.customProperty(
+            `${PREFIX}-lessThan`,
+            extractStrippedName(this.constraints.lessThan)
+          );
+        })
+        .with('equals', () => {
+          if (this.constraints.equals == null) return;
+          builder.customProperty(`${PREFIX}-equals`, extractStrippedName(this.constraints.equals));
+        })
+        .with('defaultValue', () => {
+          if (this.constraints.defaultValue == null) return;
+          // Parse default value to appropriate JavaScript type based on datatype
+          const parsedValue = parseDefaultValue(
+            this.constraints.defaultValue,
+            this.constraints.datatype
+          );
+          builder.default(parsedValue);
+        })
+        .with('lessThanOrEquals', () => {
+          if (this.constraints.lessThanOrEquals == null) return;
+          builder.customProperty(
+            `${PREFIX}-lessThanOrEquals`,
+            extractStrippedName(this.constraints.lessThanOrEquals)
+          );
+        })
+        .otherwise((key) => {
+          const value = this.constraints[key as keyof CoreConstraints];
+          if (value == null) return;
+          builder.customProperty(`${PREFIX}-${key}`, value);
         });
     });
     return builder.build();
