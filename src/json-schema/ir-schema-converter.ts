@@ -62,6 +62,17 @@ export class IrSchemaConverter {
         });
       });
       builder.$id(schemaWithReference.shape.nodeKey).$schema(JSON_SCHEMA_DRAFT);
+      schemaWithReferences
+        .filter((element) => element != schemaWithReference)
+        .map((element) => {
+          const { shape, schema } = element;
+          const target = shape.targets[0];
+          delete schema.additionalProperties;
+          builder.$defs({
+            ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
+            [target]: schema,
+          });
+        });
       builder.mergeFrom(schemaWithReference.schema);
     } else {
       builder = JsonSchemaObjectBuilder.from(schemas.get(shapeDefinitions[0]) ?? {});

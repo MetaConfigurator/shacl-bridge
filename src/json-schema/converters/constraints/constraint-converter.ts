@@ -31,6 +31,7 @@ export class ConstraintConverter {
 
   convert(): JsonSchemaObjectType {
     const builder = new JsonSchemaObjectBuilder();
+    if (this.context.isInvalid) return builder.build();
     if (this.context.isArray) {
       builder.type('array');
     }

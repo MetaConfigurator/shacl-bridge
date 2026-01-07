@@ -118,6 +118,9 @@ export function mapDataType(
     .with(P.string.endsWith('#duration'), () => builder.type('string').format('duration'))
     // URI type
     .with(P.string.endsWith('#anyURI'), () => builder.type('string').format('uri'))
+    .with(P.string.endsWith('#base64Binary'), () =>
+      builder.type('string').contentEncoding('base64')
+    )
     // All String types
     // Binary types, Unknown datatype, #gYearMonth
     // #gYear

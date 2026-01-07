@@ -188,7 +188,7 @@ export class JsonSchemaObjectBuilder {
     return this;
   }
 
-  const(constValue: unknown): this {
+  const(constValue: string | boolean | number): this {
     this.schema.const = constValue;
     return this;
   }

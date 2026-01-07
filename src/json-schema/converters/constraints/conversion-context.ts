@@ -1,6 +1,5 @@
 import { match, P } from 'ts-pattern';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
-import logger from '../../../logger';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
 import { NodeKind } from '../../../ir/meta-model/node-kind';
 
@@ -10,7 +9,8 @@ export class ConversionContext {
   setMaxItems = false;
   required = false;
   constraints: CoreConstraints;
-  private isPrimitive: boolean;
+  isPrimitive: boolean;
+  isInvalid = false;
 
   constructor(
     private readonly shapeDefinition: ShapeDefinition,
@@ -18,6 +18,7 @@ export class ConversionContext {
   ) {
     this.constraints = shapeDefinition.coreConstraints ?? {};
     this.isPrimitive = this.hasPrimitiveElements();
+    this.isInvalid = this.constraints.maxCount != null && this.constraints.maxCount == 0;
     if (!this.isLogicalFragment) {
       this.needToBeArray();
     }
@@ -144,7 +145,10 @@ export class ConversionContext {
         () => {
           if (typeof minCount === 'number' && typeof maxCount === 'number') {
             if (maxCount < minCount) {
-              logger.error('minCount should be less than maxCount');
+              this.isInvalid = true;
+            }
+            if (maxCount == 0) {
+              this.isInvalid = true;
             }
             // Fallback for any other numeric combinations
             this.isArray = maxCount > 1 || minCount > 1;

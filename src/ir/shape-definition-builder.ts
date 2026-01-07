@@ -204,11 +204,9 @@ export class ShapeDefinitionBuilder {
   setHasValue(value: string) {
     // sh:hasValue can be any value (string, number, URI, etc.)
     // Store the value as-is, not as a boolean
-    if (value === 'true' || value === 'false') {
-      this.coreConstraints.hasValue = value === 'true';
-    } else {
-      this.coreConstraints.hasValue = value;
-    }
+    if (value === 'true' || value === 'false') this.coreConstraints.hasValue = value === 'true';
+    else if (!isNaN(Number(value))) this.coreConstraints.hasValue = Number(value);
+    else this.coreConstraints.hasValue = value;
     return this;
   }
 
@@ -383,6 +381,15 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
+  setOrder(value: string) {
+    this.coreConstraints.order = isNaN(Number(value)) ? value : Number(value);
+    return this;
+  }
+
+  setFlags(flags: string) {
+    this.coreConstraints.flags = flags;
+    return this;
+  }
   /**
    * Extracts values from an RDF list if the identifier is a list head.
    * Otherwise returns the identifier as a single-element array.

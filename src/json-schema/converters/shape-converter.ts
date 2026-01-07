@@ -21,7 +21,6 @@ export class ShapeConverter {
 
   convert() {
     const schema = new ConstraintConverter(this.sb, this.processed).convert();
-
     // Apply shape metadata (message, severity, deactivated, etc.) to the schema
     const propertyBuilder = JsonSchemaObjectBuilder.from(schema);
     new ShapeMetadataConverter(this.shape.shape).applyToBuilder(propertyBuilder);
@@ -31,7 +30,7 @@ export class ShapeConverter {
       const target = possibleTargets[0];
       this.builder.properties({
         ...(this.builder.getKey('properties') as Record<string, JsonSchemaType>),
-        [target]: schemaWithMetadata,
+        [target]: this.sb.getContext().isInvalid ? false : schemaWithMetadata,
       });
     } else {
       this.builder.mergeFrom(schemaWithMetadata);

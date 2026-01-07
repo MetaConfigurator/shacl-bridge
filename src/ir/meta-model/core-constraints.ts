@@ -6,7 +6,7 @@ export interface CoreConstraints {
   closed?: boolean;
   datatype?: string;
   equals?: string; // TODO: Maybe move to Shape
-  hasValue?: string | boolean;
+  hasValue?: string | boolean | number;
   lessThan?: string;
   lessThanOrEquals?: string;
   maxCount?: number;
@@ -36,4 +36,6 @@ export interface CoreConstraints {
   languageIn?: string[]; // TODO
   disjoint?: string[]; // TODO: Verify
   defaultValue?: string;
+  order?: number | string;
+  flags?: string;
 }
