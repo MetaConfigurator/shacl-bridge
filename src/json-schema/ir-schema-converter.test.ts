@@ -5063,13 +5063,15 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
         $id: 'http://example.org/MetadataOnlyShape',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        additionalProperties: true,
         title: 'MetadataOnly',
         type: 'object',
+        'x-shacl-description': 'A shape with only metadata',
         'x-shacl-message': 'Validation failed',
+        'x-shacl-name': 'Metadata Only Shape',
         'x-shacl-severity': 'sh:Info',
-        additionalProperties: true,
       });
     });
   });

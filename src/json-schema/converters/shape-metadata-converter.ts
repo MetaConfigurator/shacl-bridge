@@ -1,14 +1,18 @@
 import { Shape } from '../../ir/meta-model/shape';
 import { JsonSchemaObjectBuilder } from '../meta/json-schema-object-builder';
 import { match } from 'ts-pattern';
+import { AdditionalProperty, ShapeDefinition } from '../../ir/meta-model/shape-definition';
+import { extractStrippedName } from '../../util/helpers';
 
 const PREFIX = 'x-shacl';
 
 export class ShapeMetadataConverter {
   private readonly shape: Shape | undefined;
+  private readonly additionalProperties: AdditionalProperty[] | undefined;
 
-  constructor(shape: Shape | undefined) {
-    this.shape = shape;
+  constructor(shapeDefinition: ShapeDefinition) {
+    this.shape = shapeDefinition.shape;
+    this.additionalProperties = shapeDefinition.additionalProperties;
   }
 
   applyToBuilder(builder: JsonSchemaObjectBuilder): void {
@@ -72,6 +76,13 @@ export class ShapeMetadataConverter {
             builder.customProperty(`${PREFIX}-${key}`, value);
           }
         });
+    });
+
+    if (!this.additionalProperties || this.additionalProperties.length === 0) return;
+
+    this.additionalProperties.forEach((additionalProperty: AdditionalProperty) => {
+      const { predicate, value } = additionalProperty;
+      builder.customProperty(`${PREFIX}-${extractStrippedName(predicate)}`, value.value);
     });
   }
 }

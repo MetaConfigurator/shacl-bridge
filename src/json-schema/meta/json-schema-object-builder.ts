@@ -157,7 +157,7 @@ export class JsonSchemaObjectBuilder {
 
   requiredElement(requiredElement: string): this {
     this.schema.required ??= [];
-    this.schema.required.push(requiredElement);
+    if (!this.schema.required.includes(requiredElement)) this.schema.required.push(requiredElement);
     return this;
   }
 

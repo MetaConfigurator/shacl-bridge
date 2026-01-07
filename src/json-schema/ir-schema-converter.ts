@@ -119,7 +119,7 @@ export class IrSchemaConverter {
             .additionalProperties(!top.getShape().coreConstraints?.closed);
 
           // Apply shape metadata to root shape
-          new ShapeMetadataConverter(top.getShape().shape).applyToBuilder(top.getBuilder());
+          new ShapeMetadataConverter(top.getShape()).applyToBuilder(top.getBuilder());
           top.getBuilder().mergeFrom(new ConstraintConverter(top, this.processed).convert());
         }
         this.processed.set(top.getShape(), top.build());
