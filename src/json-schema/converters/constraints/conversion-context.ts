@@ -18,10 +18,26 @@ export class ConversionContext {
   ) {
     this.constraints = shapeDefinition.coreConstraints ?? {};
     this.isPrimitive = this.hasPrimitiveElements();
-    this.isInvalid = this.constraints.maxCount != null && this.constraints.maxCount == 0;
+    this.isInvalid = this.checkForInvalidNumericConstraint();
     if (!this.isLogicalFragment) {
       this.needToBeArray();
     }
+  }
+
+  checkForInvalidNumericConstraint() {
+    const minCount = this.constraints.minCount;
+    const maxCount = this.constraints.maxCount;
+    const minLength = this.constraints.minLength;
+    const maxLength = this.constraints.maxLength;
+    const minInclusive = this.constraints.minInclusive;
+    const maxInclusive = this.constraints.maxInclusive;
+    if (minCount == null && maxCount == 0) return true;
+    if (minCount != null && maxCount != null && maxCount < minCount) return true;
+    if (minCount == 0 && maxCount == 0) return true;
+    if (minLength == null && maxLength != null && maxLength == 0) return true;
+    if (minLength != null && maxLength != null && maxLength < minLength) return true;
+    if (minInclusive != null && maxInclusive != null && maxInclusive < minInclusive) return true;
+    return false;
   }
 
   hasPrimitiveElements() {
