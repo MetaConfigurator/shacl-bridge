@@ -259,7 +259,7 @@ describe('TopologicalShapeBuilder', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].coreConstraints?.closed).toBe(true);
-      expect(result[0].coreConstraints?.ignoredProperties).toEqual(['l1']);
+      expect(result[0].coreConstraints?.ignoredProperties).toEqual([RDF_TYPE]);
     });
 
     it('should handle shapes with severity and deactivation', async () => {

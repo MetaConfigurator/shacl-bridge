@@ -6,6 +6,7 @@ import { ShapeBuilder } from './shape-builder';
 
 export interface IntermediateRepresentation {
   index: Index;
+  shaclDocument: ShaclDocument;
   shapeDefinitions: ShapeDefinition[];
 }
 
@@ -17,6 +18,7 @@ export class IntermediateRepresentationBuilder {
     const graph = new DependencyGraphBuilder(index, this.shaclDocument).build();
     return {
       index: index,
+      shaclDocument: this.shaclDocument,
       shapeDefinitions: new ShapeBuilder(this.shaclDocument, index, graph).build(),
     };
   }

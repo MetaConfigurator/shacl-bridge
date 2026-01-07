@@ -7,6 +7,7 @@ import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { Index } from './indexer';
 import { ShaclDocument } from '../shacl/shacl-document';
 import logger from '../logger';
+import { getTarget } from './target-resolver';
 import isBlankNode = Util.isBlankNode;
 
 export class ShapeBuilder {
@@ -89,6 +90,8 @@ export class ShapeBuilder {
 
   private buildShapeFromQuads(nodeKey: string, quads: Quad[]): ShapeDefinition {
     const builder = new ShapeDefinitionBuilder(nodeKey);
+    builder.setTargets(getTarget(this.index.targets, nodeKey));
+
     const lists = this.shaclDocument.lists;
     quads.forEach((quad) => {
       const predicate = quad.predicate.value;
@@ -125,7 +128,9 @@ export class ShapeBuilder {
         .with(P.string.endsWith('uniqueLang'), () => builder.setUniqueLang(object))
         .with(P.string.endsWith('first'), () => builder.setFirst(object))
         .with(P.string.endsWith('rest'), () => builder.setRest(object))
-        .with(P.string.endsWith('ignoredProperties'), () => builder.setIgnoredProperties(object))
+        .with(P.string.endsWith('ignoredProperties'), () =>
+          builder.setIgnoredProperties(object, lists)
+        )
         .with(P.string.endsWith('in'), () => builder.in(object, lists))
         .with(P.string.endsWith('and'), () => builder.and(object, lists))
         .with(P.string.endsWith('or'), () => builder.or(object, lists))
@@ -135,6 +140,13 @@ export class ShapeBuilder {
           builder.setQualifiedValueShape(object)
         )
         .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object, lists))
+        .with(P.string.endsWith('equals'), () => builder.setEquals(object))
+        .with(P.string.endsWith('lessThan'), () => builder.setLessThan(object))
+        .with(P.string.endsWith('defaultValue'), () => builder.setDefaultValue(object))
+        .with(P.string.endsWith('lessThanOrEquals'), () => builder.setLessThanOrEquals(object))
+        .with(P.string.endsWith('disjoint'), () => builder.setDisjoint(object, lists))
+        .with(P.string.endsWith('order'), () => builder.setOrder(object))
+        .with(P.string.endsWith('flags'), () => builder.setFlags(object))
         .otherwise(() => {
           // Capture non-SHACL predicates as additional properties
           builder.setAdditionalProperty(predicate, quad.object);

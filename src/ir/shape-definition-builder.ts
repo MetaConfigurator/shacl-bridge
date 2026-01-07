@@ -8,6 +8,7 @@ import type { Term } from 'n3';
 
 export class ShapeDefinitionBuilder {
   private readonly nodeKey: string;
+  private targets: string[] = [];
   private shape: Partial<Shape> = {};
   private coreConstraints: Partial<CoreConstraints> = {};
   private dependentShapeDefinitions: ShapeDefinition[] = [];
@@ -19,6 +20,11 @@ export class ShapeDefinitionBuilder {
 
   setNode(node: string) {
     this.coreConstraints.node = node;
+    return this;
+  }
+
+  setTargets(targets: string[]) {
+    this.targets = targets;
     return this;
   }
 
@@ -95,22 +101,22 @@ export class ShapeDefinitionBuilder {
   }
 
   setMinInclusive(count: string) {
-    this.coreConstraints.minInclusive = parseInt(count);
+    this.coreConstraints.minInclusive = parseFloat(count);
     return this;
   }
 
   setMaxInclusive(count: string) {
-    this.coreConstraints.maxInclusive = parseInt(count);
+    this.coreConstraints.maxInclusive = parseFloat(count);
     return this;
   }
 
   setMinExclusive(count: string) {
-    this.coreConstraints.minExclusive = parseInt(count);
+    this.coreConstraints.minExclusive = parseFloat(count);
     return this;
   }
 
   setMaxExclusive(count: string) {
-    this.coreConstraints.maxExclusive = parseInt(count);
+    this.coreConstraints.maxExclusive = parseFloat(count);
     return this;
   }
 
@@ -195,8 +201,12 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  setHasValue(flag: string) {
-    this.coreConstraints.hasValue = flag.endsWith('true');
+  setHasValue(value: string) {
+    // sh:hasValue can be any value (string, number, URI, etc.)
+    // Store the value as-is, not as a boolean
+    if (value === 'true' || value === 'false') this.coreConstraints.hasValue = value === 'true';
+    else if (!isNaN(Number(value))) this.coreConstraints.hasValue = Number(value);
+    else this.coreConstraints.hasValue = value;
     return this;
   }
 
@@ -210,9 +220,17 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  setIgnoredProperties(dependentShape: string) {
+  setIgnoredProperties(property: string, lists: Record<string, Term[]>) {
     this.coreConstraints.ignoredProperties ??= [];
-    this.coreConstraints.ignoredProperties.push(dependentShape);
+    // Check if this is a list or a single value
+    if (property in lists) {
+      // Extract values from RDF list if this is a list head
+      const values = this.extractListValues(property, lists);
+      this.coreConstraints.ignoredProperties.push(...values);
+    } else {
+      // Single property value
+      this.coreConstraints.ignoredProperties.push(property);
+    }
     return this;
   }
 
@@ -259,19 +277,6 @@ export class ShapeDefinitionBuilder {
   setQualifiedValueShape(dependentShape: string) {
     this.coreConstraints.qualifiedValueShape = dependentShape;
     return this;
-  }
-
-  /**
-   * Extracts values from an RDF list if the identifier is a list head.
-   * Otherwise returns the identifier as a single-element array.
-   */
-  private extractListValues(listHeadOrValue: string, lists: Record<string, Term[]>): string[] {
-    if (listHeadOrValue in lists) {
-      // This is a list head - extract all values
-      return lists[listHeadOrValue].map((term) => term.value);
-    }
-    // Not a list - return as single value
-    return [listHeadOrValue];
   }
 
   setAdditionalProperty(predicate: string, object: Term) {
@@ -327,6 +332,7 @@ export class ShapeDefinitionBuilder {
 
     return {
       nodeKey: this.nodeKey,
+      targets: this.targets,
       shape: this.shape as Shape,
       coreConstraints: this.coreConstraints as CoreConstraints,
       dependentShapes: this.dependentShapeDefinitions,
@@ -339,5 +345,61 @@ export class ShapeDefinitionBuilder {
     this.coreConstraints.property ??= [];
     this.coreConstraints.property.push(property);
     return this;
+  }
+
+  setEquals(property: string) {
+    this.coreConstraints.equals = property;
+    return this;
+  }
+
+  setLessThan(property: string) {
+    this.coreConstraints.lessThan = property;
+    return this;
+  }
+
+  setLessThanOrEquals(property: string) {
+    this.coreConstraints.lessThanOrEquals = property;
+    return this;
+  }
+
+  setDisjoint(property: string, lists: Record<string, Term[]>) {
+    this.coreConstraints.disjoint ??= [];
+    // Check if this is a list or a single value
+    if (property in lists) {
+      // Extract values from RDF list if this is a list head
+      const values = this.extractListValues(property, lists);
+      this.coreConstraints.disjoint.push(...values);
+    } else {
+      // Single property value
+      this.coreConstraints.disjoint.push(property);
+    }
+    return this;
+  }
+
+  setDefaultValue(value: string) {
+    this.coreConstraints.defaultValue = value;
+    return this;
+  }
+
+  setOrder(value: string) {
+    this.coreConstraints.order = isNaN(Number(value)) ? value : Number(value);
+    return this;
+  }
+
+  setFlags(flags: string) {
+    this.coreConstraints.flags = flags;
+    return this;
+  }
+  /**
+   * Extracts values from an RDF list if the identifier is a list head.
+   * Otherwise returns the identifier as a single-element array.
+   */
+  private extractListValues(listHeadOrValue: string, lists: Record<string, Term[]>): string[] {
+    if (listHeadOrValue in lists) {
+      // This is a list head - extract all values
+      return lists[listHeadOrValue].map((term) => term.value);
+    }
+    // Not a list - return as single value
+    return [listHeadOrValue];
   }
 }
