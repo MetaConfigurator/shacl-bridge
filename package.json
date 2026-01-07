@@ -36,6 +36,7 @@
   },
   "private": true,
   "dependencies": {
+    "clipboardy": "^5.0.2",
     "commander": "^14.0.2",
     "n3": "^1.26.0",
     "pino": "^10.1.0",

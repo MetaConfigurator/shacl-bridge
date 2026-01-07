@@ -164,6 +164,7 @@ ex:PersonReferenceShape
     expect(schema).toStrictEqual({
       $defs: {
         Address: {
+          additionalProperties: true,
           properties: {
             city: {
               minLength: 1,
@@ -187,6 +188,7 @@ ex:PersonReferenceShape
           type: 'object',
         },
         Email: {
+          additionalProperties: true,
           properties: {
             value: {
               pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
@@ -199,7 +201,42 @@ ex:PersonReferenceShape
           title: 'Email',
           type: 'object',
         },
+        Person: {
+          additionalProperties: true,
+          properties: {
+            address: {
+              items: {
+                $ref: '#/$defs/Address',
+              },
+              minItems: 1,
+              type: 'array',
+            },
+            age: {
+              maximum: 150,
+              minimum: 0,
+              type: 'integer',
+            },
+            email: {
+              $ref: '#/$defs/Email',
+            },
+            friends: {
+              items: {
+                $ref: '#/$defs/PersonReference',
+              },
+              type: 'array',
+            },
+            name: {
+              maxLength: 100,
+              minLength: 1,
+              type: 'string',
+            },
+          },
+          required: ['name', 'address'],
+          title: 'Person',
+          type: 'object',
+        },
         PersonReference: {
+          additionalProperties: true,
           properties: {
             id: {
               minLength: 1,
@@ -215,39 +252,8 @@ ex:PersonReferenceShape
         },
       },
       $id: 'http://example.org/PersonShape',
+      $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
-      additionalProperties: true,
-      properties: {
-        address: {
-          type: 'array',
-          items: {
-            $ref: '#/$defs/Address',
-          },
-          minItems: 1,
-        },
-        age: {
-          maximum: 150,
-          minimum: 0,
-          type: 'integer',
-        },
-        email: {
-          $ref: '#/$defs/Email',
-        },
-        friends: {
-          type: 'array',
-          items: {
-            $ref: '#/$defs/PersonReference',
-          },
-        },
-        name: {
-          maxLength: 100,
-          minLength: 1,
-          type: 'string',
-        },
-      },
-      required: ['name', 'address'],
-      title: 'Person',
-      type: 'object',
     });
   });
 
@@ -349,93 +355,98 @@ ex:PersonReferenceShape
     const ir = await getIr(content);
     const schema = new IrSchemaConverter(ir).convert();
     expect(schema).toStrictEqual({
-      $schema: 'https://json-schema.org/draft/2020-12/schema',
-      $id: 'http://example.org/PublicationShape',
-      title: 'Publication',
-      type: 'object',
-      properties: {
-        title: {
-          type: 'string',
-          minLength: 1,
-          maxLength: 500,
-        },
-        abstract: {
-          type: 'string',
-        },
-        authors: {
-          type: 'array',
-          items: {
-            $ref: '#/$defs/Author',
-          },
-          minItems: 1,
-        },
-        keywords: {
-          type: 'array',
-          items: {
-            type: 'string',
-          },
-          minItems: 3,
-          maxItems: 10,
-        },
-        publicationYear: {
-          type: 'integer',
-          minimum: 1900,
-          maximum: 2100,
-        },
-        doi: {
-          type: 'string',
-          pattern: '^10\\.\\d{4,}/.*$',
-        },
-        citations: {
-          type: 'array',
-          items: {
-            $ref: '#/$defs/Citation',
-          },
-        },
-      },
-      required: ['title', 'authors', 'keywords'],
-      additionalProperties: true,
       $defs: {
         Author: {
-          type: 'object',
-          title: 'Author',
+          additionalProperties: true,
           properties: {
-            name: {
+            affiliation: {
               type: 'string',
-              minLength: 1,
             },
             email: {
-              type: 'string',
               pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+              type: 'string',
+            },
+            name: {
+              minLength: 1,
+              type: 'string',
             },
             orcid: {
-              type: 'string',
               pattern: '^\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]$',
-            },
-            affiliation: {
               type: 'string',
             },
           },
           required: ['name'],
+          title: 'Author',
+          type: 'object',
         },
         Citation: {
-          type: 'object',
-          title: 'Citation',
+          additionalProperties: true,
           properties: {
-            citedTitle: {
+            citedDoi: {
               type: 'string',
+            },
+            citedTitle: {
               minLength: 1,
+              type: 'string',
             },
             citedYear: {
               type: 'integer',
             },
-            citedDoi: {
+          },
+          required: ['citedTitle'],
+          title: 'Citation',
+          type: 'object',
+        },
+        Publication: {
+          additionalProperties: true,
+          properties: {
+            abstract: {
+              type: 'string',
+            },
+            authors: {
+              items: {
+                $ref: '#/$defs/Author',
+              },
+              minItems: 1,
+              type: 'array',
+            },
+            citations: {
+              items: {
+                $ref: '#/$defs/Citation',
+              },
+              type: 'array',
+            },
+            doi: {
+              pattern: '^10\\.\\d{4,}/.*$',
+              type: 'string',
+            },
+            keywords: {
+              items: {
+                type: 'string',
+              },
+              maxItems: 10,
+              minItems: 3,
+              type: 'array',
+            },
+            publicationYear: {
+              maximum: 2100,
+              minimum: 1900,
+              type: 'integer',
+            },
+            title: {
+              maxLength: 500,
+              minLength: 1,
               type: 'string',
             },
           },
-          required: ['citedTitle'],
+          required: ['title', 'authors', 'keywords'],
+          title: 'Publication',
+          type: 'object',
         },
       },
+      $id: 'http://example.org/PublicationShape',
+      $ref: '#/$defs/Publication',
+      $schema: 'https://json-schema.org/draft/2020-12/schema',
     });
   });
 
@@ -766,49 +777,61 @@ ex:PersonReferenceShape
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
         $defs: {
-          CreditCard: {
-            type: 'object',
-            title: 'CreditCard',
-            properties: {
-              cardNumber: {
-                type: 'string',
-                pattern: '^[0-9]{16}$',
-              },
-            },
-          },
           BankTransfer: {
-            type: 'object',
-            title: 'BankTransfer',
+            additionalProperties: true,
             properties: {
               iban: {
                 type: 'string',
               },
             },
+            title: 'BankTransfer',
+            type: 'object',
+          },
+          CreditCard: {
+            additionalProperties: true,
+            properties: {
+              cardNumber: {
+                pattern: '^[0-9]{16}$',
+                type: 'string',
+              },
+            },
+            title: 'CreditCard',
+            type: 'object',
           },
           PayPal: {
-            type: 'object',
-            title: 'PayPal',
+            additionalProperties: true,
             properties: {
               email: {
                 type: 'string',
               },
             },
+            title: 'PayPal',
+            type: 'object',
+          },
+          Payment: {
+            additionalProperties: true,
+            properties: {
+              method: {
+                oneOf: [
+                  {
+                    $ref: '#/$defs/CreditCard',
+                  },
+                  {
+                    $ref: '#/$defs/BankTransfer',
+                  },
+                  {
+                    $ref: '#/$defs/PayPal',
+                  },
+                ],
+              },
+            },
+            title: 'Payment',
+            type: 'object',
           },
         },
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
         $id: 'http://example.org/PaymentShape',
-        title: 'Payment',
-        type: 'object',
-        properties: {
-          method: {
-            oneOf: [
-              { $ref: '#/$defs/CreditCard' },
-              { $ref: '#/$defs/BankTransfer' },
-              { $ref: '#/$defs/PayPal' },
-            ],
-          },
-        },
-        additionalProperties: true,
+        $ref: '#/$defs/Payment',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -1005,30 +1028,34 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ProjectShape',
-        title: 'Project',
-        type: 'object',
-        properties: {
-          members: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Person',
-            },
-          },
-        },
-        additionalProperties: true,
         $defs: {
           Person: {
-            type: 'object',
-            title: 'Person',
+            additionalProperties: true,
             properties: {
               name: {
                 type: 'string',
               },
             },
+            title: 'Person',
+            type: 'object',
+          },
+          Project: {
+            additionalProperties: true,
+            properties: {
+              members: {
+                items: {
+                  $ref: '#/$defs/Person',
+                },
+                type: 'array',
+              },
+            },
+            title: 'Project',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/ProjectShape',
+        $ref: '#/$defs/Project',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1103,37 +1130,41 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          address: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/USAddress',
-            },
-            minItems: 1,
-          },
-        },
-        required: ['address'],
-        additionalProperties: true,
         $defs: {
-          USAddress: {
+          Person: {
+            additionalProperties: true,
+            properties: {
+              address: {
+                items: {
+                  $ref: '#/$defs/USAddress',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+            },
+            required: ['address'],
+            title: 'Person',
             type: 'object',
-            title: 'USAddress',
+          },
+          USAddress: {
+            additionalProperties: true,
             properties: {
               state: {
-                type: 'string',
                 pattern: '^[A-Z]{2}$',
+                type: 'string',
               },
               zipCode: {
-                type: 'string',
                 pattern: '^[0-9]{5}$',
+                type: 'string',
               },
             },
+            title: 'USAddress',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1163,32 +1194,36 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/CompanyShape',
-        title: 'Company',
-        type: 'object',
-        properties: {
-          office: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Headquarters',
-            },
-            maxItems: 1,
-          },
-        },
-        additionalProperties: true,
         $defs: {
-          Headquarters: {
-            type: 'object',
-            title: 'Headquarters',
+          Company: {
+            additionalProperties: true,
             properties: {
-              isHeadquarters: {
-                type: 'boolean',
-                const: true,
+              office: {
+                items: {
+                  $ref: '#/$defs/Headquarters',
+                },
+                maxItems: 1,
+                type: 'array',
               },
             },
+            title: 'Company',
+            type: 'object',
+          },
+          Headquarters: {
+            additionalProperties: true,
+            properties: {
+              isHeadquarters: {
+                const: true,
+                type: 'boolean',
+              },
+            },
+            title: 'Headquarters',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/CompanyShape',
+        $ref: '#/$defs/Company',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1219,34 +1254,38 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TeamShape',
-        title: 'Team',
-        type: 'object',
-        properties: {
-          member: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Leader',
-            },
-            minItems: 1,
-            maxItems: 3,
-          },
-        },
-        required: ['member'],
-        additionalProperties: true,
         $defs: {
           Leader: {
-            type: 'object',
-            title: 'Leader',
+            additionalProperties: true,
             properties: {
               role: {
-                type: 'string',
                 enum: ['TeamLead', 'TechLead', 'Manager'],
+                type: 'string',
               },
             },
+            title: 'Leader',
+            type: 'object',
+          },
+          Team: {
+            additionalProperties: true,
+            properties: {
+              member: {
+                items: {
+                  $ref: '#/$defs/Leader',
+                },
+                maxItems: 3,
+                minItems: 1,
+                type: 'array',
+              },
+            },
+            required: ['member'],
+            title: 'Team',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/TeamShape',
+        $ref: '#/$defs/Team',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -1398,25 +1437,32 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ApiResponseShape',
-        title: 'ApiResponse',
-        type: 'object',
-        properties: {
-          result: {
-            anyOf: [
-              { type: 'string' },
-              { type: 'integer' },
-              { type: 'boolean' },
-              { $ref: '#/$defs/ErrorObject' },
-            ],
-          },
-        },
-        additionalProperties: true,
         $defs: {
-          ErrorObject: {
+          ApiResponse: {
+            additionalProperties: true,
+            properties: {
+              result: {
+                anyOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    type: 'integer',
+                  },
+                  {
+                    type: 'boolean',
+                  },
+                  {
+                    $ref: '#/$defs/ErrorObject',
+                  },
+                ],
+              },
+            },
+            title: 'ApiResponse',
             type: 'object',
-            title: 'ErrorObject',
+          },
+          ErrorObject: {
+            additionalProperties: true,
             properties: {
               code: {
                 type: 'integer',
@@ -1425,8 +1471,13 @@ ex:PersonReferenceShape
                 type: 'string',
               },
             },
+            title: 'ErrorObject',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/ApiResponseShape',
+        $ref: '#/$defs/ApiResponse',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -1627,58 +1678,83 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/LocationShape',
-        title: 'Location',
-        type: 'object',
-        properties: {
-          address: {
-            oneOf: [
-              {
-                allOf: [
-                  { $ref: '#/$defs/StructuredAddress' },
-                  {
-                    anyOf: [{ $ref: '#/$defs/USAddress' }, { $ref: '#/$defs/EUAddress' }],
-                  },
-                ],
-              },
-              {
-                allOf: [{ type: 'string' }, { minLength: 10 }, { maxLength: 200 }],
-              },
-            ],
-          },
-        },
-        additionalProperties: true,
         $defs: {
-          StructuredAddress: {
-            type: 'object',
-            title: 'StructuredAddress',
-            properties: {
-              street: {
-                type: 'string',
-              },
-            },
-          },
-          USAddress: {
-            type: 'object',
-            title: 'USAddress',
-            properties: {
-              zipCode: {
-                type: 'string',
-                pattern: '^[0-9]{5}$',
-              },
-            },
-          },
           EUAddress: {
-            type: 'object',
-            title: 'EUAddress',
+            additionalProperties: true,
             properties: {
               postalCode: {
                 type: 'string',
               },
             },
+            title: 'EUAddress',
+            type: 'object',
+          },
+          Location: {
+            additionalProperties: true,
+            properties: {
+              address: {
+                oneOf: [
+                  {
+                    allOf: [
+                      {
+                        $ref: '#/$defs/StructuredAddress',
+                      },
+                      {
+                        anyOf: [
+                          {
+                            $ref: '#/$defs/USAddress',
+                          },
+                          {
+                            $ref: '#/$defs/EUAddress',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    allOf: [
+                      {
+                        type: 'string',
+                      },
+                      {
+                        minLength: 10,
+                      },
+                      {
+                        maxLength: 200,
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            title: 'Location',
+            type: 'object',
+          },
+          StructuredAddress: {
+            additionalProperties: true,
+            properties: {
+              street: {
+                type: 'string',
+              },
+            },
+            title: 'StructuredAddress',
+            type: 'object',
+          },
+          USAddress: {
+            additionalProperties: true,
+            properties: {
+              zipCode: {
+                pattern: '^[0-9]{5}$',
+                type: 'string',
+              },
+            },
+            title: 'USAddress',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/LocationShape',
+        $ref: '#/$defs/Location',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -2840,64 +2916,68 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ProductShape',
-        title: 'Product',
-        type: 'object',
-        properties: {
-          sku: {
-            type: 'string',
-            pattern: '^[A-Z]{3}-[0-9]{6}$',
-          },
-          name: {
-            type: 'string',
-            minLength: 3,
-            maxLength: 100,
-          },
-          price: {
-            type: 'number',
-            exclusiveMinimum: 0.0,
-          },
-          stock: {
-            type: 'integer',
-            minimum: 0,
-          },
-          variants: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Variant',
-            },
-          },
-          tags: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            minItems: 1,
-          },
-        },
-        required: ['sku', 'name', 'price', 'stock', 'tags'],
-        additionalProperties: false,
         $defs: {
-          Variant: {
-            type: 'object',
-            title: 'Variant',
+          Product: {
+            additionalProperties: false,
             properties: {
-              color: {
+              name: {
+                maxLength: 100,
+                minLength: 3,
                 type: 'string',
+              },
+              price: {
+                exclusiveMinimum: 0,
+                type: 'number',
+              },
+              sku: {
+                pattern: '^[A-Z]{3}-[0-9]{6}$',
+                type: 'string',
+              },
+              stock: {
+                minimum: 0,
+                type: 'integer',
+              },
+              tags: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+              variants: {
+                items: {
+                  $ref: '#/$defs/Variant',
+                },
+                type: 'array',
+              },
+            },
+            required: ['sku', 'name', 'price', 'stock', 'tags'],
+            title: 'Product',
+            type: 'object',
+          },
+          Variant: {
+            additionalProperties: true,
+            properties: {
+              additionalPrice: {
+                minimum: 0,
+                type: 'number',
+              },
+              color: {
                 enum: ['red', 'blue', 'green', 'black', 'white'],
+                type: 'string',
               },
               size: {
-                type: 'string',
                 enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-              },
-              additionalPrice: {
-                type: 'number',
-                minimum: 0.0,
+                type: 'string',
               },
             },
+            title: 'Variant',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/ProductShape',
+        $ref: '#/$defs/Product',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2968,64 +3048,69 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/OrganizationShape',
-        title: 'Organization',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            minLength: 1,
-          },
-          headquarters: {
-            $ref: '#/$defs/Address',
-          },
-          departments: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Department',
-            },
-            minItems: 1,
-          },
-        },
-        required: ['name', 'headquarters', 'departments'],
-        additionalProperties: true,
         $defs: {
           Address: {
-            type: 'object',
-            title: 'Address',
+            additionalProperties: true,
             properties: {
-              street: {
-                type: 'string',
-              },
               city: {
                 type: 'string',
               },
               country: {
                 type: 'string',
               },
+              street: {
+                type: 'string',
+              },
             },
             required: ['country'],
+            title: 'Address',
+            type: 'object',
           },
           Department: {
-            type: 'object',
-            title: 'Department',
+            additionalProperties: true,
             properties: {
+              budget: {
+                minimum: 0,
+                type: 'number',
+              },
+              headCount: {
+                minimum: 1,
+                type: 'integer',
+              },
               name: {
                 type: 'string',
               },
-              headCount: {
-                type: 'integer',
-                minimum: 1,
-              },
-              budget: {
-                type: 'number',
-                minimum: 0.0,
-              },
             },
             required: ['name'],
+            title: 'Department',
+            type: 'object',
+          },
+          Organization: {
+            additionalProperties: true,
+            properties: {
+              departments: {
+                items: {
+                  $ref: '#/$defs/Department',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+              headquarters: {
+                $ref: '#/$defs/Address',
+              },
+              name: {
+                minLength: 1,
+                type: 'string',
+              },
+            },
+            required: ['name', 'headquarters', 'departments'],
+            title: 'Organization',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/OrganizationShape',
+        $ref: '#/$defs/Organization',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -4700,26 +4785,9 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ParentShape',
-        title: 'Parent',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-          },
-          children: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Child',
-            },
-          },
-        },
-        additionalProperties: true,
         $defs: {
           Child: {
-            type: 'object',
-            title: 'Child',
+            additionalProperties: true,
             properties: {
               name: {
                 type: 'string',
@@ -4728,8 +4796,29 @@ ex:PersonReferenceShape
                 $ref: '#/$defs/Parent',
               },
             },
+            title: 'Child',
+            type: 'object',
+          },
+          Parent: {
+            additionalProperties: true,
+            properties: {
+              children: {
+                items: {
+                  $ref: '#/$defs/Child',
+                },
+                type: 'array',
+              },
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'Parent',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/ParentShape',
+        $ref: '#/$defs/Parent',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -5021,37 +5110,49 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FlexibleContactShape',
-        title: 'Contact',
-        type: 'object',
-        properties: {
-          address: {
-            anyOf: [{ $ref: '#/$defs/PhysicalAddress' }, { $ref: '#/$defs/EmailAddress' }],
-          },
-        },
-        additionalProperties: true,
         $defs: {
-          PhysicalAddress: {
+          Contact: {
+            additionalProperties: true,
+            properties: {
+              address: {
+                anyOf: [
+                  {
+                    $ref: '#/$defs/PhysicalAddress',
+                  },
+                  {
+                    $ref: '#/$defs/EmailAddress',
+                  },
+                ],
+              },
+            },
+            title: 'Contact',
             type: 'object',
-            title: 'PhysicalAddress',
+          },
+          EmailAddress: {
+            additionalProperties: true,
+            properties: {
+              email: {
+                pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+                type: 'string',
+              },
+            },
+            title: 'EmailAddress',
+            type: 'object',
+          },
+          PhysicalAddress: {
+            additionalProperties: true,
             properties: {
               street: {
                 type: 'string',
               },
             },
-          },
-          EmailAddress: {
+            title: 'PhysicalAddress',
             type: 'object',
-            title: 'EmailAddress',
-            properties: {
-              email: {
-                type: 'string',
-                pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-              },
-            },
           },
         },
+        $id: 'http://example.org/FlexibleContactShape',
+        $ref: '#/$defs/Contact',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5091,20 +5192,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MultiNodeShape',
-        title: 'MultiNode',
-        type: 'object',
-        properties: {
-          combined: {
-            allOf: [{ $ref: '#/$defs/RequiredFields' }, { $ref: '#/$defs/ValidationRules' }],
-          },
-        },
-        additionalProperties: true,
         $defs: {
-          RequiredFields: {
+          MultiNode: {
+            additionalProperties: true,
+            properties: {
+              combined: {
+                allOf: [
+                  {
+                    $ref: '#/$defs/RequiredFields',
+                  },
+                  {
+                    $ref: '#/$defs/ValidationRules',
+                  },
+                ],
+              },
+            },
+            title: 'MultiNode',
             type: 'object',
-            title: 'RequiredFields',
+          },
+          RequiredFields: {
+            additionalProperties: true,
             properties: {
               id: {
                 items: {
@@ -5115,18 +5222,24 @@ ex:PersonReferenceShape
               },
             },
             required: ['id'],
+            title: 'RequiredFields',
+            type: 'object',
           },
           ValidationRules: {
-            type: 'object',
-            title: 'ValidationRules',
+            additionalProperties: true,
             properties: {
               id: {
-                type: 'string',
                 pattern: '^[A-Z]{3}-[0-9]{4}$',
+                type: 'string',
               },
             },
+            title: 'ValidationRules',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/MultiNodeShape',
+        $ref: '#/$defs/MultiNode',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -5509,83 +5622,90 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/CompanyShape',
-        title: 'Company',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-          },
-          headquarters: {
-            $ref: '#/$defs/Office',
-          },
-        },
-        required: ['name'],
-        additionalProperties: true,
         $defs: {
-          Office: {
-            type: 'object',
-            title: 'Office',
-            properties: {
-              building: {
-                type: 'array',
-                items: {
-                  $ref: '#/$defs/Building',
-                },
-              },
-            },
-          },
-          Building: {
-            type: 'object',
-            title: 'Building',
-            properties: {
-              address: {
-                type: 'array',
-                items: {
-                  $ref: '#/$defs/Address',
-                },
-                minItems: 1,
-              },
-            },
-            required: ['address'],
-          },
           Address: {
-            type: 'object',
-            title: 'Address',
+            additionalProperties: true,
             properties: {
-              street: {
-                type: 'string',
-              },
               city: {
                 type: 'string',
               },
               coordinates: {
-                type: 'array',
                 items: {
                   $ref: '#/$defs/Coordinates',
                 },
+                type: 'array',
+              },
+              street: {
+                type: 'string',
               },
             },
             required: ['street', 'city'],
-          },
-          Coordinates: {
+            title: 'Address',
             type: 'object',
-            title: 'Coordinates',
+          },
+          Building: {
+            additionalProperties: true,
             properties: {
-              latitude: {
-                type: 'number',
-                minimum: -90.0,
-                maximum: 90.0,
-              },
-              longitude: {
-                type: 'number',
-                minimum: -180.0,
-                maximum: 180.0,
+              address: {
+                items: {
+                  $ref: '#/$defs/Address',
+                },
+                minItems: 1,
+                type: 'array',
               },
             },
+            required: ['address'],
+            title: 'Building',
+            type: 'object',
+          },
+          Company: {
+            additionalProperties: true,
+            properties: {
+              headquarters: {
+                $ref: '#/$defs/Office',
+              },
+              name: {
+                type: 'string',
+              },
+            },
+            required: ['name'],
+            title: 'Company',
+            type: 'object',
+          },
+          Coordinates: {
+            additionalProperties: true,
+            properties: {
+              latitude: {
+                maximum: 90,
+                minimum: -90,
+                type: 'number',
+              },
+              longitude: {
+                maximum: 180,
+                minimum: -180,
+                type: 'number',
+              },
+            },
+            title: 'Coordinates',
+            type: 'object',
+          },
+          Office: {
+            additionalProperties: true,
+            properties: {
+              building: {
+                items: {
+                  $ref: '#/$defs/Building',
+                },
+                type: 'array',
+              },
+            },
+            title: 'Office',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/CompanyShape',
+        $ref: '#/$defs/Company',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5643,62 +5763,54 @@ ex:PersonReferenceShape
       expect(schema).toStrictEqual({
         $defs: {
           Company: {
-            type: 'object',
-            title: 'Company',
+            additionalProperties: true,
             properties: {
               companyName: {
                 type: 'string',
               },
               employees: {
-                type: 'array',
                 items: {
                   $ref: '#/$defs/Employee',
                 },
+                type: 'array',
               },
             },
             required: ['companyName'],
+            title: 'Company',
+            type: 'object',
           },
           Employee: {
-            type: 'object',
-            title: 'Employee',
+            additionalProperties: true,
             properties: {
               employeeId: {
-                type: 'string',
                 pattern: '^EMP-[0-9]{6}$',
+                type: 'string',
               },
               person: {
                 $ref: '#/$defs/Person',
               },
             },
+            title: 'Employee',
+            type: 'object',
           },
           Person: {
-            type: 'object',
-            title: 'Person',
+            additionalProperties: true,
             properties: {
-              name: {
-                type: 'string',
-              },
               employer: {
                 $ref: '#/$defs/Company',
               },
+              name: {
+                type: 'string',
+              },
             },
             required: ['name'],
+            title: 'Person',
+            type: 'object',
           },
         },
         $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        additionalProperties: true,
-        properties: {
-          name: {
-            type: 'string',
-          },
-          employer: {
-            $ref: '#/$defs/Company',
-          },
-        },
-        required: ['name'],
-        title: 'Person',
-        type: 'object',
       });
     });
 
@@ -5753,23 +5865,23 @@ ex:PersonReferenceShape
       expect(schema).toStrictEqual({
         $defs: {
           Address: {
-            type: 'object',
-            title: 'Address',
+            additionalProperties: true,
             properties: {
               street: {
-                type: 'string',
                 minLength: 1,
+                type: 'string',
               },
               zipCode: {
-                type: 'string',
                 pattern: '^[0-9]{5}$',
+                type: 'string',
               },
             },
             required: ['street'],
+            title: 'Address',
+            type: 'object',
           },
           Company: {
-            type: 'object',
-            title: 'Company',
+            additionalProperties: true,
             properties: {
               companyName: {
                 type: 'string',
@@ -5778,24 +5890,29 @@ ex:PersonReferenceShape
                 $ref: '#/$defs/Address',
               },
             },
+            title: 'Company',
+            type: 'object',
           },
-        },
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-          },
-          address: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Address',
+          Person: {
+            additionalProperties: true,
+            properties: {
+              address: {
+                items: {
+                  $ref: '#/$defs/Address',
+                },
+                type: 'array',
+              },
+              name: {
+                type: 'string',
+              },
             },
+            title: 'Person',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -5946,45 +6063,49 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ShippingFormShape',
-        title: 'ShippingForm',
-        type: 'object',
-        properties: {
-          shippingMethod: {
-            type: 'string',
-            enum: ['standard', 'express', 'pickup'],
-          },
-          deliveryAddress: {
-            $ref: '#/$defs/Address',
-          },
-          storeLocation: {
-            type: 'string',
-          },
-        },
-        required: ['shippingMethod'],
-        additionalProperties: true,
         $defs: {
           Address: {
-            type: 'object',
-            title: 'Address',
+            additionalProperties: true,
             properties: {
-              street: {
-                type: 'string',
-                minLength: 1,
-              },
               city: {
-                type: 'string',
                 minLength: 1,
+                type: 'string',
               },
               postalCode: {
-                type: 'string',
                 pattern: '^[0-9]{5}$',
+                type: 'string',
+              },
+              street: {
+                minLength: 1,
+                type: 'string',
               },
             },
             required: ['street', 'city'],
+            title: 'Address',
+            type: 'object',
+          },
+          ShippingForm: {
+            additionalProperties: true,
+            properties: {
+              deliveryAddress: {
+                $ref: '#/$defs/Address',
+              },
+              shippingMethod: {
+                enum: ['standard', 'express', 'pickup'],
+                type: 'string',
+              },
+              storeLocation: {
+                type: 'string',
+              },
+            },
+            required: ['shippingMethod'],
+            title: 'ShippingForm',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/ShippingFormShape',
+        $ref: '#/$defs/ShippingForm',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6042,49 +6163,61 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContactFormShape',
-        title: 'ContactForm',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            minLength: 1,
-            maxLength: 100,
-          },
-          contactMethod: {
-            oneOf: [{ $ref: '#/$defs/EmailContact' }, { $ref: '#/$defs/PhoneContact' }],
-          },
-          message: {
-            type: 'string',
-            minLength: 10,
-            maxLength: 1000,
-          },
-        },
-        required: ['name', 'contactMethod', 'message'],
-        additionalProperties: true,
         $defs: {
-          EmailContact: {
+          ContactForm: {
+            additionalProperties: true,
+            properties: {
+              contactMethod: {
+                oneOf: [
+                  {
+                    $ref: '#/$defs/EmailContact',
+                  },
+                  {
+                    $ref: '#/$defs/PhoneContact',
+                  },
+                ],
+              },
+              message: {
+                maxLength: 1000,
+                minLength: 10,
+                type: 'string',
+              },
+              name: {
+                maxLength: 100,
+                minLength: 1,
+                type: 'string',
+              },
+            },
+            required: ['name', 'contactMethod', 'message'],
+            title: 'ContactForm',
             type: 'object',
-            title: 'EmailContact',
+          },
+          EmailContact: {
+            additionalProperties: true,
             properties: {
               email: {
-                type: 'string',
                 pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+                type: 'string',
               },
             },
+            title: 'EmailContact',
+            type: 'object',
           },
           PhoneContact: {
-            type: 'object',
-            title: 'PhoneContact',
+            additionalProperties: true,
             properties: {
               phone: {
-                type: 'string',
                 pattern: '^\\+?[1-9]\\d{1,14}$',
+                type: 'string',
               },
             },
+            title: 'PhoneContact',
+            type: 'object',
           },
         },
+        $id: 'http://example.org/ContactFormShape',
+        $ref: '#/$defs/ContactForm',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });

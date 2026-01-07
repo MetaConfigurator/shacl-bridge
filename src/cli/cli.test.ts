@@ -20,7 +20,7 @@ describe('CLI', () => {
 
   describe('basic usage', () => {
     it('should output JSON Schema to stdout', () => {
-      const output = runCli(simpleShaclPath);
+      const output = runCli(`-i ${simpleShaclPath}`);
       const schema = JSON.parse(output) as JsonSchemaObjectType;
 
       expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
@@ -65,8 +65,7 @@ describe('CLI', () => {
       const outputPath = path.join(tempDir, 'schema.json');
 
       try {
-        runCli(`${simpleShaclPath} --output ${outputPath}`);
-
+        runCli(`--input ${simpleShaclPath} --output ${outputPath}`);
         expect(fs.existsSync(outputPath)).toBe(true);
         const content = fs.readFileSync(outputPath, 'utf-8');
         const schema = JSON.parse(content) as JsonSchemaObjectType;

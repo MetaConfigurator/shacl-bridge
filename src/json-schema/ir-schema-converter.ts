@@ -6,8 +6,6 @@ import { ShapeConverter } from './converters/shape-converter';
 import { JsonSchemaObjectBuilder } from './meta/json-schema-object-builder';
 import { ConversionContext } from './converters/constraints/conversion-context';
 import { JSON_SCHEMA_DRAFT } from '../util/json-schema-terms';
-import { hasKeyAtAnyLevel } from '../util/helpers';
-import logger from '../logger';
 import { StackElement } from '../stack/stack-element';
 import { StackElementBuilder } from '../stack/stack-element-builder';
 import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
@@ -28,52 +26,30 @@ export class IrSchemaConverter {
     }
 
     if (schemas.size > 1) {
-      const schemaWithReferences = [...schemas.entries()]
-        .filter(([, schema]) => hasKeyAtAnyLevel(schema, '$ref'))
-        .map(([shape, schema]) => {
-          return {
-            shape: shape,
-            schema: schema,
-          };
-        });
-      if (schemaWithReferences.length > 1) {
-        logger.error(`Unexpected schema with multiple root elements`);
-      }
-      const schemaWithReference = schemaWithReferences[0];
-      const schemsWithoutReferences = [...schemas.entries()]
+      const firstSchema = [...schemas.entries()].map(([shape, schema]) => {
+        return {
+          shape: shape,
+          schema: schema,
+        };
+      })[0];
+      builder.$id(firstSchema.shape.nodeKey).$schema(JSON_SCHEMA_DRAFT);
+
+      [...schemas.entries()]
         .map(([shape, schema]) => {
           return {
             shape: shape,
             schema: schema,
           };
         })
-        .filter(
-          (schema) =>
-            !schemaWithReferences.map((pair) => pair.shape.nodeKey).includes(schema.shape.nodeKey)
-        );
-      builder.$id(schemaWithReference.shape.nodeKey).$schema(JSON_SCHEMA_DRAFT);
-      schemsWithoutReferences.forEach((element) => {
-        const { shape, schema } = element;
-        const target = shape.targets[0];
-        delete schema.additionalProperties;
-        builder.$defs({
-          ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
-          [target]: schema,
-        });
-      });
-      builder.$id(schemaWithReference.shape.nodeKey).$schema(JSON_SCHEMA_DRAFT);
-      schemaWithReferences
-        .filter((element) => element != schemaWithReference)
-        .map((element) => {
+        .forEach((element) => {
           const { shape, schema } = element;
           const target = shape.targets[0];
-          delete schema.additionalProperties;
           builder.$defs({
             ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
             [target]: schema,
           });
         });
-      builder.mergeFrom(schemaWithReference.schema);
+      builder.$ref(`#/$defs/${firstSchema.shape.targets[0]}`);
     } else {
       builder = JsonSchemaObjectBuilder.from(schemas.get(shapeDefinitions[0]) ?? {});
       builder.$id(shapeDefinitions[0].nodeKey).$schema(JSON_SCHEMA_DRAFT);

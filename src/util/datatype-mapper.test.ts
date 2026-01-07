@@ -136,7 +136,7 @@ describe('DataType Mapping', () => {
   describe('XSD binary types', () => {
     it('should map xsd:base64Binary to string with contentEncoding', () => {
       mapDataType('http://www.w3.org/2001/XMLSchema#base64Binary', builder);
-      expect(builder.build()).toEqual({ type: 'string' });
+      expect(builder.build()).toEqual({ type: 'string', contentEncoding: 'base64' });
     });
 
     it('should map xsd:hexBinary to string type', () => {

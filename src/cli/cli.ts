@@ -6,10 +6,14 @@ import * as path from 'path';
 import { ShaclParser } from '../shacl/shacl-parser';
 import { IntermediateRepresentationBuilder } from '../ir/intermediate-representation-builder';
 import { IrSchemaConverter } from '../json-schema/ir-schema-converter';
+import { ShaclDocument } from '../shacl/shacl-document';
+import clipboard from 'clipboardy';
 
 interface CliOptions {
+  input?: string;
   includeMetadata: boolean;
   preserveRdfMetadata: boolean;
+  fromClipboard: boolean;
   output?: string;
 }
 
@@ -23,27 +27,38 @@ program
   .name('shacl-bridge')
   .description('Convert SHACL shapes to JSON Schema')
   .version(packageJson.version)
-  .argument('<file>', 'SHACL file to convert (Turtle format)')
-  .option('--include-metadata', 'Include SHACL metadata as x-shacl-* extensions', false)
-  .option('--preserve-rdf-metadata', 'Preserve non-SHACL RDF properties as x-rdf-properties', false)
+  .option('-i --input <file>', 'SHACL file to convert (Turtle format)')
+  .option('--from-clipboard')
+  // .option('--include-metadata', 'Include SHACL metadata as x-shacl-* extensions', false)
+  // .option('--preserve-rdf-metadata', 'Preserve non-SHACL RDF properties as x-rdf-properties', false)
   .option('-o, --output <path>', 'Output file path (single mode) or directory (multi mode)')
-  .action(async (file: string, options: CliOptions) => {
+  .action(async (options: CliOptions) => {
     try {
-      await run(file, options);
+      await run(options);
     } catch (error) {
       console.error('Error:', error instanceof Error ? error.message : error);
       process.exit(1);
     }
   });
 
-async function run(file: string, options: CliOptions): Promise<void> {
-  // Validate input file exists
-  if (!fs.existsSync(file)) {
-    throw new Error(`File not found: ${file}`);
+async function run(options: CliOptions): Promise<void> {
+  let shaclDocument: ShaclDocument;
+  try {
+    if (options.fromClipboard) {
+      const content = await clipboard.read();
+      shaclDocument = await new ShaclParser().withContent(content).parse();
+    } else {
+      const file = options.input;
+      if (file == null || !fs.existsSync(file)) {
+        console.error(`${file ?? ''} not found`);
+        process.exit(1);
+      }
+      shaclDocument = await new ShaclParser().withPath(file).parse();
+    }
+  } catch (error) {
+    console.error('Execption while reading and processing SHACL content:', error);
+    process.exit(1);
   }
-
-  // Parse SHACL
-  const shaclDocument = await new ShaclParser().withPath(file).parse();
 
   // Build IR model
   const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
