@@ -195,7 +195,7 @@ export class JsonSchemaObjectBuilder {
 
   // ==================== Numeric Constraints ====================
 
-  enum(enumValues: unknown[]): this {
+  enum(enumValues: string[]): this {
     this.schema.enum = enumValues;
     return this;
   }

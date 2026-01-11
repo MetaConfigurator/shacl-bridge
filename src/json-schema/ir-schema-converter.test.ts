@@ -2573,12 +2573,7 @@ ex:PersonReferenceShape
         type: 'object',
         properties: {
           category: {
-            enum: [
-              'http://example.org/Science',
-              'http://example.org/Technology',
-              'http://example.org/Engineering',
-              'http://example.org/Mathematics',
-            ],
+            enum: ['Science', 'Technology', 'Engineering', 'Mathematics'],
           },
         },
         additionalProperties: true,
@@ -4162,12 +4157,12 @@ ex:PersonReferenceShape
           type: {
             type: 'string',
             format: 'uri',
-            const: 'http://example.org/StandardType',
+            const: 'StandardType',
           },
           schema: {
             type: 'string',
             format: 'uri',
-            const: 'https://schema.org/Thing',
+            const: 'Thing',
           },
         },
         additionalProperties: true,
@@ -6429,9 +6424,7 @@ ex:PersonReferenceShape
         title: 'EmptyOr',
         type: 'object',
         properties: {
-          value: {
-            anyOf: [],
-          },
+          value: {},
         },
         additionalProperties: true,
       });
