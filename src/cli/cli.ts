@@ -7,7 +7,6 @@ import { ShaclParser } from '../shacl/shacl-parser';
 import { IntermediateRepresentationBuilder } from '../ir/intermediate-representation-builder';
 import { IrSchemaConverter } from '../json-schema/ir-schema-converter';
 import { ShaclDocument } from '../shacl/shacl-document';
-import clipboard from 'clipboardy';
 
 interface CliOptions {
   input?: string;
@@ -45,7 +44,8 @@ async function run(options: CliOptions): Promise<void> {
   let shaclDocument: ShaclDocument;
   try {
     if (options.fromClipboard) {
-      const content = await clipboard.read();
+      const { default: clipboardy } = await import('clipboardy');
+      const content = await clipboardy.read();
       shaclDocument = await new ShaclParser().withContent(content).parse();
     } else {
       const file = options.input;
