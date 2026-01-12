@@ -21,3 +21,7 @@ coverage/
 CLAUDE.md
 
 output/
+
+.clinic/
+
+.devcontainer/
