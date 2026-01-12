@@ -1,6 +1,11 @@
 import { JsonSchemaObjectType } from '../../meta/json-schema-type';
 import { match } from 'ts-pattern';
-import { extractStrippedName, mapDataType, mapNodeKind, parseDefaultValue, } from '../../../util/helpers';
+import {
+  extractStrippedName,
+  mapDataType,
+  mapNodeKind,
+  parseDefaultValue,
+} from '../../../util/helpers';
 import { JsonSchemaObjectBuilder } from '../../meta/json-schema-object-builder';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
 
