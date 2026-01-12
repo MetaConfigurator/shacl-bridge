@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "bin": {
-    "shacl-bridge": "./dist/cli/cli.js"
-  },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
@@ -16,8 +13,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "prepare": "husky",
-    "fix:lint-format": "npm run lint:fix && npm run format"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -32,14 +28,12 @@
     "prettier": "3.7.4",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.51.0"
+    "typescript-eslint": "^8.52.0"
   },
   "private": true,
   "dependencies": {
-    "clipboardy": "^5.0.2",
-    "commander": "^14.0.2",
-    "n3": "^1.26.0",
-    "pino": "^10.1.0",
+    "n3": "^2.0.1",
+    "pino": "^10.1.1",
     "ts-pattern": "^5.9.0"
   }
 }
