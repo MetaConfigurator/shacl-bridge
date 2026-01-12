@@ -1,11 +1,6 @@
 import { JsonSchemaObjectType } from '../../meta/json-schema-type';
 import { match } from 'ts-pattern';
-import {
-  extractStrippedName,
-  mapDataType,
-  mapNodeKind,
-  parseDefaultValue,
-} from '../../../util/helpers';
+import { extractStrippedName, mapDataType, mapNodeKind, parseDefaultValue, } from '../../../util/helpers';
 import { JsonSchemaObjectBuilder } from '../../meta/json-schema-object-builder';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
 
@@ -14,16 +9,17 @@ import { StackElementBuilder } from '../../../stack/stack-element-builder';
 import { ConversionContext } from './conversion-context';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 import {
-  ArraySetByContext,
-  IsNonEmptyArray,
-  IsNotNull,
-  IsNumericDatatypeIfSpecified,
-  IsStringValue,
-  SetMaxItems,
-  SetMinItems,
+  arraySetByContext,
+  ConstraintCandidate,
+  isNotNull,
+  nonEmptyArray,
+  numericDatatypeSpecified,
+  setMaxItems,
+  setMinItems,
+  stringValue,
 } from './constraint-conditions';
-import { Check } from '../../../condition/condition';
 import { NodeKind } from '../../../ir/meta-model/node-kind';
+import { Condition } from '../../../condition/condition';
 
 const PREFIX = 'x-shacl';
 
@@ -48,233 +44,309 @@ export class ConstraintConverter {
     Object.keys(this.constraints).forEach((key) => {
       match(key)
         .with('datatype', () => {
-          new Check()
-            .on({ key: 'datatype', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new ArraySetByContext())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'datatype',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(arraySetByContext)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const itemBuilder = new JsonSchemaObjectBuilder();
-              mapDataType(this.constraints.datatype, itemBuilder);
+              mapDataType(candidate.constraints.datatype, itemBuilder);
               builder.items(itemBuilder.build());
             })
-            .otherwise(() => {
-              mapDataType(this.constraints.datatype, builder);
+            .otherwise((candidate: ConstraintCandidate) => {
+              mapDataType(candidate.constraints.datatype, builder);
             })
             .execute();
         })
         .with('minLength', () => {
-          new Check()
-            .on({ key: 'minLength', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
-              builder.minLength(this.constraints.minLength ?? 0);
-              this.context.required = true;
+          new Condition()
+            .on({
+              key: 'minLength',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.minLength(candidate.constraints.minLength ?? 0);
+              candidate.context.required = true;
             })
             .execute();
         })
         .with('maxLength', () => {
-          new Check()
-            .on({ key: 'maxLength', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
-              builder.maxLength(this.constraints.maxLength ?? 0);
+          new Condition()
+            .on({
+              key: 'maxLength',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.maxLength(candidate.constraints.maxLength ?? 0);
             })
             .execute();
         })
         // (min/max constraints only apply to numeric types in JSON Schema)
         .with('minInclusive', () => {
-          new Check()
-            .on({ key: 'minInclusive', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new IsNumericDatatypeIfSpecified())
-            .ifSatisfied(() => {
-              builder.minimum(this.constraints.minInclusive ?? 0);
+          new Condition()
+            .on({
+              key: 'minInclusive',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(numericDatatypeSpecified)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.minimum(candidate.constraints.minInclusive ?? 0);
             })
             .execute();
         })
         .with('maxInclusive', () => {
-          new Check()
-            .on({ key: 'maxInclusive', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new IsNumericDatatypeIfSpecified())
-            .ifSatisfied(() => {
-              builder.maximum(this.constraints.maxInclusive ?? 0);
+          new Condition()
+            .on({
+              key: 'maxInclusive',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(numericDatatypeSpecified)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.maximum(candidate.constraints.maxInclusive ?? 0);
             })
             .execute();
         })
         .with('minExclusive', () => {
-          new Check()
+          new Condition()
             .on({
               key: 'minExclusive',
               context: this.context,
               constraints: this.constraints,
-            })
-            .with(new IsNumericDatatypeIfSpecified())
-            .ifSatisfied(() => {
-              builder.exclusiveMinimum(this.constraints.minExclusive ?? 0);
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(numericDatatypeSpecified)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.exclusiveMinimum(candidate.constraints.minExclusive ?? 0);
             })
             .execute();
         })
         .with('maxExclusive', () => {
-          new Check()
+          new Condition()
             .on({
               key: 'maxExclusive',
               context: this.context,
               constraints: this.constraints,
-            })
-            .with(new IsNumericDatatypeIfSpecified())
-            .ifSatisfied(() => {
-              builder.exclusiveMaximum(this.constraints.maxExclusive ?? 0);
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(numericDatatypeSpecified)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.exclusiveMaximum(candidate.constraints.maxExclusive ?? 0);
             })
             .execute();
         })
         .with('nodeKind', () => {
-          new Check()
-            .on({ key: 'nodeKind', context: this.context, constraints: this.constraints })
-            .with(new ArraySetByContext())
-            .not()
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
-              mapNodeKind(this.constraints.nodeKind ?? NodeKind.IRI, builder);
+          new Condition()
+            .on({
+              key: 'nodeKind',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have((c) => !arraySetByContext(c))
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              mapNodeKind(candidate.constraints.nodeKind ?? NodeKind.IRI, builder);
             })
             .execute();
         })
         .with('in', () => {
-          new Check()
-            .on({ key: 'in', context: this.context, constraints: this.constraints })
-            .with(new IsNonEmptyArray())
-            .ifSatisfied(() => {
-              builder.enum(this.constraints.in?.map(extractStrippedName) ?? []);
+          new Condition()
+            .on({
+              key: 'in',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.enum(candidate.constraints.in?.map(extractStrippedName) ?? []);
             })
             .execute();
         })
         .with('class', () => {
-          new Check()
-            .on({ key: 'class', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new ArraySetByContext())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'class',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(arraySetByContext)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
               const ref = new JsonSchemaObjectBuilder()
-                .$ref(`#/$defs/${extractStrippedName(this.constraints.class ?? '')}`)
+                .$ref(`#/$defs/${extractStrippedName(candidate.constraints.class ?? '')}`)
                 .build();
               builder.items({
                 ...existingItems,
                 ...ref,
               });
             })
-            .otherwise(() =>
-              builder.$ref(`#/$defs/${extractStrippedName(this.constraints.class ?? '')}`)
-            )
+            .otherwise((candidate: ConstraintCandidate) => {
+              builder.$ref(`#/$defs/${extractStrippedName(candidate.constraints.class ?? '')}`);
+            })
             .execute();
         })
         .with('node', () => {
-          new Check()
-            .on({ key: 'node', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new ArraySetByContext())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'node',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(arraySetByContext)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
               const ref = new JsonSchemaObjectBuilder()
-                .$ref(`#/$defs/${extractStrippedName(this.constraints.node ?? '')}`)
+                .$ref(`#/$defs/${extractStrippedName(candidate.constraints.node ?? '')}`)
                 .build();
               builder.items({
                 ...existingItems,
                 ...ref,
               });
             })
-            .otherwise(() =>
-              builder.$ref(`#/$defs/${extractStrippedName(this.constraints.node ?? '')}`)
-            )
+            .otherwise((candidate: ConstraintCandidate) => {
+              builder.$ref(`#/$defs/${extractStrippedName(candidate.constraints.node ?? '')}`);
+            })
             .execute();
         })
         .with('qualifiedValueShape', () => {
-          new Check()
+          new Condition()
             .on({
               key: 'qualifiedValueShape',
               context: this.context,
               constraints: this.constraints,
-            })
-            .gate(new IsNotNull())
-            .with(new ArraySetByContext())
-            .ifSatisfied(() => {
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(arraySetByContext)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
               const ref = new JsonSchemaObjectBuilder()
-                .$ref(`#/$defs/${extractStrippedName(this.constraints.qualifiedValueShape ?? '')}`)
+                .$ref(
+                  `#/$defs/${extractStrippedName(candidate.constraints.qualifiedValueShape ?? '')}`
+                )
                 .build();
               builder.items({
                 ...existingItems,
                 ...ref,
               });
             })
-            .otherwise(() =>
+            .otherwise((candidate: ConstraintCandidate) => {
               builder.$ref(
-                `#/$defs/${extractStrippedName(this.constraints.qualifiedValueShape ?? '')}`
-              )
-            )
+                `#/$defs/${extractStrippedName(candidate.constraints.qualifiedValueShape ?? '')}`
+              );
+            })
             .execute();
         })
         .with('minCount', () => {
-          new Check()
-            .on({ key: 'minCount', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new SetMinItems())
-            .ifSatisfied(() => builder.minItems(this.constraints.minCount ?? 0))
+          new Condition()
+            .on({
+              key: 'minCount',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(setMinItems)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
+              builder.minItems(candidate.constraints.minCount ?? 0)
+            )
             .execute();
         })
         .with('maxCount', () => {
-          new Check()
-            .on({ key: 'maxCount', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new SetMaxItems())
-            .ifSatisfied(() => builder.maxItems(this.constraints.maxCount ?? 0))
+          new Condition()
+            .on({
+              key: 'maxCount',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(setMaxItems)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
+              builder.maxItems(candidate.constraints.maxCount ?? 0)
+            )
             .execute();
         })
         .with('qualifiedMinCount', () => {
-          new Check()
-            .on({ key: 'qualifiedMinCount', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new SetMinItems())
-            .ifSatisfied(() => builder.minItems(this.constraints.qualifiedMinCount ?? 0))
+          new Condition()
+            .on({
+              key: 'qualifiedMinCount',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(setMinItems)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
+              builder.minItems(candidate.constraints.qualifiedMinCount ?? 0)
+            )
             .execute();
         })
         .with('qualifiedMaxCount', () => {
-          new Check()
-            .on({ key: 'qualifiedMaxCount', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new SetMaxItems())
-            .ifSatisfied(() => builder.maxItems(this.constraints.qualifiedMaxCount ?? 0))
+          new Condition()
+            .on({
+              key: 'qualifiedMaxCount',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(setMaxItems)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
+              builder.maxItems(candidate.constraints.qualifiedMaxCount ?? 0)
+            )
             .execute();
         })
         .with('pattern', () => {
-          new Check()
-            .on({ key: 'pattern', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => builder.pattern(this.constraints.pattern ?? ''))
+          new Condition()
+            .on({
+              key: 'pattern',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
+              builder.pattern(candidate.constraints.pattern ?? '')
+            )
             .execute();
         })
         .with('hasValue', () => {
-          new Check()
-            .on({ key: 'hasValue', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new IsStringValue())
-            .ifSatisfied(() =>
-              builder.const(extractStrippedName(this.constraints.hasValue as string))
-            )
-            .otherwise(() => {
-              // TS Shenanigans
-              if (this.constraints.hasValue == null) return;
-              builder.const(this.constraints.hasValue);
+          new Condition()
+            .on({
+              key: 'hasValue',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(stringValue)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              builder.const(extractStrippedName(candidate.constraints.hasValue as string));
+            })
+            .otherwise((candidate: ConstraintCandidate) => {
+              if (candidate.constraints.hasValue == null) return;
+              builder.const(candidate.constraints.hasValue);
             })
             .execute();
         })
         .with('or', () => {
-          new Check()
-            .on({ key: 'or', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'or',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const orSchemas =
-                this.constraints.or
+                candidate.constraints.or
                   ?.map((node) =>
                     [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(node))
                   )
@@ -288,12 +360,16 @@ export class ConstraintConverter {
             .execute();
         })
         .with('and', () => {
-          new Check()
-            .on({ key: 'and', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'and',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const andSchemas =
-                this.constraints.and
+                candidate.constraints.and
                   ?.map((node) =>
                     [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(node))
                   )
@@ -307,12 +383,16 @@ export class ConstraintConverter {
             .execute();
         })
         .with('xone', () => {
-          new Check()
-            .on({ key: 'xone', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'xone',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const xoneSchemas =
-                this.constraints.xone
+                candidate.constraints.xone
                   ?.map((node) =>
                     [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(node))
                   )
@@ -326,11 +406,15 @@ export class ConstraintConverter {
             .execute();
         })
         .with('not', () => {
-          new Check()
-            .on({ key: 'not', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
-              const notSchema = this.constraints.not
+          new Condition()
+            .on({
+              key: 'not',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              const notSchema = candidate.constraints.not
                 ?.map((node) => [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(node)))
                 .map((shape) => {
                   if (shape) return this.processed.get(shape);
@@ -344,67 +428,83 @@ export class ConstraintConverter {
             .execute();
         })
         .with('lessThan', () => {
-          new Check()
-            .on({ key: 'lessThan', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() =>
+          new Condition()
+            .on({
+              key: 'lessThan',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThan`,
-                extractStrippedName(this.constraints.lessThan ?? '')
+                extractStrippedName(candidate.constraints.lessThan ?? '')
               )
             )
             .execute();
         })
         .with('equals', () => {
-          new Check()
-            .on({ key: 'equals', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() =>
+          new Condition()
+            .on({
+              key: 'equals',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-equals`,
-                extractStrippedName(this.constraints.equals ?? '')
+                extractStrippedName(candidate.constraints.equals ?? '')
               )
             )
             .execute();
         })
         .with('defaultValue', () => {
-          new Check()
-            .on({ key: 'defaultValue', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'defaultValue',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               // Parse default value to appropriate JavaScript type based on datatype
               const parsedValue = parseDefaultValue(
-                this.constraints.defaultValue ?? '',
-                this.constraints.datatype
+                candidate.constraints.defaultValue ?? '',
+                candidate.constraints.datatype
               );
               builder.default(parsedValue);
             })
             .execute();
         })
         .with('lessThanOrEquals', () => {
-          new Check()
+          new Condition()
             .on({
               key: 'lessThanOrEquals',
               context: this.context,
               constraints: this.constraints,
-            })
-            .gate(new IsNotNull())
-            .ifSatisfied(() =>
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThanOrEquals`,
-                extractStrippedName(this.constraints.lessThanOrEquals ?? '')
+                extractStrippedName(candidate.constraints.lessThanOrEquals ?? '')
               )
             )
             .execute();
         })
         .with('disjoint', () => {
-          new Check()
-            .on({ key: 'disjoint', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .with(new IsNonEmptyArray())
-            .ifSatisfied(() => {
+          new Condition()
+            .on({
+              key: 'disjoint',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(nonEmptyArray)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
               const disjointPaths =
-                this.constraints.disjoint?.map((path) => extractStrippedName(path)) ?? [];
+                candidate.constraints.disjoint?.map((path) => extractStrippedName(path)) ?? [];
               if (disjointPaths.length === 1)
                 builder.customProperty(`${PREFIX}-disjoint`, disjointPaths[0]);
               else builder.customProperty(`${PREFIX}-disjoint`, disjointPaths);
@@ -412,35 +512,43 @@ export class ConstraintConverter {
             .execute();
         })
         .with('ignoredProperties', () => {
-          new Check()
+          new Condition()
             .on({
               key: 'ignoredProperties',
               context: this.context,
               constraints: this.constraints,
-            })
-            .gate(new IsNotNull())
-            .with(new IsNonEmptyArray())
-            .ifSatisfied(() => {
-              const ignoredProperties = this.constraints.ignoredProperties ?? [];
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .have(nonEmptyArray)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              const ignoredProperties = candidate.constraints.ignoredProperties ?? [];
               if (ignoredProperties.length === 0) return;
               builder.customProperty(`${PREFIX}-ignoredProperties`, ignoredProperties);
             })
             .execute();
         })
         .with('closed', () => {
-          new Check()
-            .on({ key: 'closed', context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
+          new Condition()
+            .on({
+              key: 'closed',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
             .ifSatisfied(() => builder.additionalProperties(false))
             .execute();
         })
         .otherwise((key) => {
           if (key == 'property') return;
-          new Check()
-            .on({ key: key, context: this.context, constraints: this.constraints })
-            .gate(new IsNotNull())
-            .ifSatisfied(() => {
-              const value = this.constraints[key as keyof CoreConstraints];
+          new Condition()
+            .on({
+              key: key,
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .always(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              const value = candidate.constraints[key as keyof CoreConstraints];
               if (value == null) return;
               builder.customProperty(`${PREFIX}-${key}`, value);
             })
