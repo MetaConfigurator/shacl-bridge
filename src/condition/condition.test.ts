@@ -1,13 +1,12 @@
-import { Condition } from './condition';
-import logger from '../logger';
-
-// Mock the logger module
 jest.mock('../logger', () => ({
   __esModule: true,
   default: {
     error: jest.fn(),
   },
 }));
+
+import { Condition } from './condition';
+import logger from '../logger';
 
 describe('Condition', () => {
   let condition: Condition<unknown>;
