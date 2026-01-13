@@ -19,3 +19,9 @@ coverage/
 /junit.xml
 
 CLAUDE.md
+
+output/
+
+.clinic/
+
+.devcontainer/

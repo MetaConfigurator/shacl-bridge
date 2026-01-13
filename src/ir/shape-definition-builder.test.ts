@@ -1,7 +1,7 @@
 import { ShapeDefinitionBuilder } from './shape-definition-builder';
 import { SEVERITY, SHAPE_TYPE } from './meta-model/shape';
 import { NodeKind } from './meta-model/node-kind';
-import { Term } from 'n3';
+import { DataFactory, Term } from 'n3';
 
 describe('ShapeDefinitionBuilder', () => {
   describe('basic construction', () => {
@@ -24,7 +24,7 @@ describe('ShapeDefinitionBuilder', () => {
         .build();
 
       expect(result.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-      expect(result.shape?.targetClass).toBe('http://xmlns.com/foaf/0.1/Person');
+      expect(result.shape?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
       expect(result.shape?.message).toBe('Test message');
     });
   });
@@ -72,7 +72,7 @@ describe('ShapeDefinitionBuilder', () => {
       builder.setTargetClass('http://xmlns.com/foaf/0.1/Person');
       const result = builder.build();
 
-      expect(result.shape?.targetClass).toBe('http://xmlns.com/foaf/0.1/Person');
+      expect(result.shape?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
     });
   });
 
@@ -108,7 +108,7 @@ describe('ShapeDefinitionBuilder', () => {
       builder.setTargetNode('http://example.org/specificNode');
       const result = builder.build();
 
-      expect(result.shape?.targetNode).toBe('http://example.org/specificNode');
+      expect(result.shape?.targetNodes?.[0]).toBe('http://example.org/specificNode');
     });
   });
 
@@ -422,18 +422,28 @@ describe('ShapeDefinitionBuilder', () => {
   describe('array-based constraints', () => {
     it('should add single ignored property', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setIgnoredProperties('n3-6');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
+      builder.setIgnoredProperties('value1', lists);
       const result = builder.build();
 
-      expect(result.coreConstraints?.ignoredProperties).toEqual(['n3-6']);
+      expect(result.coreConstraints?.ignoredProperties).toEqual(['value1']);
     });
 
     it('should add multiple ignored properties', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setIgnoredProperties('n3-6').setIgnoredProperties('n3-7');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
+      builder.setIgnoredProperties('value1', lists).setIgnoredProperties('value2', lists);
       const result = builder.build();
 
-      expect(result.coreConstraints?.ignoredProperties).toEqual(['n3-6', 'n3-7']);
+      expect(result.coreConstraints?.ignoredProperties).toEqual(['value1', 'value2']);
     });
 
     it('should add single property', () => {
@@ -454,7 +464,9 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add values to in constraint', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.in('n3-8');
+      builder.in('n3-8', {
+        'n3-8': [DataFactory.blankNode('n3-8')],
+      });
       const result = builder.build();
 
       expect(result.coreConstraints?.in).toEqual(['n3-8']);
@@ -462,7 +474,12 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple values to in constraint', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.in('value1').in('value2').in('value3');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
+      builder.in('value1', lists).in('value2', lists).in('value3', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.in).toEqual(['value1', 'value2', 'value3']);
@@ -472,7 +489,9 @@ describe('ShapeDefinitionBuilder', () => {
   describe('logical constraints', () => {
     it('should add or constraint', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.or('n3-14');
+      builder.or('n3-14', {
+        'n3-14': [DataFactory.blankNode('n3-14')],
+      });
       const result = builder.build();
 
       expect(result.coreConstraints?.or).toEqual(['n3-14']);
@@ -480,7 +499,11 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple or constraints', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.or('n3-14').or('n3-15');
+      const lists = {
+        'n3-14': [DataFactory.blankNode('n3-14')],
+        'n3-15': [DataFactory.blankNode('n3-15')],
+      };
+      builder.or('n3-14', lists).or('n3-15', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.or).toEqual(['n3-14', 'n3-15']);
@@ -488,7 +511,9 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add and constraint', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.and('n3-20');
+      builder.and('n3-20', {
+        'n3-20': [DataFactory.blankNode('n3-20')],
+      });
       const result = builder.build();
 
       expect(result.coreConstraints?.and).toEqual(['n3-20']);
@@ -496,7 +521,11 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple and constraints', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.and('n3-20').and('n3-21');
+      const lists = {
+        'n3-20': [DataFactory.blankNode('n3-20')],
+        'n3-21': [DataFactory.blankNode('n3-21')],
+      };
+      builder.and('n3-20', lists).and('n3-21', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.and).toEqual(['n3-20', 'n3-21']);
@@ -504,7 +533,9 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add not constraint', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.not('n3-23');
+      builder.not('n3-23', {
+        'n3-23': [DataFactory.blankNode('n3-23')],
+      });
       const result = builder.build();
 
       expect(result.coreConstraints?.not).toEqual(['n3-23']);
@@ -512,7 +543,11 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple not constraints', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.not('n3-23').not('n3-24');
+      const lists = {
+        'n3-23': [DataFactory.blankNode('n3-23')],
+        'n3-24': [DataFactory.blankNode('n3-24')],
+      };
+      builder.not('n3-23', lists).not('n3-24', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.not).toEqual(['n3-23', 'n3-24']);
@@ -520,7 +555,9 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add xone constraint', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.xone('n3-25');
+      builder.xone('n3-25', {
+        'n3-25': [DataFactory.blankNode('n3-25')],
+      });
       const result = builder.build();
 
       expect(result.coreConstraints?.xone).toEqual(['n3-25']);
@@ -528,7 +565,11 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple xone constraints', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.xone('n3-25').xone('n3-26');
+      const lists = {
+        'n3-25': [DataFactory.blankNode('n3-25')],
+        'n3-26': [DataFactory.blankNode('n3-26')],
+      };
+      builder.xone('n3-25', lists).xone('n3-26', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.xone).toEqual(['n3-25', 'n3-26']);
@@ -536,7 +577,20 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should handle complex logical combinations', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.or('n3-1').or('n3-2').and('n3-3').not('n3-4').xone('n3-5');
+      const lists = {
+        'n3-1': [DataFactory.blankNode('n3-1')],
+        'n3-2': [DataFactory.blankNode('n3-2')],
+        'n3-3': [DataFactory.blankNode('n3-3')],
+        'n3-4': [DataFactory.blankNode('n3-4')],
+        'n3-5': [DataFactory.blankNode('n3-5')],
+        'n3-6': [DataFactory.blankNode('n3-6')],
+      };
+      builder
+        .or('n3-1', lists)
+        .or('n3-2', lists)
+        .and('n3-3', lists)
+        .not('n3-4', lists)
+        .xone('n3-5', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.or).toEqual(['n3-1', 'n3-2']);
@@ -549,7 +603,9 @@ describe('ShapeDefinitionBuilder', () => {
   describe('setLanguageIn', () => {
     it('should add single language', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setLanguageIn('n3-47');
+      builder.setLanguageIn('n3-47', {
+        'n3-47': [DataFactory.blankNode('n3-47')],
+      });
       const result = builder.build();
 
       expect(result.coreConstraints?.languageIn).toEqual(['n3-47']);
@@ -557,7 +613,11 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple languages', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setLanguageIn('n3-47').setLanguageIn('n3-48');
+      const lists = {
+        'n3-47': [DataFactory.blankNode('n3-47')],
+        'n3-48': [DataFactory.blankNode('n3-48')],
+      };
+      builder.setLanguageIn('n3-47', lists).setLanguageIn('n3-48', lists);
       const result = builder.build();
 
       expect(result.coreConstraints?.languageIn).toEqual(['n3-47', 'n3-48']);
@@ -567,12 +627,9 @@ describe('ShapeDefinitionBuilder', () => {
   describe('setDependentShapeDefinition', () => {
     it('should add single dependent shape definition', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      const dependentShape = {
-        nodeKey: 'n3-1',
-        shape: { type: SHAPE_TYPE.PROPERTY_SHAPE },
-        coreConstraints: {},
-        dependentShapes: [],
-      };
+      const dependentShape = new ShapeDefinitionBuilder('n3-1')
+        .setType(SHAPE_TYPE.PROPERTY_SHAPE)
+        .build();
       builder.setDependentShapeDefinition(dependentShape);
       const result = builder.build();
 
@@ -582,18 +639,12 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should add multiple dependent shape definitions', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      const dependent1 = {
-        nodeKey: 'n3-1',
-        shape: { type: SHAPE_TYPE.PROPERTY_SHAPE },
-        coreConstraints: {},
-        dependentShapes: [],
-      };
-      const dependent2 = {
-        nodeKey: 'n3-2',
-        shape: { type: SHAPE_TYPE.PROPERTY_SHAPE },
-        coreConstraints: {},
-        dependentShapes: [],
-      };
+      const dependent1 = new ShapeDefinitionBuilder('n3-1')
+        .setType(SHAPE_TYPE.PROPERTY_SHAPE)
+        .build();
+      const dependent2 = new ShapeDefinitionBuilder('n3-2')
+        .setType(SHAPE_TYPE.PROPERTY_SHAPE)
+        .build();
       builder.setDependentShapeDefinition(dependent1).setDependentShapeDefinition(dependent2);
       const result = builder.build();
 
@@ -606,6 +657,11 @@ describe('ShapeDefinitionBuilder', () => {
   describe('complex shape building', () => {
     it('should build a complete PersonShape with multiple constraints', () => {
       const builder = new ShapeDefinitionBuilder('http://example.org/PersonShape');
+      const lists = {
+        value1: [DataFactory.blankNode('value1')],
+        value2: [DataFactory.blankNode('value2')],
+        value3: [DataFactory.blankNode('value3')],
+      };
       const result = builder
         .setType('http://www.w3.org/ns/shacl#NodeShape')
         .setTargetClass('http://xmlns.com/foaf/0.1/Person')
@@ -616,18 +672,18 @@ describe('ShapeDefinitionBuilder', () => {
         .setProperty('n3-4')
         .setProperty('n3-5')
         .setClosed('true')
-        .setIgnoredProperties('n3-6')
+        .setIgnoredProperties('value1', lists)
         .build();
 
       expect(result.nodeKey).toBe('http://example.org/PersonShape');
       expect(result.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-      expect(result.shape?.targetClass).toBe('http://xmlns.com/foaf/0.1/Person');
+      expect(result.shape?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
       expect(result.shape?.message).toBe('Person shape violation');
       expect(result.shape?.severity).toBe(SEVERITY.VIOLATION);
       expect(result.shape?.deactivated).toBe(false);
       expect(result.coreConstraints?.property).toEqual(['n3-3', 'n3-4', 'n3-5']);
       expect(result.coreConstraints?.closed).toBe(true);
-      expect(result.coreConstraints?.ignoredProperties).toEqual(['n3-6']);
+      expect(result.coreConstraints?.ignoredProperties).toEqual(['value1']);
     });
 
     it('should build a PropertyShape with string constraints', () => {
@@ -693,15 +749,21 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should build a shape with logical constraints', () => {
       const builder = new ShapeDefinitionBuilder('http://example.org/IdentifierShape');
+      const lists = {
+        'n3-14': [DataFactory.blankNode('n3-14')],
+        'n3-20': [DataFactory.blankNode('n3-20')],
+        'n3-23': [DataFactory.blankNode('n3-23')],
+        'n3-25': [DataFactory.blankNode('n3-25')],
+      };
       const result = builder
         .setTargetClass('http://example.org/IdentifiableEntity')
-        .or('n3-14')
-        .and('n3-20')
-        .not('n3-23')
-        .xone('n3-25')
+        .or('n3-14', lists)
+        .and('n3-20', lists)
+        .not('n3-23', lists)
+        .xone('n3-25', lists)
         .build();
 
-      expect(result.shape?.targetClass).toBe('http://example.org/IdentifiableEntity');
+      expect(result.shape?.targetClasses?.[0]).toBe('http://example.org/IdentifiableEntity');
       expect(result.coreConstraints?.or).toEqual(['n3-14']);
       expect(result.coreConstraints?.and).toEqual(['n3-20']);
       expect(result.coreConstraints?.not).toEqual(['n3-23']);
@@ -900,7 +962,7 @@ describe('ShapeDefinitionBuilder', () => {
         .build();
 
       expect(result.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
-      expect(result.shape?.targetClass).toBe('http://example.org/MyClass');
+      expect(result.shape?.targetClasses?.[0]).toBe('http://example.org/MyClass');
       expect(result.coreConstraints?.minCount).toBe(1);
       expect(result.additionalProperties).toBeDefined();
       expect(result.additionalProperties).toHaveLength(1);

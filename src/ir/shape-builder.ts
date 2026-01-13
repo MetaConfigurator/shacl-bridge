@@ -1,71 +1,83 @@
 import { DependencyGraph } from './dependency-graph';
 import { ShapeDefinition } from './meta-model/shape-definition';
-import { Quad } from 'n3';
+import { Quad, Term, Util } from 'n3';
 import { SHAPE_TYPE } from './meta-model/shape';
 import { match, P } from 'ts-pattern';
 import { ShapeDefinitionBuilder } from './shape-definition-builder';
-import { TripleIndex } from './indexer';
+import { Index } from './indexer';
+import { ShaclDocument } from '../shacl/shacl-document';
+import logger from '../logger';
+import { getTarget } from './target-resolver';
+import isBlankNode = Util.isBlankNode;
 
 export class ShapeBuilder {
   private readonly resolved = new Map<string, ShapeDefinition>();
+  private readonly termCache = new Map<string, Term>();
 
   constructor(
-    private readonly index: TripleIndex,
+    private readonly shaclDocument: ShaclDocument,
+    private readonly index: Index,
     private readonly graph: DependencyGraph
-  ) {}
+  ) {
+    new Set([...this.graph.dependencies.keys(), ...this.graph.dependents.keys()]).forEach((term) =>
+      this.termCache.set(term.value, term)
+    );
+  }
 
   build(): ShapeDefinition[] {
-    const subjectsInDocument = [...this.index.quadsIndex.keys()];
+    const { quads, shapes } = this.index;
 
-    // First pass: Create all ShapeDefinitions without resolving dependencies
-    subjectsInDocument.forEach((subject) => {
-      this.buildAndRegisterShape(subject);
+    [...quads.keys()].forEach((subject) => {
+      this.buildAndRegisterShape(subject, quads.get(subject) ?? []);
     });
 
-    // Second pass: Resolve dependencies for all shapes
-    subjectsInDocument.forEach((subject) => {
+    [...quads.keys()].forEach((subject) => {
       this.resolveDependencies(subject);
     });
 
-    return [...this.index.namedShapesIndex].map((name) => {
-      const shape = this.resolved.get(name);
-      if (!shape) {
-        throw new Error(`Named shape '${name}' was not resolved`);
-      }
-      return shape;
-    });
+    return shapes
+      .filter((shapeTerm) => !isBlankNode(shapeTerm))
+      .map((shapeTerm) => this.resolved.get(shapeTerm.value))
+      .filter((shape) => shape != null);
   }
 
-  private buildAndRegisterShape(subject: string): void {
-    const quads = this.index.quadsIndex.get(subject);
-    const shapeDefinition = this.buildShapeFromQuads(subject, quads);
-    this.resolved.set(subject, shapeDefinition);
+  private getCanonicalTerm(term: Term): Term {
+    return this.termCache.get(term.value) ?? term;
   }
 
-  private resolveDependencies(subject: string): void {
-    const shapeDefinition = this.resolved.get(subject);
+  private buildAndRegisterShape(subject: Term, quads: Quad[]): void {
+    if (quads.length === 0) {
+      logger.warn(`Shape '${subject.value}' has no quads, skipping.`);
+      return;
+    }
+    const shapeDefinition = this.buildShapeFromQuads(subject.value, quads);
+    this.resolved.set(subject.value, shapeDefinition);
+  }
+
+  private resolveDependencies(subject: Term): void {
+    const canonicalSubject = this.getCanonicalTerm(subject);
+    const shapeDefinition = this.resolved.get(subject.value);
+    const { dependencies, dependents } = this.graph;
+    const { lists } = this.shaclDocument;
+    const { quads, blanks } = this.index;
     if (!shapeDefinition) {
-      throw new Error(`Shape '${subject}' was not created in first pass`);
+      throw new Error(`Shape '${subject.value}' was not created in first pass`);
     }
 
-    // Resolve dependent shapes
-    const deps = this.graph.dependencies.get(subject) ?? new Set();
-    shapeDefinition.dependentShapes = [...deps].map((name) => {
-      const shape = this.resolved.get(name);
-      if (!shape) {
-        throw new Error(`Dependent shape '${name}' was not resolved`);
-      }
-      return shape;
-    });
+    shapeDefinition.dependentShapes = [...(dependencies.get(canonicalSubject) ?? new Set())]
+      .filter((dep) => !(dep.value in lists))
+      .map((dep) => this.resolved.get(dep.value))
+      .filter((shape) => shape !== undefined);
 
     // Handle property shape type override for blank nodes
-    if (this.index.blankNodesIndex.has(subject)) {
-      const parents = this.graph.dependents.get(subject) ?? new Set<string>();
+    const isBlankNode = blanks.some((blank) => blank.value === subject.value);
+    if (isBlankNode) {
+      const parents = dependents.get(canonicalSubject) ?? new Set();
       for (const parent of parents) {
         // Check if parent references this blank node via sh:property
-        const parentQuads = this.index.quadsIndex.get(parent) ?? [];
+        const parentQuads = quads.get(parent) ?? [];
         const isProperty = parentQuads.some(
-          (q) => q.predicate.value.endsWith('property') && q.object.value === subject
+          (q) => q.predicate.value.endsWith('property') && q.object.value === subject.value
         );
         // Override the type if it's a blank node referenced via sh:property and doesn't have an explicit type
         if (isProperty && shapeDefinition.shape?.type === SHAPE_TYPE.NODE_SHAPE) {
@@ -76,9 +88,12 @@ export class ShapeBuilder {
     }
   }
 
-  private buildShapeFromQuads(nodeKey: string, quads: Quad[] | undefined): ShapeDefinition {
+  private buildShapeFromQuads(nodeKey: string, quads: Quad[]): ShapeDefinition {
     const builder = new ShapeDefinitionBuilder(nodeKey);
-    quads?.forEach((quad) => {
+    builder.setTargets(getTarget(this.index.targets, nodeKey));
+
+    const lists = this.shaclDocument.lists;
+    quads.forEach((quad) => {
       const predicate = quad.predicate.value;
       const object = quad.object.value;
 
@@ -88,12 +103,15 @@ export class ShapeBuilder {
         .with(P.string.endsWith('property'), () => builder.setProperty(object))
         .with(P.string.endsWith('path'), () => builder.setPath(object))
         .with(P.string.endsWith('targetClass'), () => builder.setTargetClass(object))
-        .with(P.string.endsWith('deactivated'), () => builder.setDeactivated(object))
         .with(P.string.endsWith('targetNode'), () => builder.setTargetNode(object))
+        .with(P.string.endsWith('targetObjectsOf'), () => builder.setTargetObjectsOf(object))
+        .with(P.string.endsWith('targetSubjectsOf'), () => builder.setTargetSubjectsOf(object))
+        .with(P.string.endsWith('deactivated'), () => builder.setDeactivated(object))
         .with(P.string.endsWith('message'), () => builder.setMessage(object))
         .with(P.string.endsWith('severity'), () => builder.setSeverity(object))
         .with(P.string.endsWith('pattern'), () => builder.setPattern(object))
         .with(P.string.endsWith('class'), () => builder.setClass(object))
+        .with(P.string.endsWith('node'), () => builder.setNode(object))
         .with(P.string.endsWith('nodeKind'), () => builder.setNodeKind(object))
         .with(P.string.endsWith('closed'), () => builder.setClosed(object))
         .with(P.string.endsWith('hasValue'), () => builder.setHasValue(object))
@@ -110,16 +128,25 @@ export class ShapeBuilder {
         .with(P.string.endsWith('uniqueLang'), () => builder.setUniqueLang(object))
         .with(P.string.endsWith('first'), () => builder.setFirst(object))
         .with(P.string.endsWith('rest'), () => builder.setRest(object))
-        .with(P.string.endsWith('ignoredProperties'), () => builder.setIgnoredProperties(object))
-        .with(P.string.endsWith('in'), () => builder.in(object))
-        .with(P.string.endsWith('and'), () => builder.and(object))
-        .with(P.string.endsWith('or'), () => builder.or(object))
-        .with(P.string.endsWith('not'), () => builder.not(object))
-        .with(P.string.endsWith('xone'), () => builder.xone(object))
+        .with(P.string.endsWith('ignoredProperties'), () =>
+          builder.setIgnoredProperties(object, lists)
+        )
+        .with(P.string.endsWith('in'), () => builder.in(object, lists))
+        .with(P.string.endsWith('and'), () => builder.and(object, lists))
+        .with(P.string.endsWith('or'), () => builder.or(object, lists))
+        .with(P.string.endsWith('not'), () => builder.not(object, lists))
+        .with(P.string.endsWith('xone'), () => builder.xone(object, lists))
         .with(P.string.endsWith('qualifiedValueShape'), () =>
           builder.setQualifiedValueShape(object)
         )
-        .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object))
+        .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object, lists))
+        .with(P.string.endsWith('equals'), () => builder.setEquals(object))
+        .with(P.string.endsWith('lessThan'), () => builder.setLessThan(object))
+        .with(P.string.endsWith('defaultValue'), () => builder.setDefaultValue(object))
+        .with(P.string.endsWith('lessThanOrEquals'), () => builder.setLessThanOrEquals(object))
+        .with(P.string.endsWith('disjoint'), () => builder.setDisjoint(object, lists))
+        .with(P.string.endsWith('order'), () => builder.setOrder(object))
+        .with(P.string.endsWith('flags'), () => builder.setFlags(object))
         .otherwise(() => {
           // Capture non-SHACL predicates as additional properties
           builder.setAdditionalProperty(predicate, quad.object);

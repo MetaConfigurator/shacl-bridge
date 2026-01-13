@@ -1,50 +1,31 @@
-import { Quad, Store } from 'n3';
+import { BlankNode, Quad, Quad_Subject, Term } from 'n3';
+import { ShaclDocument } from '../shacl/shacl-document';
+import { getBlankNodes, getQuads, getShapes } from './util';
+import { TargetResolver } from './target-resolver';
 
-const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-const SHACL_NODE_SHAPE = 'http://www.w3.org/ns/shacl#NodeShape';
-const SHACL_PROPERTY_SHAPE = 'http://www.w3.org/ns/shacl#PropertyShape';
-
-export interface TripleIndex {
-  quadsIndex: Map<string, Quad[]>;
-  blankNodesIndex: Set<string>;
-  namedShapesIndex: Set<string>;
-}
-
-function isBlankNode(quad: Quad): boolean {
-  return quad.subject.termType === 'BlankNode';
-}
-
-function isAShape(quad: Quad): boolean {
-  return (
-    quad.predicate.value === RDF_TYPE &&
-    (quad.object.value === SHACL_NODE_SHAPE || quad.object.value === SHACL_PROPERTY_SHAPE)
-  );
+export interface Index {
+  quads: Map<Term, Quad[]>;
+  blanks: BlankNode[];
+  shapes: Quad_Subject[];
+  targets: Map<Term, string[]>;
 }
 
 export class Indexer {
-  constructor(private readonly store: Store) {}
+  private targetResolver: TargetResolver;
 
-  build(): TripleIndex {
-    const quads = new Map<string, Quad[]>();
-    const blanks = new Set<string>();
-    const namedShapes = new Set<string>();
+  constructor(private readonly shaclDocument: ShaclDocument) {
+    this.targetResolver = new TargetResolver(shaclDocument);
+  }
 
-    this.store.getQuads(null, null, null, null).forEach((quad) => {
-      const subject = quad.subject.value;
-
-      if (!quads.has(subject)) {
-        quads.set(subject, []);
-      }
-      quads.get(subject)?.push(quad);
-
-      if (isBlankNode(quad)) {
-        blanks.add(subject);
-        return;
-      }
-
-      if (isAShape(quad)) namedShapes.add(subject);
-    });
-
-    return { quadsIndex: quads, blankNodesIndex: blanks, namedShapesIndex: namedShapes };
+  build(): Index {
+    const quads = getQuads(this.shaclDocument);
+    const shapes = getShapes(this.shaclDocument.subjects);
+    const targets = this.targetResolver.resolveTargets(quads);
+    return {
+      quads: quads,
+      blanks: getBlankNodes(this.shaclDocument.subjects),
+      shapes: shapes,
+      targets: targets,
+    };
   }
 }

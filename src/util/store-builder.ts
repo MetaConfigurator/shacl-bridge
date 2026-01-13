@@ -1,5 +1,5 @@
 // Common RDF and SHACL URIs
-import { DataFactory, Store } from 'n3';
+import { DataFactory, Store, Writer } from 'n3';
 import { RDF_TYPE, XSD_BOOLEAN, XSD_INTEGER } from './rdf-terms';
 
 export class StoreBuilder {
@@ -97,5 +97,24 @@ export class StoreBuilder {
 
   build() {
     return this.store;
+  }
+
+  write(): Promise<string> {
+    const writer = new Writer({ format: 'text/turtle' });
+
+    return new Promise((resolve, reject) => {
+      // Add all quads from store
+      this.store.forEach((quad) => {
+        writer.addQuad(quad);
+      });
+
+      // Get the serialized output
+      writer.end((error, result) => {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (error) reject(error);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        else resolve(result);
+      });
+    });
   }
 }

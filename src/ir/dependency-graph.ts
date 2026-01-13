@@ -1,116 +1,106 @@
-import { TripleIndex } from './indexer';
-import { Quad } from 'n3';
+import { Index } from './indexer';
+import { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term, Util, Variable } from 'n3';
+import { ShaclDocument } from '../shacl/shacl-document';
+import isBlankNode = Util.isBlankNode;
 
 export interface DependencyGraph {
-  dependencies: Map<string, Set<string>>;
-  dependents: Map<string, Set<string>>;
-  cycles: Map<string, Set<string>>;
+  dependencies: Map<Term, Set<Term>>;
+  dependents: Map<Term, Set<Term>>;
 }
 
 export class DependencyGraphBuilder {
   private graph: DependencyGraph = {
-    dependencies: new Map<string, Set<string>>(),
-    dependents: new Map<string, Set<string>>(),
-    cycles: new Map<string, Set<string>>(),
+    dependencies: new Map<Term, Set<Term>>(),
+    dependents: new Map<BlankNode, Set<Term>>(),
   };
+  private termCache = new Map<string, Term>();
 
-  constructor(private readonly index: TripleIndex) {}
+  constructor(
+    private readonly index: Index,
+    private readonly shaclDocument: ShaclDocument
+  ) {}
 
   build(): DependencyGraph {
-    const { quadsIndex, blankNodesIndex } = this.index;
+    const { quads, blanks } = this.index;
+    const lists = this.shaclDocument.lists;
 
-    // First pass: Build dependency and dependent relationships
-    quadsIndex.forEach((quads, subject) => {
-      this.findDependenciesForSubject(quads, blankNodesIndex, subject);
+    quads.forEach((quads, subject) => {
+      this.findDependenciesForSubject(quads, this.getCanonicalTerm(subject), lists, blanks);
     });
-
-    // Second pass: Detect cycles using DFS
-    this.detectCycles();
 
     return this.graph;
   }
 
-  private findDependenciesForSubject(quads: Quad[], blankNodesIndex: Set<string>, subject: string) {
-    const dependenciesForCurrentSubject: Set<string> = new Set<string>();
-    quads.forEach((quad) => {
-      const object = quad.object.value;
-      if (blankNodesIndex.has(object) && !dependenciesForCurrentSubject.has(object)) {
-        dependenciesForCurrentSubject.add(object);
-        this.addDependents(object, subject);
-      }
-    });
-
-    if (dependenciesForCurrentSubject.size > 0)
-      this.graph.dependencies.set(subject, dependenciesForCurrentSubject);
-  }
-
-  private detectCycles(): void {
-    const visited = new Set<string>();
-    const visiting = new Set<string>();
-    const recStack: string[] = [];
-
-    const dfs = (node: string): void => {
-      // If we encounter a node in the current path, we found a cycle
-      if (visiting.has(node)) {
-        const cycleStartIndex = recStack.indexOf(node);
-        const cycleNodes = recStack.slice(cycleStartIndex);
-        cycleNodes.push(node); // Include the node that closes the cycle
-
-        const cycleSet = new Set<string>(cycleNodes);
-
-        // Store the cycle for all nodes involved in it
-        cycleNodes.forEach((cycleNode) => {
-          if (!this.graph.cycles.has(cycleNode)) {
-            this.graph.cycles.set(cycleNode, new Set<string>());
-          }
-          const cycleNodeSet = this.graph.cycles.get(cycleNode);
-          if (cycleNodeSet) {
-            cycleSet.forEach((n) => {
-              cycleNodeSet.add(n);
-            });
-          }
-        });
-        return;
-      }
-
-      // Skip if already fully processed
-      if (visited.has(node)) {
-        return;
-      }
-
-      // Mark as currently visiting
-      visiting.add(node);
-      recStack.push(node);
-
-      // Visit all dependencies
-      const deps = this.graph.dependencies.get(node);
-      if (deps) {
-        deps.forEach((dep) => {
-          dfs(dep);
-        });
-      }
-
-      // Done visiting this node
-      recStack.pop();
-      visiting.delete(node);
-      visited.add(node);
-    };
-
-    // Run DFS from all nodes that have dependencies
-    this.graph.dependencies.forEach((_, node) => {
-      if (!visited.has(node)) {
-        dfs(node);
-      }
-    });
-  }
-
-  private addDependents(object: string, subject: string) {
-    if (!this.graph.dependents.has(object)) {
-      this.graph.dependents.set(object, new Set<string>());
+  private getCanonicalTerm(term: Term): Term {
+    const key = term.value;
+    const cached = this.termCache.get(key);
+    if (cached) {
+      return cached;
     }
-    const dependentsSet = this.graph.dependents.get(object);
-    if (dependentsSet) {
-      dependentsSet.add(subject);
+    this.termCache.set(key, term);
+    return term;
+  }
+
+  private findDependenciesForSubject(
+    quads: Quad[],
+    subject: Term,
+    lists: Record<string, Term[]>,
+    blanks: BlankNode[]
+  ) {
+    const dependenciesForSubject: Set<Term> = new Set<Term>();
+    // Get all blank node dependencies for this subject (including list head nodes)
+    this.addBlankNodeDependencies(quads, blanks, dependenciesForSubject, subject);
+    // Additionally, extract blank nodes from RDF list values (if any)
+    this.addListDependencies(quads, lists, blanks, dependenciesForSubject, subject);
+    if (dependenciesForSubject.size > 0)
+      this.graph.dependencies.set(subject, dependenciesForSubject);
+  }
+
+  private addListDependencies(
+    quads: Quad[],
+    lists: Record<string, Term[]>,
+    blanks: BlankNode[],
+    dependenciesForSubject: Set<Term>,
+    subject: NamedNode | BlankNode | Literal | Variable | DefaultGraph
+  ) {
+    quads
+      .filter((quad) => quad.object.value in lists && lists[quad.object.value].length > 0)
+      .map((quad) => lists[quad.object.value])
+      .flat(1)
+      .filter((term) => isBlankNode(term))
+      .filter((term) => blanks.map((b) => b.value).includes(term.value))
+      .map((term) => this.getCanonicalTerm(term))
+      .forEach((canonicalTerm) => {
+        this.resolveDependency(dependenciesForSubject, canonicalTerm, subject);
+      });
+  }
+
+  private addBlankNodeDependencies(
+    quads: Quad[],
+    blanks: BlankNode[],
+    dependenciesForSubject: Set<Term>,
+    subject: NamedNode | BlankNode | Literal | Variable | DefaultGraph
+  ) {
+    quads
+      .filter((quad) => isBlankNode(quad.object))
+      .filter((quad) => blanks.map((b) => b.value).includes(quad.object.value))
+      .map((quad) => this.getCanonicalTerm(quad.object))
+      .forEach((canonicalTerm) => {
+        this.resolveDependency(dependenciesForSubject, canonicalTerm, subject);
+      });
+  }
+
+  private resolveDependency(
+    dependenciesForSubject: Set<Term>,
+    canonicalTerm: NamedNode | BlankNode | Literal | Variable | DefaultGraph,
+    subject: NamedNode | BlankNode | Literal | Variable | DefaultGraph
+  ) {
+    if (!dependenciesForSubject.has(canonicalTerm)) {
+      dependenciesForSubject.add(canonicalTerm);
+      if (!this.graph.dependents.has(canonicalTerm)) {
+        this.graph.dependents.set(canonicalTerm, new Set<Term>());
+      }
+      this.graph.dependents.get(canonicalTerm)?.add(subject);
     }
   }
 }
