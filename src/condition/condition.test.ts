@@ -2,6 +2,7 @@ jest.mock('../logger', () => ({
   __esModule: true,
   default: {
     error: jest.fn(),
+    info: jest.fn(),
   },
 }));
 
@@ -23,8 +24,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c.value > 5)
-        .have((c) => c.value < 15)
+        .allOf((c) => c.value > 5)
+        .allOf((c) => c.value < 15)
         .ifSatisfied(mockAction)
         .execute();
 
@@ -39,7 +40,7 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c.value > 5)
+        .allOf((c) => c.value > 5)
         .ifSatisfied(mockIfSatisfied)
         .otherwise(mockOtherwise)
         .execute();
@@ -67,7 +68,7 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .always((c) => c.value > 5)
+        .must((c) => c.value > 5)
         .onMandatoryConditionFailure(mockGateFailure)
         .ifSatisfied(mockIfSatisfied)
         .execute();
@@ -84,7 +85,7 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .always((c) => c.value > 5)
+        .must((c) => c.value > 5)
         .onMandatoryConditionFailure(mockGateFailure)
         .ifSatisfied(mockIfSatisfied)
         .execute();
@@ -101,8 +102,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .always((c) => c.value > 5)
-        .always((c) => c.value < 8)
+        .must((c) => c.value > 5)
+        .must((c) => c.value < 8)
         .onMandatoryConditionFailure(mockGateFailure)
         .ifSatisfied(mockIfSatisfied)
         .execute();
@@ -119,8 +120,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .always((c) => c.value > 10)
-        .have((c) => c.value < 5)
+        .must((c) => c.value > 10)
+        .allOf((c) => c.value < 5)
         .onMandatoryConditionFailure(mockGateFailure)
         .ifSatisfied(mockIfSatisfied)
         .otherwise(mockOtherwise)
@@ -132,38 +133,198 @@ describe('Condition', () => {
     });
   });
 
-  describe('Multiple conditions', () => {
-    it('should pass when all normal conditions are satisfied', () => {
+  describe('allOf conditions (AND logic)', () => {
+    it('should pass when all allOf conditions are satisfied', () => {
       const candidate = { value: 10, name: 'test' };
       const mockAction = jest.fn();
 
       condition
         .on(candidate)
-        .have((c) => c.value > 5)
-        .have((c) => c.value < 15)
-        .have((c) => c.name === 'test')
+        .allOf((c) => c.value > 5)
+        .allOf((c) => c.value < 15)
+        .allOf((c) => c.name === 'test')
         .ifSatisfied(mockAction)
         .execute();
 
       expect(mockAction).toHaveBeenCalledWith(candidate);
     });
 
-    it('should fail when any normal condition fails', () => {
+    it('should fail when any allOf condition fails', () => {
       const candidate = { value: 10, name: 'test' };
       const mockIfSatisfied = jest.fn();
       const mockOtherwise = jest.fn();
 
       condition
         .on(candidate)
-        .have((c) => c.value > 5)
-        .have((c) => c.value < 15)
-        .have((c) => c.name === 'wrong')
+        .allOf((c) => c.value > 5)
+        .allOf((c) => c.value < 15)
+        .allOf((c) => c.name === 'wrong')
         .ifSatisfied(mockIfSatisfied)
         .otherwise(mockOtherwise)
         .execute();
 
       expect(mockIfSatisfied).not.toHaveBeenCalled();
       expect(mockOtherwise).toHaveBeenCalledWith(candidate);
+    });
+  });
+
+  describe('anyOf conditions (OR logic)', () => {
+    it('should pass when at least one anyOf condition is satisfied', () => {
+      const candidate = { value: 10, name: 'test' };
+      const mockAction = jest.fn();
+
+      condition
+        .on(candidate)
+        .anyOf((c) => c.value > 100) // false
+        .anyOf((c) => c.value < 5) // false
+        .anyOf((c) => c.name === 'test') // true
+        .ifSatisfied(mockAction)
+        .execute();
+
+      expect(mockAction).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should fail when all anyOf conditions fail', () => {
+      const candidate = { value: 10, name: 'test' };
+      const mockIfSatisfied = jest.fn();
+      const mockOtherwise = jest.fn();
+
+      condition
+        .on(candidate)
+        .anyOf((c) => c.value > 100)
+        .anyOf((c) => c.value < 5)
+        .anyOf((c) => c.name === 'wrong')
+        .ifSatisfied(mockIfSatisfied)
+        .otherwise(mockOtherwise)
+        .execute();
+
+      expect(mockIfSatisfied).not.toHaveBeenCalled();
+      expect(mockOtherwise).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should pass when multiple anyOf conditions are satisfied', () => {
+      const candidate = { value: 10, name: 'test' };
+      const mockAction = jest.fn();
+
+      condition
+        .on(candidate)
+        .anyOf((c) => c.value > 5) // true
+        .anyOf((c) => c.value < 15) // true
+        .anyOf((c) => c.name === 'test') // true
+        .ifSatisfied(mockAction)
+        .execute();
+
+      expect(mockAction).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should return true when at least one anyOf condition is met', () => {
+      const candidate = { value: 10 };
+
+      const result = condition
+        .on(candidate)
+        .anyOf((c) => c.value === 5)
+        .anyOf((c) => c.value === 10)
+        .anyOf((c) => c.value === 15)
+        .execute();
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when no anyOf conditions are met', () => {
+      const candidate = { value: 10 };
+
+      const result = condition
+        .on(candidate)
+        .anyOf((c) => c.value === 5)
+        .anyOf((c) => c.value === 15)
+        .anyOf((c) => c.value === 20)
+        .execute();
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('Combined allOf and anyOf conditions', () => {
+    it('should pass when both allOf and anyOf conditions are satisfied', () => {
+      const candidate = { value: 10, name: 'test', active: true };
+      const mockAction = jest.fn();
+
+      condition
+        .on(candidate)
+        .allOf((c) => c.active) // must be true
+        .allOf((c) => c.value > 5) // must be true
+        .anyOf((c) => c.name === 'test') // at least one must be true
+        .anyOf((c) => c.value > 100)
+        .ifSatisfied(mockAction)
+        .execute();
+
+      expect(mockAction).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should fail when allOf conditions pass but anyOf conditions fail', () => {
+      const candidate = { value: 10, name: 'test', active: true };
+      const mockIfSatisfied = jest.fn();
+      const mockOtherwise = jest.fn();
+
+      condition
+        .on(candidate)
+        .allOf((c) => c.active) // true
+        .allOf((c) => c.value > 5) // true
+        .anyOf((c) => c.name === 'wrong') // all false
+        .anyOf((c) => c.value > 100)
+        .ifSatisfied(mockIfSatisfied)
+        .otherwise(mockOtherwise)
+        .execute();
+
+      expect(mockIfSatisfied).not.toHaveBeenCalled();
+      expect(mockOtherwise).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should fail when anyOf conditions pass but allOf conditions fail', () => {
+      const candidate = { value: 10, name: 'test', active: false };
+      const mockIfSatisfied = jest.fn();
+      const mockOtherwise = jest.fn();
+
+      condition
+        .on(candidate)
+        .allOf((c) => c.active) // false
+        .allOf((c) => c.value > 5) // true
+        .anyOf((c) => c.name === 'test') // true
+        .anyOf((c) => c.value === 10) // true
+        .ifSatisfied(mockIfSatisfied)
+        .otherwise(mockOtherwise)
+        .execute();
+
+      expect(mockIfSatisfied).not.toHaveBeenCalled();
+      expect(mockOtherwise).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should pass with only anyOf conditions (no allOf)', () => {
+      const candidate = { value: 10 };
+      const mockAction = jest.fn();
+
+      condition
+        .on(candidate)
+        .anyOf((c) => c.value > 5)
+        .anyOf((c) => c.value < 15)
+        .ifSatisfied(mockAction)
+        .execute();
+
+      expect(mockAction).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should pass with only allOf conditions (no anyOf)', () => {
+      const candidate = { value: 10 };
+      const mockAction = jest.fn();
+
+      condition
+        .on(candidate)
+        .allOf((c) => c.value > 5)
+        .allOf((c) => c.value < 15)
+        .ifSatisfied(mockAction)
+        .execute();
+
+      expect(mockAction).toHaveBeenCalledWith(candidate);
     });
   });
 
@@ -207,7 +368,7 @@ describe('Condition', () => {
       expect(() => {
         condition
           .on(candidate)
-          .have((c) => c.value > 5)
+          .allOf((c) => c.value > 5)
           .execute();
       }).not.toThrow();
     });
@@ -219,7 +380,7 @@ describe('Condition', () => {
       expect(() => {
         condition
           .on(candidate)
-          .always((c) => c.value > 5)
+          .must((c) => c.value > 5)
           .ifSatisfied(mockIfSatisfied)
           .execute();
       }).not.toThrow();
@@ -233,7 +394,7 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c === 0)
+        .allOf((c) => c === 0)
         .ifSatisfied(mockAction)
         .execute();
 
@@ -246,7 +407,7 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c === '')
+        .allOf((c) => c === '')
         .ifSatisfied(mockAction)
         .execute();
 
@@ -259,7 +420,7 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => !c)
+        .allOf((c) => !c)
         .ifSatisfied(mockAction)
         .execute();
 
@@ -277,8 +438,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c.user.age >= 18)
-        .have((c) => c.permissions.includes('write'))
+        .allOf((c) => c.user.age >= 18)
+        .allOf((c) => c.permissions.includes('write'))
         .ifSatisfied(mockAction)
         .execute();
 
@@ -293,9 +454,9 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .always((c) => c.active)
-        .have((c) => c.value > 5)
-        .have((c) => c.value < 15)
+        .must((c) => c.active)
+        .allOf((c) => c.value > 5)
+        .allOf((c) => c.value < 15)
         .onMandatoryConditionFailure(mockGateFailure)
         .ifSatisfied(mockIfSatisfied)
         .otherwise(mockOtherwise)
@@ -313,9 +474,9 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .always((c) => c.active)
-        .always((c) => c.verified)
-        .always((c) => c.value > 0)
+        .must((c) => c.active)
+        .must((c) => c.verified)
+        .must((c) => c.value > 0)
         .onMandatoryConditionFailure(mockGateFailure)
         .ifSatisfied(mockIfSatisfied)
         .execute();
@@ -330,8 +491,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c.length === 5)
-        .have((c) => c.includes(3))
+        .allOf((c) => c.length === 5)
+        .allOf((c) => c.includes(3))
         .ifSatisfied(mockAction)
         .execute();
 
@@ -344,8 +505,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((c) => c > 40)
-        .have((c) => c < 50)
+        .allOf((c) => c > 40)
+        .allOf((c) => c < 50)
         .ifSatisfied(mockAction)
         .execute();
 
@@ -360,9 +521,9 @@ describe('Condition', () => {
 
       const builder = condition
         .on(candidate)
-        .always((c) => c.value > 0)
-        .have((c) => c.value > 5)
-        .have((c) => c.value < 15)
+        .must((c) => c.value > 0)
+        .allOf((c) => c.value > 5)
+        .allOf((c) => c.value < 15)
         .ifSatisfied(mockAction)
         .otherwise(jest.fn());
 
@@ -402,8 +563,8 @@ describe('Condition', () => {
 
       condition
         .on(candidate)
-        .have((user) => user.id > 0)
-        .have((user) => user.email.includes('@'))
+        .allOf((user) => user.id > 0)
+        .allOf((user) => user.email.includes('@'))
         .ifSatisfied(mockAction)
         .execute();
 

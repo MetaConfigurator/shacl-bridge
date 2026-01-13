@@ -55,8 +55,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(arraySetByContext)
+            .must(isNotNull)
+            .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const itemBuilder = new JsonSchemaObjectBuilder();
               mapDataType(candidate.constraints.datatype, itemBuilder);
@@ -74,7 +74,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.minLength(candidate.constraints.minLength ?? 0);
               candidate.context.required = true;
@@ -88,7 +88,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.maxLength(candidate.constraints.maxLength ?? 0);
             })
@@ -102,8 +102,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(numericDatatypeSpecified)
+            .must(isNotNull)
+            .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.minimum(candidate.constraints.minInclusive ?? 0);
             })
@@ -116,8 +116,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(numericDatatypeSpecified)
+            .must(isNotNull)
+            .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.maximum(candidate.constraints.maxInclusive ?? 0);
             })
@@ -130,8 +130,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(numericDatatypeSpecified)
+            .must(isNotNull)
+            .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.exclusiveMinimum(candidate.constraints.minExclusive ?? 0);
             })
@@ -144,8 +144,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(numericDatatypeSpecified)
+            .must(isNotNull)
+            .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.exclusiveMaximum(candidate.constraints.maxExclusive ?? 0);
             })
@@ -158,8 +158,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have((c) => !arraySetByContext(c))
+            .must(isNotNull)
+            .allOf((c) => !arraySetByContext(c))
             .ifSatisfied((candidate: ConstraintCandidate) => {
               mapNodeKind(candidate.constraints.nodeKind ?? NodeKind.IRI, builder);
             })
@@ -172,7 +172,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.enum(candidate.constraints.in?.map(extractStrippedName) ?? []);
             })
@@ -185,8 +185,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(arraySetByContext)
+            .must(isNotNull)
+            .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
               const ref = new JsonSchemaObjectBuilder()
@@ -209,8 +209,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(arraySetByContext)
+            .must(isNotNull)
+            .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
               const ref = new JsonSchemaObjectBuilder()
@@ -233,8 +233,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(arraySetByContext)
+            .must(isNotNull)
+            .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
               const ref = new JsonSchemaObjectBuilder()
@@ -261,8 +261,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(setMinItems)
+            .must(isNotNull)
+            .allOf(setMinItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.minItems(candidate.constraints.minCount ?? 0)
             )
@@ -275,8 +275,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(setMaxItems)
+            .must(isNotNull)
+            .allOf(setMaxItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.maxItems(candidate.constraints.maxCount ?? 0)
             )
@@ -289,8 +289,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(setMinItems)
+            .must(isNotNull)
+            .allOf(setMinItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.minItems(candidate.constraints.qualifiedMinCount ?? 0)
             )
@@ -303,8 +303,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(setMaxItems)
+            .must(isNotNull)
+            .allOf(setMaxItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.maxItems(candidate.constraints.qualifiedMaxCount ?? 0)
             )
@@ -317,7 +317,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.pattern(candidate.constraints.pattern ?? '')
             )
@@ -330,8 +330,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(stringValue)
+            .must(isNotNull)
+            .allOf(stringValue)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.const(extractStrippedName(candidate.constraints.hasValue as string));
             })
@@ -348,7 +348,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const orSchemas =
                 candidate.constraints.or
@@ -371,7 +371,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const andSchemas =
                 candidate.constraints.and
@@ -394,7 +394,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const xoneSchemas =
                 candidate.constraints.xone
@@ -417,7 +417,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const notSchema = candidate.constraints.not
                 ?.map((node) => [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(node)))
@@ -439,7 +439,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThan`,
@@ -455,7 +455,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-equals`,
@@ -471,7 +471,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               // Parse default value to appropriate JavaScript type based on datatype
               const parsedValue = parseDefaultValue(
@@ -489,7 +489,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThanOrEquals`,
@@ -505,8 +505,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(nonEmptyArray)
+            .must(isNotNull)
+            .allOf(nonEmptyArray)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const disjointPaths =
                 candidate.constraints.disjoint?.map((path) => extractStrippedName(path)) ?? [];
@@ -523,8 +523,8 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
-            .have(nonEmptyArray)
+            .must(isNotNull)
+            .allOf(nonEmptyArray)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const ignoredProperties = candidate.constraints.ignoredProperties ?? [];
               if (ignoredProperties.length === 0) return;
@@ -539,7 +539,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied(() => builder.additionalProperties(false))
             .execute();
         })
@@ -551,7 +551,7 @@ export class ConstraintConverter {
               context: this.context,
               constraints: this.constraints,
             } as ConstraintCandidate)
-            .always(isNotNull)
+            .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const value = candidate.constraints[key as keyof CoreConstraints];
               if (value == null) return;

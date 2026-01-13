@@ -6,7 +6,8 @@ export type Action<T> = (action: T) => void;
 export class Condition<T> {
   private candidate?: T;
   private gateConditions: ConditionalFunctions<T>[] = [];
-  private normalConditions: ConditionalFunctions<T>[] = [];
+  private normalAndConditions: ConditionalFunctions<T>[] = [];
+  private normalOrConditions: ConditionalFunctions<T>[] = [];
   private onGateFailureAction?: Action<T>;
   private ifSatisfiedAction?: Action<T>;
   private otherwiseAction?: Action<T>;
@@ -17,13 +18,18 @@ export class Condition<T> {
     return builder;
   }
 
-  always(mandatoryCondition: ConditionalFunctions<T>) {
+  must(mandatoryCondition: ConditionalFunctions<T>) {
     this.gateConditions.push(mandatoryCondition);
     return this;
   }
 
-  have(condition: ConditionalFunctions<T>) {
-    this.normalConditions.push(condition);
+  allOf(condition: ConditionalFunctions<T>) {
+    this.normalAndConditions.push(condition);
+    return this;
+  }
+
+  anyOf(condition: ConditionalFunctions<T>) {
+    this.normalOrConditions.push(condition);
     return this;
   }
 
@@ -42,13 +48,13 @@ export class Condition<T> {
     return this;
   }
 
-  execute(): void {
+  execute(): boolean {
     const candidate = this.candidate;
     if (candidate == null) {
       logger.error(
         'No parameter for check, use on to specify parameter on which conditions needs to be checked'
       );
-      return;
+      return false;
     }
     const gateEvaluationResult =
       this.gateConditions.length == 0 ? true : this.gateConditions.every((fn) => fn(candidate));
@@ -56,14 +62,22 @@ export class Condition<T> {
       logger.error('Mandatory condition failed.');
       if (this.onGateFailureAction) this.onGateFailureAction(candidate);
     }
-    const otherConditionEvaluationResult =
-      this.normalConditions.length == 0 ? true : this.normalConditions.every((fn) => fn(candidate));
-    const functionToExecute = otherConditionEvaluationResult
-      ? this.ifSatisfiedAction
-      : this.otherwiseAction;
+    const andConditionResult =
+      this.normalAndConditions.length == 0
+        ? true
+        : this.normalAndConditions.every((fn) => fn(candidate));
+    const orConditionResult =
+      this.normalOrConditions.length == 0
+        ? true
+        : this.normalOrConditions.some((fn) => fn(candidate));
+    const functionToExecute =
+      andConditionResult && orConditionResult ? this.ifSatisfiedAction : this.otherwiseAction;
 
     if (functionToExecute) {
       functionToExecute(candidate);
+    } else {
+      logger.info('Condition satisfied, but no function to execute.');
     }
+    return andConditionResult && orConditionResult;
   }
 }

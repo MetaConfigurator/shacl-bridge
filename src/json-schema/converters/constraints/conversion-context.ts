@@ -2,6 +2,7 @@ import { match, P } from 'ts-pattern';
 import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 import { ShapeDefinition } from '../../../ir/meta-model/shape-definition';
 import { NodeKind } from '../../../ir/meta-model/node-kind';
+import { Condition } from '../../../condition/condition';
 
 export class ConversionContext {
   isArray = false;
@@ -25,32 +26,31 @@ export class ConversionContext {
   }
 
   checkForInvalidNumericConstraint() {
-    const minCount = this.constraints.minCount;
-    const maxCount = this.constraints.maxCount;
-    const minLength = this.constraints.minLength;
-    const maxLength = this.constraints.maxLength;
-    const minInclusive = this.constraints.minInclusive;
-    const maxInclusive = this.constraints.maxInclusive;
-    if (minCount == null && maxCount == 0) return true;
-    if (minCount != null && maxCount != null && maxCount < minCount) return true;
-    if (minCount == 0 && maxCount == 0) return true;
-    if (minLength == null && maxLength != null && maxLength == 0) return true;
-    if (minLength != null && maxLength != null && maxLength < minLength) return true;
-    if (minInclusive != null && maxInclusive != null && maxInclusive < minInclusive) return true;
-    return false;
+    return new Condition()
+      .on(this.constraints)
+      .anyOf((c) => c.minCount == null && c.maxCount === 0)
+      .anyOf((c) => c.minCount != null && c.maxCount != null && c.maxCount < c.minCount)
+      .anyOf((c) => c.minCount === 0 && c.maxCount === 0)
+      .anyOf((c) => c.minLength == null && c.maxLength != null && c.maxLength === 0)
+      .anyOf((c) => c.minLength != null && c.maxLength != null && c.maxLength < c.minLength)
+      .anyOf(
+        (c) => c.minInclusive != null && c.maxInclusive != null && c.maxInclusive < c.minInclusive
+      )
+      .execute();
   }
 
   hasPrimitiveElements() {
-    return (
-      (this.constraints.datatype != null ||
-        this.constraints.in != null ||
-        this.hasLogicalConstraints() ||
-        this.hasStringConstraints() ||
-        this.hasPrimitiveNodeKind()) &&
-      this.constraints.node == null &&
-      this.constraints.class == null &&
-      this.constraints.qualifiedValueShape == null
-    );
+    return new Condition()
+      .on(this.constraints)
+      .allOf((constraints) => constraints.node == null)
+      .allOf((constraints) => constraints.class == null)
+      .allOf((constraints) => constraints.qualifiedValueShape == null)
+      .anyOf((constraints) => constraints.datatype != null)
+      .anyOf((constraints) => constraints.in != null)
+      .anyOf(() => this.hasLogicalConstraints())
+      .anyOf(() => this.hasStringConstraints())
+      .anyOf(() => this.hasPrimitiveNodeKind())
+      .execute();
   }
 
   hasPrimitiveNodeKind() {
@@ -66,20 +66,22 @@ export class ConversionContext {
   }
 
   hasLogicalConstraints() {
-    return (
-      this.constraints.or != null ||
-      this.constraints.and != null ||
-      this.constraints.xone != null ||
-      this.constraints.not != null
-    );
+    return new Condition()
+      .on(this.constraints)
+      .anyOf((constraints) => constraints.or != null)
+      .anyOf((constraints) => constraints.and != null)
+      .anyOf((constraints) => constraints.xone != null)
+      .anyOf((constraints) => constraints.not != null)
+      .execute();
   }
 
   hasStringConstraints() {
-    return (
-      this.constraints.minLength != null ||
-      this.constraints.maxLength != null ||
-      this.constraints.pattern != null
-    );
+    return new Condition()
+      .on(this.constraints)
+      .anyOf((constraints) => constraints.minLength != null)
+      .anyOf((constraints) => constraints.maxLength != null)
+      .anyOf((constraints) => constraints.pattern != null)
+      .execute();
   }
 
   needToBeArray(): void {
