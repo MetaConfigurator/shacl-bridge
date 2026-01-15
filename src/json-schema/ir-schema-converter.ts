@@ -10,64 +10,47 @@ import { StackElement } from '../stack/stack-element';
 import { StackElementBuilder } from '../stack/stack-element-builder';
 import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
 import { ConstraintConverter } from './converters/constraints/constraint-converter';
+import { Condition } from '../condition/condition';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
+  private shapeDefinitions: ShapeDefinition[] = [];
 
-  constructor(private readonly ir: IntermediateRepresentation) {}
+  constructor(private readonly ir: IntermediateRepresentation) {
+    this.shapeDefinitions = ir.shapeDefinitions;
+  }
 
   convert(): JsonSchemaObjectType {
-    let builder = new JsonSchemaObjectBuilder();
-    const { shapeDefinitions } = this.ir;
-    if (shapeDefinitions.length == 0) return builder.build();
-    const schemas = new Map<ShapeDefinition, JsonSchemaObjectType>();
-    for (const shapeDef of shapeDefinitions) {
-      schemas.set(shapeDef, this.processBottomUp(shapeDef));
-    }
-
-    if (schemas.size > 1) {
-      const firstSchema = [...schemas.entries()].map(([shape, schema]) => {
-        return {
-          shape: shape,
-          schema: schema,
-        };
-      })[0];
-      builder.$id(firstSchema.shape.nodeKey).$schema(JSON_SCHEMA_DRAFT);
-
-      [...schemas.entries()]
-        .map(([shape, schema]) => {
-          return {
-            shape: shape,
-            schema: schema,
-          };
-        })
-        .forEach((element) => {
-          const { shape, schema } = element;
-          const target = shape.targets[0];
-          builder.$defs({
-            ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
-            [target]: schema,
-          });
+    const builder = new JsonSchemaObjectBuilder();
+    if (this.shapeDefinitions.length == 0) return builder.build();
+    this.shapeDefinitions
+      .map((shapeDefinition) => {
+        return { shape: shapeDefinition, schema: this.processBottomUp(shapeDefinition) };
+      })
+      .forEach((element) => {
+        const { shape, schema } = element;
+        const target = shape.targets[0];
+        builder.$defs({
+          ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
+          [target]: schema,
         });
-      builder.$ref(`#/$defs/${firstSchema.shape.targets[0]}`);
-    } else {
-      builder = JsonSchemaObjectBuilder.from(schemas.get(shapeDefinitions[0]) ?? {});
-      builder.$id(shapeDefinitions[0].nodeKey).$schema(JSON_SCHEMA_DRAFT);
-    }
-    return builder.build();
+      });
+    return builder
+      .$id(this.shapeDefinitions[0].nodeKey)
+      .$schema(JSON_SCHEMA_DRAFT)
+      .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`)
+      .build();
   }
 
   private isLogicalConstraintFragment(parentShape: ShapeDefinition, childNodeKey: string): boolean {
-    const constraints = parentShape.coreConstraints;
-    if (!constraints) return false;
-
-    return (
-      constraints.or?.some((ref) => ref.includes(childNodeKey)) ??
-      constraints.and?.some((ref) => ref.includes(childNodeKey)) ??
-      constraints.xone?.some((ref) => ref.includes(childNodeKey)) ??
-      constraints.not?.includes(childNodeKey) ??
-      false
-    );
+    return new Condition()
+      .on(parentShape.coreConstraints)
+      .must((constraints) => constraints != null)
+      .anyOf((constraints) => constraints?.or?.some((ref) => ref.includes(childNodeKey)) ?? false)
+      .anyOf((constraints) => constraints?.and?.some((ref) => ref.includes(childNodeKey)) ?? false)
+      .anyOf((constraints) => constraints?.xone?.some((ref) => ref.includes(childNodeKey)) ?? false)
+      .anyOf((constraints) => constraints?.not?.includes(childNodeKey) ?? false)
+      .execute();
   }
 
   private processBottomUp(shapeDef: ShapeDefinition): JsonSchemaObjectType {

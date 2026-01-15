@@ -49,26 +49,31 @@ describe('ir-schema-converter', () => {
     const ir = await getIr(content);
     const schema = new IrSchemaConverter(ir).convert();
     expect(schema).toStrictEqual({
-      $schema: 'https://json-schema.org/draft/2020-12/schema',
-      $id: 'http://example.org/PersonShape',
-      title: 'Person',
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-        },
-        email: {
-          type: 'string',
-          pattern: '^[\\w.-]+@[\\w.-]+\\.\\w+$',
-        },
-        age: {
-          type: 'integer',
-          minimum: 0,
-          maximum: 150,
+      $defs: {
+        Person: {
+          additionalProperties: true,
+          properties: {
+            age: {
+              maximum: 150,
+              minimum: 0,
+              type: 'integer',
+            },
+            email: {
+              pattern: '^[\\w.-]+@[\\w.-]+\\.\\w+$',
+              type: 'string',
+            },
+            name: {
+              type: 'string',
+            },
+          },
+          required: ['name'],
+          title: 'Person',
+          type: 'object',
         },
       },
-      required: ['name'],
-      additionalProperties: true,
+      $id: 'http://example.org/PersonShape',
+      $ref: '#/$defs/Person',
+      $schema: 'https://json-schema.org/draft/2020-12/schema',
     });
   });
 
@@ -476,24 +481,29 @@ ex:PersonReferenceShape
     const ir = await getIr(content);
     const schema = new IrSchemaConverter(ir).convert();
     expect(schema).toStrictEqual({
-      $schema: 'https://json-schema.org/draft/2020-12/schema',
-      $id: 'http://example.org/PersonShape',
-      title: 'Person',
-      type: 'object',
-      properties: {
-        ssn: {
-          type: 'string',
-          pattern: '^\\d{3}-\\d{2}-\\d{4}$',
-        },
-        worksFor: {
-          type: 'array',
-          items: {
-            $ref: '#/$defs/Company',
+      $defs: {
+        Person: {
+          additionalProperties: false,
+          properties: {
+            ssn: {
+              pattern: '^\\d{3}-\\d{2}-\\d{4}$',
+              type: 'string',
+            },
+            worksFor: {
+              items: {
+                $ref: '#/$defs/Company',
+              },
+              type: 'array',
+            },
           },
+          title: 'Person',
+          type: 'object',
+          'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
         },
       },
-      additionalProperties: false,
-      'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
+      $id: 'http://example.org/PersonShape',
+      $ref: '#/$defs/Person',
+      $schema: 'https://json-schema.org/draft/2020-12/schema',
     });
   });
 
@@ -523,28 +533,33 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FlexibleShape',
-        title: 'FlexibleType',
-        type: 'object',
-        properties: {
-          identifier: {
-            anyOf: [
-              {
+        $defs: {
+          FlexibleType: {
+            additionalProperties: true,
+            properties: {
+              identifier: {
+                anyOf: [
+                  {
+                    minLength: 5,
+                    type: 'string',
+                  },
+                  {
+                    minimum: 1000,
+                    type: 'integer',
+                  },
+                ],
+              },
+              name: {
                 type: 'string',
-                minLength: 5,
               },
-              {
-                type: 'integer',
-                minimum: 1000,
-              },
-            ],
-          },
-          name: {
-            type: 'string',
+            },
+            title: 'FlexibleType',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/FlexibleShape',
+        $ref: '#/$defs/FlexibleType',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -568,25 +583,30 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/RestrictedShape',
-        title: 'RestrictedType',
-        type: 'object',
-        properties: {
-          code: {
-            allOf: [
-              {
-                type: 'string',
-                pattern: '^[A-Z]{3}$',
+        $defs: {
+          RestrictedType: {
+            additionalProperties: true,
+            properties: {
+              code: {
+                allOf: [
+                  {
+                    pattern: '^[A-Z]{3}$',
+                    type: 'string',
+                  },
+                  {
+                    maxLength: 3,
+                    minLength: 3,
+                  },
+                ],
               },
-              {
-                minLength: 3,
-                maxLength: 3,
-              },
-            ],
+            },
+            title: 'RestrictedType',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/RestrictedShape',
+        $ref: '#/$defs/RestrictedType',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -610,25 +630,30 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ExclusiveShape',
-        title: 'ExclusiveType',
-        type: 'object',
-        properties: {
-          contact: {
-            oneOf: [
-              {
-                type: 'string',
-                pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+        $defs: {
+          ExclusiveType: {
+            additionalProperties: true,
+            properties: {
+              contact: {
+                oneOf: [
+                  {
+                    pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+                    type: 'string',
+                  },
+                  {
+                    pattern: '^\\+?[1-9]\\d{1,14}$',
+                    type: 'string',
+                  },
+                ],
               },
-              {
-                type: 'string',
-                pattern: '^\\+?[1-9]\\d{1,14}$',
-              },
-            ],
+            },
+            title: 'ExclusiveType',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ExclusiveShape',
+        $ref: '#/$defs/ExclusiveType',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -652,19 +677,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/NegativeShape',
-        title: 'NegativeType',
-        type: 'object',
-        properties: {
-          username: {
-            type: 'string',
-            not: {
-              pattern: '^admin.*',
+        $defs: {
+          NegativeType: {
+            additionalProperties: true,
+            properties: {
+              username: {
+                not: {
+                  pattern: '^admin.*',
+                },
+                type: 'string',
+              },
             },
+            title: 'NegativeType',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/NegativeShape',
+        $ref: '#/$defs/NegativeType',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -698,38 +728,43 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ComplexLogicShape',
-        title: 'ComplexType',
-        type: 'object',
-        properties: {
-          value: {
-            anyOf: [
-              {
-                allOf: [
+        $defs: {
+          ComplexType: {
+            additionalProperties: true,
+            properties: {
+              value: {
+                anyOf: [
                   {
-                    type: 'string',
+                    allOf: [
+                      {
+                        type: 'string',
+                      },
+                      {
+                        minLength: 10,
+                      },
+                    ],
                   },
                   {
-                    minLength: 10,
+                    allOf: [
+                      {
+                        type: 'integer',
+                      },
+                      {
+                        maximum: 100,
+                        minimum: 0,
+                      },
+                    ],
                   },
                 ],
               },
-              {
-                allOf: [
-                  {
-                    type: 'integer',
-                  },
-                  {
-                    minimum: 0,
-                    maximum: 100,
-                  },
-                ],
-              },
-            ],
+            },
+            title: 'ComplexType',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ComplexLogicShape',
+        $ref: '#/$defs/ComplexType',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -854,16 +889,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TagShape',
-        title: 'Item',
-        type: 'object',
-        properties: {
-          tags: {
-            type: 'string',
+        $defs: {
+          Item: {
+            additionalProperties: true,
+            properties: {
+              tags: {
+                type: 'string',
+              },
+            },
+            title: 'Item',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/TagShape',
+        $ref: '#/$defs/Item',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -885,16 +925,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/NoteShape',
-        title: 'Document',
-        type: 'object',
-        properties: {
-          notes: {
-            type: 'string',
+        $defs: {
+          Document: {
+            title: 'Document',
+            type: 'object',
+            properties: {
+              notes: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/NoteShape',
+        $ref: '#/$defs/Document',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -916,21 +961,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/AuthorShape',
-        title: 'Article',
-        type: 'object',
-        properties: {
-          authors: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Article: {
+            title: 'Article',
+            type: 'object',
+            properties: {
+              authors: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+              },
             },
-            minItems: 1,
+            required: ['authors'],
+            additionalProperties: true,
           },
         },
-        required: ['authors'],
-        additionalProperties: true,
+        $id: 'http://example.org/AuthorShape',
+        $ref: '#/$defs/Article',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -953,22 +1003,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/CategoryShape',
-        title: 'Product',
-        type: 'object',
-        properties: {
-          categories: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Product: {
+            title: 'Product',
+            type: 'object',
+            properties: {
+              categories: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 2,
+                maxItems: 5,
+              },
             },
-            minItems: 2,
-            maxItems: 5,
+            required: ['categories'],
+            additionalProperties: true,
           },
         },
-        required: ['categories'],
-        additionalProperties: true,
+        $id: 'http://example.org/CategoryShape',
+        $ref: '#/$defs/Product',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -991,16 +1046,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DescriptionShape',
-        title: 'Item',
-        type: 'object',
-        properties: {
-          description: {
-            type: 'string',
+        $defs: {
+          Item: {
+            title: 'Item',
+            type: 'object',
+            properties: {
+              description: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/DescriptionShape',
+        $ref: '#/$defs/Item',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1078,22 +1138,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/BatchShape',
-        title: 'Batch',
-        type: 'object',
-        properties: {
-          items: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Batch: {
+            title: 'Batch',
+            type: 'object',
+            properties: {
+              items: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 100,
+                maxItems: 1000,
+              },
             },
-            minItems: 100,
-            maxItems: 1000,
+            required: ['items'],
+            additionalProperties: true,
           },
         },
-        required: ['items'],
-        additionalProperties: true,
+        $id: 'http://example.org/BatchShape',
+        $ref: '#/$defs/Batch',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -1313,20 +1378,31 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ProductShape',
-        title: 'Product',
-        type: 'object',
-        properties: {
-          productId: {
-            anyOf: [
-              { type: 'string', pattern: '^[A-Z]{3}-[0-9]{4}$' },
-              { type: 'integer', minimum: 1000 },
-            ],
+        $defs: {
+          Product: {
+            additionalProperties: true,
+            properties: {
+              productId: {
+                anyOf: [
+                  {
+                    pattern: '^[A-Z]{3}-[0-9]{4}$',
+                    type: 'string',
+                  },
+                  {
+                    minimum: 1000,
+                    type: 'integer',
+                  },
+                ],
+              },
+            },
+            required: ['productId'],
+            title: 'Product',
+            type: 'object',
           },
         },
-        required: ['productId'],
-        additionalProperties: true,
+        $id: 'http://example.org/ProductShape',
+        $ref: '#/$defs/Product',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1352,17 +1428,30 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TaxPayerShape',
-        title: 'TaxPayer',
-        type: 'object',
-        properties: {
-          taxId: {
-            anyOf: [{ type: 'integer' }, { type: 'string', format: 'uri' }],
+        $defs: {
+          TaxPayer: {
+            additionalProperties: true,
+            properties: {
+              taxId: {
+                anyOf: [
+                  {
+                    type: 'integer',
+                  },
+                  {
+                    format: 'uri',
+                    type: 'string',
+                  },
+                ],
+              },
+            },
+            required: ['taxId'],
+            title: 'TaxPayer',
+            type: 'object',
           },
         },
-        required: ['taxId'],
-        additionalProperties: true,
+        $id: 'http://example.org/TaxPayerShape',
+        $ref: '#/$defs/TaxPayer',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1387,20 +1476,33 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PublicationShape',
-        title: 'Publication',
-        type: 'object',
-        properties: {
-          publishedDate: {
-            anyOf: [
-              { type: 'string', format: 'date' },
-              { type: 'string', format: 'date-time' },
-              { type: 'string' },
-            ],
+        $defs: {
+          Publication: {
+            additionalProperties: true,
+            properties: {
+              publishedDate: {
+                anyOf: [
+                  {
+                    format: 'date',
+                    type: 'string',
+                  },
+                  {
+                    format: 'date-time',
+                    type: 'string',
+                  },
+                  {
+                    type: 'string',
+                  },
+                ],
+              },
+            },
+            title: 'Publication',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/PublicationShape',
+        $ref: '#/$defs/Publication',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1510,22 +1612,36 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/UserShape',
-        title: 'User',
-        type: 'object',
-        properties: {
-          email: {
-            allOf: [
-              { type: 'string' },
-              {
-                anyOf: [{ pattern: '.*@company.com$' }, { pattern: '.*@partner.org$' }],
+        $defs: {
+          User: {
+            additionalProperties: true,
+            properties: {
+              email: {
+                allOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    anyOf: [
+                      {
+                        pattern: '.*@company.com$',
+                      },
+                      {
+                        pattern: '.*@partner.org$',
+                      },
+                    ],
+                  },
+                ],
               },
-            ],
+            },
+            required: ['email'],
+            title: 'User',
+            type: 'object',
           },
         },
-        required: ['email'],
-        additionalProperties: true,
+        $id: 'http://example.org/UserShape',
+        $ref: '#/$defs/User',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1562,24 +1678,46 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ParticipantShape',
-        title: 'Participant',
-        type: 'object',
-        properties: {
-          age: {
-            anyOf: [
-              {
-                allOf: [{ type: 'integer' }, { minimum: 18 }, { maximum: 65 }],
+        $defs: {
+          Participant: {
+            additionalProperties: true,
+            properties: {
+              age: {
+                anyOf: [
+                  {
+                    allOf: [
+                      {
+                        type: 'integer',
+                      },
+                      {
+                        minimum: 18,
+                      },
+                      {
+                        maximum: 65,
+                      },
+                    ],
+                  },
+                  {
+                    allOf: [
+                      {
+                        type: 'string',
+                      },
+                      {
+                        enum: ['minor-with-guardian', 'senior-exempt'],
+                      },
+                    ],
+                  },
+                ],
               },
-              {
-                allOf: [{ type: 'string' }, { enum: ['minor-with-guardian', 'senior-exempt'] }],
-              },
-            ],
+            },
+            required: ['age'],
+            title: 'Participant',
+            type: 'object',
           },
         },
-        required: ['age'],
-        additionalProperties: true,
+        $id: 'http://example.org/ParticipantShape',
+        $ref: '#/$defs/Participant',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1605,18 +1743,30 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FileUploadShape',
-        title: 'FileUpload',
-        type: 'object',
-        properties: {
-          mimeType: {
-            not: {
-              anyOf: [{ pattern: '^application/x-.*' }, { pattern: '^application/.*executable.*' }],
+        $defs: {
+          FileUpload: {
+            additionalProperties: true,
+            properties: {
+              mimeType: {
+                not: {
+                  anyOf: [
+                    {
+                      pattern: '^application/x-.*',
+                    },
+                    {
+                      pattern: '^application/.*executable.*',
+                    },
+                  ],
+                },
+              },
             },
+            title: 'FileUpload',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/FileUploadShape',
+        $ref: '#/$defs/FileUpload',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1782,20 +1932,25 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/AccountShape',
-        title: 'Account',
-        type: 'object',
-        properties: {
-          username: {
-            type: 'string',
-            minLength: 3,
-            maxLength: 20,
-            pattern: '^[a-zA-Z0-9_-]+$',
+        $defs: {
+          Account: {
+            additionalProperties: true,
+            properties: {
+              username: {
+                maxLength: 20,
+                minLength: 3,
+                pattern: '^[a-zA-Z0-9_-]+$',
+                type: 'string',
+              },
+            },
+            required: ['username'],
+            title: 'Account',
+            type: 'object',
           },
         },
-        required: ['username'],
-        additionalProperties: true,
+        $id: 'http://example.org/AccountShape',
+        $ref: '#/$defs/Account',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1818,19 +1973,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContactShape',
-        title: 'Contact',
-        type: 'object',
-        properties: {
-          email: {
-            type: 'string',
-            pattern:
-              "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
-            maxLength: 254,
+        $defs: {
+          Contact: {
+            additionalProperties: true,
+            properties: {
+              email: {
+                maxLength: 254,
+                pattern:
+                  "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+                type: 'string',
+              },
+            },
+            title: 'Contact',
+            type: 'object',
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ContactShape',
+        $ref: '#/$defs/Contact',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1854,20 +2014,25 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/WebResourceShape',
-        title: 'WebResource',
-        type: 'object',
-        properties: {
-          url: {
-            type: 'string',
-            pattern: '^https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/.*)?$',
-            minLength: 10,
-            maxLength: 2048,
+        $defs: {
+          WebResource: {
+            additionalProperties: true,
+            properties: {
+              url: {
+                maxLength: 2048,
+                minLength: 10,
+                pattern: '^https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/.*)?$',
+                type: 'string',
+              },
+            },
+            required: ['url'],
+            title: 'WebResource',
+            type: 'object',
           },
         },
-        required: ['url'],
-        additionalProperties: true,
+        $id: 'http://example.org/WebResourceShape',
+        $ref: '#/$defs/WebResource',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1893,21 +2058,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ResourceShape',
-        title: 'Resource',
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            pattern:
-              '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
-            minLength: 36,
-            maxLength: 36,
+        $defs: {
+          Resource: {
+            additionalProperties: true,
+            properties: {
+              id: {
+                maxLength: 36,
+                minLength: 36,
+                pattern:
+                  '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+                type: 'string',
+              },
+            },
+            required: ['id'],
+            title: 'Resource',
+            type: 'object',
           },
         },
-        required: ['id'],
-        additionalProperties: true,
+        $id: 'http://example.org/ResourceShape',
+        $ref: '#/$defs/Resource',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -1934,19 +2104,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TemperatureShape',
-        title: 'Sensor',
-        type: 'object',
-        properties: {
-          temperature: {
-            type: 'number',
-            minimum: -273.15,
-            maximum: 1000.0,
+        $defs: {
+          Sensor: {
+            title: 'Sensor',
+            type: 'object',
+            properties: {
+              temperature: {
+                type: 'number',
+                minimum: -273.15,
+                maximum: 1000.0,
+              },
+            },
+            required: ['temperature'],
+            additionalProperties: true,
           },
         },
-        required: ['temperature'],
-        additionalProperties: true,
+        $id: 'http://example.org/TemperatureShape',
+        $ref: '#/$defs/Sensor',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -1969,18 +2144,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PercentageShape',
-        title: 'Statistics',
-        type: 'object',
-        properties: {
-          rate: {
-            type: 'number',
-            exclusiveMinimum: 0.0,
-            exclusiveMaximum: 100.0,
+        $defs: {
+          Statistics: {
+            title: 'Statistics',
+            type: 'object',
+            properties: {
+              rate: {
+                type: 'number',
+                exclusiveMinimum: 0.0,
+                exclusiveMaximum: 100.0,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/PercentageShape',
+        $ref: '#/$defs/Statistics',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2003,18 +2183,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ScoreShape',
-        title: 'TestResult',
-        type: 'object',
-        properties: {
-          score: {
-            type: 'integer',
-            minimum: 0,
-            exclusiveMaximum: 100,
+        $defs: {
+          TestResult: {
+            title: 'TestResult',
+            type: 'object',
+            properties: {
+              score: {
+                type: 'integer',
+                minimum: 0,
+                exclusiveMaximum: 100,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ScoreShape',
+        $ref: '#/$defs/TestResult',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2040,17 +2225,22 @@ ex:PersonReferenceShape
       // Note: min/max constraints are filtered out for date types
       // because JSON Schema minimum/maximum only apply to numeric types
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/EventShape',
-        title: 'Event',
-        type: 'object',
-        properties: {
-          eventDate: {
-            type: 'string',
-            format: 'date',
+        $defs: {
+          Event: {
+            title: 'Event',
+            type: 'object',
+            properties: {
+              eventDate: {
+                type: 'string',
+                format: 'date',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/EventShape',
+        $ref: '#/$defs/Event',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2079,23 +2269,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/BalanceShape',
-        title: 'Account',
-        type: 'object',
-        properties: {
-          balance: {
-            type: 'number',
-            minimum: -1000.0,
-            maximum: 0.0,
-          },
-          creditScore: {
-            type: 'integer',
-            exclusiveMinimum: -1,
-            maximum: 850,
+        $defs: {
+          Account: {
+            title: 'Account',
+            type: 'object',
+            properties: {
+              balance: {
+                type: 'number',
+                minimum: -1000.0,
+                maximum: 0.0,
+              },
+              creditScore: {
+                type: 'integer',
+                exclusiveMinimum: -1,
+                maximum: 850,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/BalanceShape',
+        $ref: '#/$defs/Account',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -2125,20 +2320,25 @@ ex:PersonReferenceShape
       // Note: sh:equals has no direct JSON Schema equivalent
       // Preserved as x-shacl-equals extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          email: {
-            type: 'string',
-          },
-          confirmEmail: {
-            type: 'string',
-            'x-shacl-equals': 'email',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+              confirmEmail: {
+                type: 'string',
+                'x-shacl-equals': 'email',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2170,23 +2370,28 @@ ex:PersonReferenceShape
       // Note: sh:lessThan has no direct JSON Schema equivalent
       // Preserved as x-shacl-lessThan extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DateRangeShape',
-        title: 'DateRange',
-        type: 'object',
-        properties: {
-          startDate: {
-            type: 'string',
-            format: 'date',
-          },
-          endDate: {
-            type: 'string',
-            format: 'date',
-            'x-shacl-lessThan': 'startDate',
+        $defs: {
+          DateRange: {
+            title: 'DateRange',
+            type: 'object',
+            properties: {
+              startDate: {
+                type: 'string',
+                format: 'date',
+              },
+              endDate: {
+                type: 'string',
+                format: 'date',
+                'x-shacl-lessThan': 'startDate',
+              },
+            },
+            required: ['startDate', 'endDate'],
+            additionalProperties: true,
           },
         },
-        required: ['startDate', 'endDate'],
-        additionalProperties: true,
+        $id: 'http://example.org/DateRangeShape',
+        $ref: '#/$defs/DateRange',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -2209,17 +2414,22 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DocumentShape',
-        title: 'Document',
-        type: 'object',
-        properties: {
-          externalLink: {
-            type: 'string',
-            format: 'uri',
+        $defs: {
+          Document: {
+            title: 'Document',
+            type: 'object',
+            properties: {
+              externalLink: {
+                type: 'string',
+                format: 'uri',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/DocumentShape',
+        $ref: '#/$defs/Document',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2240,16 +2450,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MetadataShape',
-        title: 'Metadata',
-        type: 'object',
-        properties: {
-          description: {
-            type: ['string', 'number', 'boolean'],
+        $defs: {
+          Metadata: {
+            title: 'Metadata',
+            type: 'object',
+            properties: {
+              description: {
+                type: ['string', 'number', 'boolean'],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/MetadataShape',
+        $ref: '#/$defs/Metadata',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2272,17 +2487,22 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ArticleShape',
-        title: 'Article',
-        type: 'object',
-        properties: {
-          author: {
+        $defs: {
+          Article: {
+            title: 'Article',
             type: 'object',
+            properties: {
+              author: {
+                type: 'object',
+              },
+            },
+            required: ['author'],
+            additionalProperties: true,
           },
         },
-        required: ['author'],
-        additionalProperties: true,
+        $id: 'http://example.org/ArticleShape',
+        $ref: '#/$defs/Article',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2303,16 +2523,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/EntityShape',
-        title: 'Entity',
-        type: 'object',
-        properties: {
-          relatedTo: {
-            oneOf: [{ type: 'object' }, { type: 'string', format: 'uri' }],
+        $defs: {
+          Entity: {
+            title: 'Entity',
+            type: 'object',
+            properties: {
+              relatedTo: {
+                oneOf: [{ type: 'object' }, { type: 'string', format: 'uri' }],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/EntityShape',
+        $ref: '#/$defs/Entity',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2333,16 +2558,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContentShape',
-        title: 'Content',
-        type: 'object',
-        properties: {
-          value: {
-            oneOf: [{ type: 'object' }, { type: ['string', 'number', 'boolean'] }],
+        $defs: {
+          Content: {
+            title: 'Content',
+            type: 'object',
+            properties: {
+              value: {
+                oneOf: [{ type: 'object' }, { type: ['string', 'number', 'boolean'] }],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ContentShape',
+        $ref: '#/$defs/Content',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2365,17 +2595,25 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/IdentifierShape',
-        title: 'Thing',
-        type: 'object',
-        properties: {
-          identifier: {
-            oneOf: [{ type: 'string', format: 'uri' }, { type: ['string', 'number', 'boolean'] }],
+        $defs: {
+          Thing: {
+            title: 'Thing',
+            type: 'object',
+            properties: {
+              identifier: {
+                oneOf: [
+                  { type: 'string', format: 'uri' },
+                  { type: ['string', 'number', 'boolean'] },
+                ],
+              },
+            },
+            required: ['identifier'],
+            additionalProperties: true,
           },
         },
-        required: ['identifier'],
-        additionalProperties: true,
+        $id: 'http://example.org/IdentifierShape',
+        $ref: '#/$defs/Thing',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -2403,19 +2641,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/StrictPersonShape',
-        title: 'StrictPerson',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-          },
-          age: {
-            type: 'integer',
+        $defs: {
+          StrictPerson: {
+            title: 'StrictPerson',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              age: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: false,
           },
         },
-        additionalProperties: false,
+        $id: 'http://example.org/StrictPersonShape',
+        $ref: '#/$defs/StrictPerson',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2441,17 +2684,22 @@ ex:PersonReferenceShape
       // sh:ignoredProperties doesn't have a direct JSON Schema equivalent
       // The shape is still closed, but RDF validators would allow rdf:type
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TypedPersonShape',
-        title: 'TypedPerson',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
+        $defs: {
+          TypedPerson: {
+            title: 'TypedPerson',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
           },
         },
-        additionalProperties: false,
-        'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
+        $id: 'http://example.org/TypedPersonShape',
+        $ref: '#/$defs/TypedPerson',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2473,16 +2721,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FlexiblePersonShape',
-        title: 'FlexiblePerson',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
+        $defs: {
+          FlexiblePerson: {
+            title: 'FlexiblePerson',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/FlexiblePersonShape',
+        $ref: '#/$defs/FlexiblePerson',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -2506,17 +2759,22 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SingletonShape',
-        title: 'Singleton',
-        type: 'object',
-        properties: {
-          status: {
-            type: 'string',
-            enum: ['active'],
+        $defs: {
+          Singleton: {
+            title: 'Singleton',
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string',
+                enum: ['active'],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/SingletonShape',
+        $ref: '#/$defs/Singleton',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2537,16 +2795,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MixedEnumShape',
-        title: 'MixedEnum',
-        type: 'object',
-        properties: {
-          value: {
-            enum: ['low', 'medium', 'high', '1', '2', '3'],
+        $defs: {
+          MixedEnum: {
+            title: 'MixedEnum',
+            type: 'object',
+            properties: {
+              value: {
+                enum: ['low', 'medium', 'high', '1', '2', '3'],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/MixedEnumShape',
+        $ref: '#/$defs/MixedEnum',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2567,16 +2830,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/CategoryShape',
-        title: 'Document',
-        type: 'object',
-        properties: {
-          category: {
-            enum: ['Science', 'Technology', 'Engineering', 'Mathematics'],
+        $defs: {
+          Document: {
+            title: 'Document',
+            type: 'object',
+            properties: {
+              category: {
+                enum: ['Science', 'Technology', 'Engineering', 'Mathematics'],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/CategoryShape',
+        $ref: '#/$defs/Document',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2600,18 +2868,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PriorityShape',
-        title: 'Task',
-        type: 'object',
-        properties: {
-          priority: {
-            type: 'string',
-            enum: ['low', 'medium', 'high', 'critical'],
+        $defs: {
+          Task: {
+            title: 'Task',
+            type: 'object',
+            properties: {
+              priority: {
+                type: 'string',
+                enum: ['low', 'medium', 'high', 'critical'],
+              },
+            },
+            required: ['priority'],
+            additionalProperties: true,
           },
         },
-        required: ['priority'],
-        additionalProperties: true,
+        $id: 'http://example.org/PriorityShape',
+        $ref: '#/$defs/Task',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -2641,21 +2914,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/UserShape',
-        title: 'User',
-        type: 'object',
-        properties: {
-          role: {
-            type: 'string',
-            default: 'user',
-          },
-          country: {
-            type: 'string',
-            default: 'USA',
+        $defs: {
+          User: {
+            title: 'User',
+            type: 'object',
+            properties: {
+              role: {
+                type: 'string',
+                default: 'user',
+              },
+              country: {
+                type: 'string',
+                default: 'USA',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/UserShape',
+        $ref: '#/$defs/User',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2684,23 +2962,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ConfigShape',
-        title: 'Config',
-        type: 'object',
-        properties: {
-          timeout: {
-            type: 'integer',
-            minimum: 0,
-            maximum: 300,
-            default: 30,
-          },
-          retryCount: {
-            type: 'integer',
-            default: 3,
+        $defs: {
+          Config: {
+            title: 'Config',
+            type: 'object',
+            properties: {
+              timeout: {
+                type: 'integer',
+                minimum: 0,
+                maximum: 300,
+                default: 30,
+              },
+              retryCount: {
+                type: 'integer',
+                default: 3,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ConfigShape',
+        $ref: '#/$defs/Config',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2731,24 +3014,29 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TaskShape',
-        title: 'Task',
-        type: 'object',
-        properties: {
-          status: {
-            type: 'string',
-            enum: ['pending', 'active', 'completed', 'cancelled'],
-            default: 'pending',
-          },
-          priority: {
-            type: 'string',
-            enum: ['low', 'medium', 'high'],
-            default: 'medium',
+        $defs: {
+          Task: {
+            title: 'Task',
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string',
+                enum: ['pending', 'active', 'completed', 'cancelled'],
+                default: 'pending',
+              },
+              priority: {
+                type: 'string',
+                enum: ['low', 'medium', 'high'],
+                default: 'medium',
+              },
+            },
+            required: ['status'],
+            additionalProperties: true,
           },
         },
-        required: ['status'],
-        additionalProperties: true,
+        $id: 'http://example.org/TaskShape',
+        $ref: '#/$defs/Task',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2776,21 +3064,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SettingsShape',
-        title: 'Settings',
-        type: 'object',
-        properties: {
-          notificationsEnabled: {
-            type: 'boolean',
-            default: true,
-          },
-          darkMode: {
-            type: 'boolean',
-            default: false,
+        $defs: {
+          Settings: {
+            title: 'Settings',
+            type: 'object',
+            properties: {
+              notificationsEnabled: {
+                type: 'boolean',
+                default: true,
+              },
+              darkMode: {
+                type: 'boolean',
+                default: false,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/SettingsShape',
+        $ref: '#/$defs/Settings',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -2819,23 +3112,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ProductShape',
-        title: 'Product',
-        type: 'object',
-        properties: {
-          taxRate: {
-            type: 'number',
-            minimum: 0.0,
-            maximum: 1.0,
-            default: 0.08,
-          },
-          discountRate: {
-            type: 'number',
-            default: 0.0,
+        $defs: {
+          Product: {
+            title: 'Product',
+            type: 'object',
+            properties: {
+              taxRate: {
+                type: 'number',
+                minimum: 0.0,
+                maximum: 1.0,
+                default: 0.08,
+              },
+              discountRate: {
+                type: 'number',
+                default: 0.0,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ProductShape',
+        $ref: '#/$defs/Product',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3132,22 +3430,27 @@ ex:PersonReferenceShape
       // Note: sh:uniqueLang ensures each language tag appears at most once
       // No direct JSON Schema equivalent, so preserved as extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MultilingualShape',
-        title: 'Document',
-        type: 'object',
-        properties: {
-          title: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Document: {
+            title: 'Document',
+            type: 'object',
+            properties: {
+              title: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                'x-shacl-uniqueLang': true,
+              },
             },
-            minItems: 1,
-            'x-shacl-uniqueLang': true,
+            required: ['title'],
+            additionalProperties: true,
           },
         },
-        required: ['title'],
-        additionalProperties: true,
+        $id: 'http://example.org/MultilingualShape',
+        $ref: '#/$defs/Document',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3172,18 +3475,23 @@ ex:PersonReferenceShape
       // Note: sh:languageIn restricts language tags to a specific set
       // No direct JSON Schema equivalent, so preserved as extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/LocalizedContentShape',
-        title: 'Content',
-        type: 'object',
-        properties: {
-          description: {
-            type: 'string',
-            'x-shacl-languageIn': ['en', 'de', 'fr', 'es'],
-            'x-shacl-uniqueLang': true,
+        $defs: {
+          Content: {
+            title: 'Content',
+            type: 'object',
+            properties: {
+              description: {
+                type: 'string',
+                'x-shacl-languageIn': ['en', 'de', 'fr', 'es'],
+                'x-shacl-uniqueLang': true,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/LocalizedContentShape',
+        $ref: '#/$defs/Content',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3215,21 +3523,26 @@ ex:PersonReferenceShape
       // Note: sh:lessThanOrEquals has no direct JSON Schema equivalent
       // Preserved as x-shacl-lessThanOrEquals extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/VersionRangeShape',
-        title: 'Version',
-        type: 'object',
-        properties: {
-          minVersion: {
-            type: 'number',
-          },
-          maxVersion: {
-            type: 'number',
-            'x-shacl-lessThanOrEquals': 'minVersion',
+        $defs: {
+          Version: {
+            title: 'Version',
+            type: 'object',
+            properties: {
+              minVersion: {
+                type: 'number',
+              },
+              maxVersion: {
+                type: 'number',
+                'x-shacl-lessThanOrEquals': 'minVersion',
+              },
+            },
+            required: ['minVersion', 'maxVersion'],
+            additionalProperties: true,
           },
         },
-        required: ['minVersion', 'maxVersion'],
-        additionalProperties: true,
+        $id: 'http://example.org/VersionRangeShape',
+        $ref: '#/$defs/Version',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3260,29 +3573,34 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ProductShape',
-        title: 'Product',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Product: {
+            title: 'Product',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 2,
+                maxItems: 2,
+                'x-shacl-languageIn': ['en', 'fr'],
+                'x-shacl-uniqueLang': true,
+              },
+              description: {
+                type: 'string',
+                'x-shacl-languageIn': ['en', 'de', 'fr', 'es', 'it'],
+                'x-shacl-uniqueLang': true,
+              },
             },
-            minItems: 2,
-            maxItems: 2,
-            'x-shacl-languageIn': ['en', 'fr'],
-            'x-shacl-uniqueLang': true,
-          },
-          description: {
-            type: 'string',
-            'x-shacl-languageIn': ['en', 'de', 'fr', 'es', 'it'],
-            'x-shacl-uniqueLang': true,
+            required: ['name'],
+            additionalProperties: true,
           },
         },
-        required: ['name'],
-        additionalProperties: true,
+        $id: 'http://example.org/ProductShape',
+        $ref: '#/$defs/Product',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3310,20 +3628,25 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        'x-shacl-message': 'Person validation failed',
-        properties: {
-          email: {
-            type: 'string',
-            pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-            'x-shacl-message': 'Email must be a valid email address',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            'x-shacl-message': 'Person validation failed',
+            properties: {
+              email: {
+                type: 'string',
+                pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+                'x-shacl-message': 'Email must be a valid email address',
+              },
+            },
+            required: ['email'],
+            additionalProperties: true,
           },
         },
-        required: ['email'],
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3354,24 +3677,29 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DataQualityShape',
-        title: 'DataRecord',
-        type: 'object',
-        'x-shacl-severity': 'sh:Warning',
-        properties: {
-          optionalField: {
-            type: 'string',
-            maxLength: 100,
-            'x-shacl-severity': 'sh:Info',
-          },
-          criticalField: {
-            type: 'string',
-            'x-shacl-severity': 'sh:Violation',
+        $defs: {
+          DataRecord: {
+            title: 'DataRecord',
+            type: 'object',
+            'x-shacl-severity': 'sh:Warning',
+            properties: {
+              optionalField: {
+                type: 'string',
+                maxLength: 100,
+                'x-shacl-severity': 'sh:Info',
+              },
+              criticalField: {
+                type: 'string',
+                'x-shacl-severity': 'sh:Violation',
+              },
+            },
+            required: ['criticalField'],
+            additionalProperties: true,
           },
         },
-        required: ['criticalField'],
-        additionalProperties: true,
+        $id: 'http://example.org/DataQualityShape',
+        $ref: '#/$defs/DataRecord',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3400,23 +3728,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ValidationShape',
-        title: 'ValidationTest',
-        type: 'object',
-        'x-shacl-message': 'Shape validation constraints not met',
-        'x-shacl-severity': 'sh:Violation',
-        properties: {
-          username: {
-            type: 'string',
-            minLength: 3,
-            maxLength: 20,
-            'x-shacl-message': 'Username must be between 3 and 20 characters',
-            'x-shacl-severity': 'sh:Warning',
+        $defs: {
+          ValidationTest: {
+            title: 'ValidationTest',
+            type: 'object',
+            'x-shacl-message': 'Shape validation constraints not met',
+            'x-shacl-severity': 'sh:Violation',
+            properties: {
+              username: {
+                type: 'string',
+                minLength: 3,
+                maxLength: 20,
+                'x-shacl-message': 'Username must be between 3 and 20 characters',
+                'x-shacl-severity': 'sh:Warning',
+              },
+            },
+            required: ['username'],
+            additionalProperties: true,
           },
         },
-        required: ['username'],
-        additionalProperties: true,
+        $id: 'http://example.org/ValidationShape',
+        $ref: '#/$defs/ValidationTest',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3442,18 +3775,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DeprecatedShape',
-        title: 'LegacyUser',
-        type: 'object',
-        'x-shacl-deactivated': true,
-        properties: {
-          username: {
-            type: 'string',
+        $defs: {
+          LegacyUser: {
+            title: 'LegacyUser',
+            type: 'object',
+            'x-shacl-deactivated': true,
+            properties: {
+              username: {
+                type: 'string',
+              },
+            },
+            required: ['username'],
+            additionalProperties: true,
           },
         },
-        required: ['username'],
-        additionalProperties: true,
+        $id: 'http://example.org/DeprecatedShape',
+        $ref: '#/$defs/LegacyUser',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3481,21 +3819,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/UserShape',
-        title: 'User',
-        type: 'object',
-        properties: {
-          email: {
-            type: 'string',
-          },
-          legacyField: {
-            type: 'string',
-            'x-shacl-deactivated': true,
+        $defs: {
+          User: {
+            title: 'User',
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+              legacyField: {
+                type: 'string',
+                'x-shacl-deactivated': true,
+              },
+            },
+            required: ['email'],
+            additionalProperties: true,
           },
         },
-        required: ['email'],
-        additionalProperties: true,
+        $id: 'http://example.org/UserShape',
+        $ref: '#/$defs/User',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3519,16 +3862,21 @@ ex:PersonReferenceShape
       const schema = new IrSchemaConverter(ir).convert();
       // sh:deactivated false should not add any extension (default state)
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ActiveShape',
-        title: 'ActiveUser',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
+        $defs: {
+          ActiveUser: {
+            title: 'ActiveUser',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ActiveShape',
+        $ref: '#/$defs/ActiveUser',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3558,20 +3906,25 @@ ex:PersonReferenceShape
       // Note: sh:disjoint has no direct JSON Schema equivalent
       // Preserved as x-shacl-disjoint extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/OrganizationShape',
-        title: 'Organization',
-        type: 'object',
-        properties: {
-          employee: {
-            type: 'string',
-          },
-          manager: {
-            type: 'string',
-            'x-shacl-disjoint': 'employee',
+        $defs: {
+          Organization: {
+            title: 'Organization',
+            type: 'object',
+            properties: {
+              employee: {
+                type: 'string',
+              },
+              manager: {
+                type: 'string',
+                'x-shacl-disjoint': 'employee',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/OrganizationShape',
+        $ref: '#/$defs/Organization',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3602,23 +3955,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TeamShape',
-        title: 'Team',
-        type: 'object',
-        properties: {
-          member: {
-            type: 'string',
-          },
-          lead: {
-            type: 'string',
-          },
-          externalConsultant: {
-            type: 'string',
-            'x-shacl-disjoint': ['member', 'lead'],
+        $defs: {
+          Team: {
+            title: 'Team',
+            type: 'object',
+            properties: {
+              member: {
+                type: 'string',
+              },
+              lead: {
+                type: 'string',
+              },
+              externalConsultant: {
+                type: 'string',
+                'x-shacl-disjoint': ['member', 'lead'],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/TeamShape',
+        $ref: '#/$defs/Team',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3646,29 +4004,34 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/RoleShape',
-        title: 'Role',
-        type: 'object',
-        properties: {
-          admin: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Role: {
+            title: 'Role',
+            type: 'object',
+            properties: {
+              admin: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+              },
+              user: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                'x-shacl-disjoint': 'admin',
+              },
             },
-            minItems: 1,
-          },
-          user: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            minItems: 1,
-            'x-shacl-disjoint': 'admin',
+            required: ['admin', 'user'],
+            additionalProperties: true,
           },
         },
-        required: ['admin', 'user'],
-        additionalProperties: true,
+        $id: 'http://example.org/RoleShape',
+        $ref: '#/$defs/Role',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3716,41 +4079,46 @@ ex:PersonReferenceShape
       // Note: sh:qualifiedValueShapesDisjoint has no direct JSON Schema equivalent
       // Preserved as x-shacl-qualifiedValueShapesDisjoint extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContactShape',
-        title: 'Contact',
-        type: 'object',
-        properties: {
-          address: {
-            type: 'array',
-            items: {
-              anyOf: [{ $ref: '#/$defs/HomeAddress' }, { $ref: '#/$defs/WorkAddress' }],
-            },
-            maxItems: 1,
-            'x-shacl-qualifiedValueShapesDisjoint': true,
-          },
-        },
-        additionalProperties: true,
         $defs: {
-          HomeAddress: {
+          Contact: {
+            title: 'Contact',
             type: 'object',
-            title: 'HomeAddress',
             properties: {
-              type: {
-                const: 'home',
+              address: {
+                type: 'array',
+                items: {
+                  anyOf: [{ $ref: '#/$defs/HomeAddress' }, { $ref: '#/$defs/WorkAddress' }],
+                },
+                maxItems: 1,
+                'x-shacl-qualifiedValueShapesDisjoint': true,
               },
             },
-          },
-          WorkAddress: {
-            type: 'object',
-            title: 'WorkAddress',
-            properties: {
-              type: {
-                const: 'work',
+            additionalProperties: true,
+            $defs: {
+              HomeAddress: {
+                type: 'object',
+                title: 'HomeAddress',
+                properties: {
+                  type: {
+                    const: 'home',
+                  },
+                },
+              },
+              WorkAddress: {
+                type: 'object',
+                title: 'WorkAddress',
+                properties: {
+                  type: {
+                    const: 'work',
+                  },
+                },
               },
             },
           },
         },
+        $id: 'http://example.org/ContactShape',
+        $ref: '#/$defs/Contact',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3777,22 +4145,27 @@ ex:PersonReferenceShape
       // Note: sh:targetNode specifies which specific RDF nodes to validate
       // This is RDF-specific and preserved as x-shacl extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SpecificNodeShape',
-        title: 'Node1',
-        type: 'object',
-        properties: {
-          value: {
-            type: 'string',
+        $defs: {
+          Node1: {
+            title: 'Node1',
+            type: 'object',
+            properties: {
+              value: {
+                type: 'string',
+              },
+            },
+            required: ['value'],
+            additionalProperties: true,
+            'x-shacl-targetNodes': [
+              'http://example.org/Node1',
+              'http://example.org/Node2',
+              'http://example.org/Node3',
+            ],
           },
         },
-        required: ['value'],
-        additionalProperties: true,
-        'x-shacl-targetNodes': [
-          'http://example.org/Node1',
-          'http://example.org/Node2',
-          'http://example.org/Node3',
-        ],
+        $id: 'http://example.org/SpecificNodeShape',
+        $ref: '#/$defs/Node1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3817,18 +4190,23 @@ ex:PersonReferenceShape
       // Note: sh:targetObjectsOf targets nodes that are objects of a predicate
       // This is RDF-specific and preserved as x-shacl extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ObjectTargetShape',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
+        $defs: {
+          ObjectTarget: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            required: ['name'],
+            title: 'ObjectTarget',
+            additionalProperties: true,
+            'x-shacl-targetObjectsOf': 'http://example.org/hasMember',
           },
         },
-        required: ['name'],
-        title: 'ObjectTarget',
-        additionalProperties: true,
-        'x-shacl-targetObjectsOf': 'http://example.org/hasMember',
+        $id: 'http://example.org/ObjectTargetShape',
+        $ref: '#/$defs/ObjectTarget',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3853,18 +4231,23 @@ ex:PersonReferenceShape
       // Note: sh:targetSubjectsOf targets nodes that are subjects of a predicate
       // This is RDF-specific and preserved as x-shacl extension
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SubjectTargetShape',
-        type: 'object',
-        properties: {
-          title: {
-            type: 'string',
+        $defs: {
+          SubjectTarget: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+              },
+            },
+            required: ['title'],
+            additionalProperties: true,
+            title: 'SubjectTarget',
+            'x-shacl-targetSubjectsOf': 'http://example.org/manages',
           },
         },
-        required: ['title'],
-        additionalProperties: true,
-        title: 'SubjectTarget',
-        'x-shacl-targetSubjectsOf': 'http://example.org/manages',
+        $id: 'http://example.org/SubjectTargetShape',
+        $ref: '#/$defs/SubjectTarget',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3889,19 +4272,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MultiTargetShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          identifier: {
-            type: 'string',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              identifier: {
+                type: 'string',
+              },
+            },
+            required: ['identifier'],
+            additionalProperties: true,
+            'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
           },
         },
-        required: ['identifier'],
-        additionalProperties: true,
-        'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
-        'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+        $id: 'http://example.org/MultiTargetShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -3936,25 +4324,30 @@ ex:PersonReferenceShape
       const schema = new IrSchemaConverter(ir).convert();
 
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DocumentShape',
-        title: 'Document',
-        type: 'object',
-        properties: {
-          title: {
-            type: 'string',
-          },
-          content: {
-            type: 'string',
+        $defs: {
+          Document: {
+            title: 'Document',
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+              },
+              content: {
+                type: 'string',
+              },
+            },
+            required: ['title'],
+            additionalProperties: false,
+            'x-shacl-ignoredProperties': [
+              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              'http://www.w3.org/2000/01/rdf-schema#label',
+              'http://www.w3.org/2000/01/rdf-schema#comment',
+            ],
           },
         },
-        required: ['title'],
-        additionalProperties: false,
-        'x-shacl-ignoredProperties': [
-          'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-          'http://www.w3.org/2000/01/rdf-schema#label',
-          'http://www.w3.org/2000/01/rdf-schema#comment',
-        ],
+        $id: 'http://example.org/DocumentShape',
+        $ref: '#/$defs/Document',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -3981,17 +4374,22 @@ ex:PersonReferenceShape
       // Note: sh:ignoredProperties without sh:closed has no validation effect
       // but is preserved for documentation purposes
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/OpenShape',
-        title: 'OpenEntity',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
+        $defs: {
+          OpenEntity: {
+            title: 'OpenEntity',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+            'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
           },
         },
-        additionalProperties: true,
-        'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
+        $id: 'http://example.org/OpenShape',
+        $ref: '#/$defs/OpenEntity',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -4022,22 +4420,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ConfigShape',
-        title: 'Config',
-        type: 'object',
-        properties: {
-          version: {
-            type: 'string',
-            const: '1.0.0',
-          },
-          environment: {
-            type: 'string',
-            const: 'production',
+        $defs: {
+          Config: {
+            title: 'Config',
+            type: 'object',
+            properties: {
+              version: {
+                type: 'string',
+                const: '1.0.0',
+              },
+              environment: {
+                type: 'string',
+                const: 'production',
+              },
+            },
+            required: ['environment'],
+            additionalProperties: true,
           },
         },
-        required: ['environment'],
-        additionalProperties: true,
+        $id: 'http://example.org/ConfigShape',
+        $ref: '#/$defs/Config',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4064,21 +4467,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ConstantShape',
-        title: 'Constant',
-        type: 'object',
-        properties: {
-          maxRetries: {
-            type: 'integer',
-            const: 3,
-          },
-          timeout: {
-            type: 'number',
-            const: 30.5,
+        $defs: {
+          Constant: {
+            title: 'Constant',
+            type: 'object',
+            properties: {
+              maxRetries: {
+                type: 'integer',
+                const: 3,
+              },
+              timeout: {
+                type: 'number',
+                const: 30.5,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ConstantShape',
+        $ref: '#/$defs/Constant',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4107,22 +4515,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FeatureFlagShape',
-        title: 'FeatureFlag',
-        type: 'object',
-        properties: {
-          enabled: {
-            type: 'boolean',
-            const: true,
-          },
-          debugMode: {
-            type: 'boolean',
-            const: false,
+        $defs: {
+          FeatureFlag: {
+            title: 'FeatureFlag',
+            type: 'object',
+            properties: {
+              enabled: {
+                type: 'boolean',
+                const: true,
+              },
+              debugMode: {
+                type: 'boolean',
+                const: false,
+              },
+            },
+            required: ['enabled'],
+            additionalProperties: true,
           },
         },
-        required: ['enabled'],
-        additionalProperties: true,
+        $id: 'http://example.org/FeatureFlagShape',
+        $ref: '#/$defs/FeatureFlag',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4149,23 +4562,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ResourceShape',
-        title: 'Resource',
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            format: 'uri',
-            const: 'StandardType',
-          },
-          schema: {
-            type: 'string',
-            format: 'uri',
-            const: 'Thing',
+        $defs: {
+          Resource: {
+            title: 'Resource',
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                format: 'uri',
+                const: 'StandardType',
+              },
+              schema: {
+                type: 'string',
+                format: 'uri',
+                const: 'Thing',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ResourceShape',
+        $ref: '#/$defs/Resource',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4189,20 +4607,25 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/RestrictedShape',
-        title: 'Restricted',
-        type: 'object',
-        properties: {
-          fixedPrefix: {
-            type: 'string',
-            const: 'PREFIX-',
-            pattern: '^PREFIX-.*',
-            minLength: 7,
+        $defs: {
+          Restricted: {
+            title: 'Restricted',
+            type: 'object',
+            properties: {
+              fixedPrefix: {
+                type: 'string',
+                const: 'PREFIX-',
+                pattern: '^PREFIX-.*',
+                minLength: 7,
+              },
+            },
+            required: ['fixedPrefix'],
+            additionalProperties: true,
           },
         },
-        required: ['fixedPrefix'],
-        additionalProperties: true,
+        $id: 'http://example.org/RestrictedShape',
+        $ref: '#/$defs/Restricted',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -4227,18 +4650,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ScheduleShape',
-        title: 'Schedule',
-        type: 'object',
-        properties: {
-          startTime: {
-            type: 'string',
-            format: 'time',
+        $defs: {
+          Schedule: {
+            title: 'Schedule',
+            type: 'object',
+            properties: {
+              startTime: {
+                type: 'string',
+                format: 'time',
+              },
+            },
+            required: ['startTime'],
+            additionalProperties: true,
           },
         },
-        required: ['startTime'],
-        additionalProperties: true,
+        $id: 'http://example.org/ScheduleShape',
+        $ref: '#/$defs/Schedule',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4259,17 +4687,22 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/EventShape',
-        title: 'Event',
-        type: 'object',
-        properties: {
-          duration: {
-            type: 'string',
-            format: 'duration',
+        $defs: {
+          Event: {
+            title: 'Event',
+            type: 'object',
+            properties: {
+              duration: {
+                type: 'string',
+                format: 'duration',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/EventShape',
+        $ref: '#/$defs/Event',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4294,19 +4727,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PartialDateShape',
-        title: 'PartialDate',
-        type: 'object',
-        properties: {
-          yearMonth: {
-            type: 'string',
-          },
-          monthDay: {
-            type: 'string',
+        $defs: {
+          PartialDate: {
+            title: 'PartialDate',
+            type: 'object',
+            properties: {
+              yearMonth: {
+                type: 'string',
+              },
+              monthDay: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/PartialDateShape',
+        $ref: '#/$defs/PartialDate',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4335,22 +4773,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/IntegerVariantsShape',
-        title: 'IntegerVariants',
-        type: 'object',
-        properties: {
-          byteValue: {
-            type: 'integer',
-          },
-          shortValue: {
-            type: 'integer',
-          },
-          longValue: {
-            type: 'integer',
+        $defs: {
+          IntegerVariants: {
+            title: 'IntegerVariants',
+            type: 'object',
+            properties: {
+              byteValue: {
+                type: 'integer',
+              },
+              shortValue: {
+                type: 'integer',
+              },
+              longValue: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/IntegerVariantsShape',
+        $ref: '#/$defs/IntegerVariants',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4375,19 +4818,24 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FloatingPointShape',
-        title: 'FloatingPoint',
-        type: 'object',
-        properties: {
-          floatValue: {
-            type: 'number',
-          },
-          doubleValue: {
-            type: 'number',
+        $defs: {
+          FloatingPoint: {
+            title: 'FloatingPoint',
+            type: 'object',
+            properties: {
+              floatValue: {
+                type: 'number',
+              },
+              doubleValue: {
+                type: 'number',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/FloatingPointShape',
+        $ref: '#/$defs/FloatingPoint',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4412,20 +4860,25 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/BinaryDataShape',
-        title: 'BinaryData',
-        type: 'object',
-        properties: {
-          base64Data: {
-            type: 'string',
-            contentEncoding: 'base64',
-          },
-          hexData: {
-            type: 'string',
+        $defs: {
+          BinaryData: {
+            title: 'BinaryData',
+            type: 'object',
+            properties: {
+              base64Data: {
+                type: 'string',
+                contentEncoding: 'base64',
+              },
+              hexData: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/BinaryDataShape',
+        $ref: '#/$defs/BinaryData',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4458,29 +4911,34 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/UnsignedShape',
-        title: 'Unsigned',
-        type: 'object',
-        properties: {
-          unsignedInt: {
-            type: 'integer',
-            minimum: 0,
-          },
-          unsignedLong: {
-            type: 'integer',
-            minimum: 0,
-          },
-          unsignedShort: {
-            type: 'integer',
-            minimum: 0,
-          },
-          unsignedByte: {
-            type: 'integer',
-            minimum: 0,
+        $defs: {
+          Unsigned: {
+            title: 'Unsigned',
+            type: 'object',
+            properties: {
+              unsignedInt: {
+                type: 'integer',
+                minimum: 0,
+              },
+              unsignedLong: {
+                type: 'integer',
+                minimum: 0,
+              },
+              unsignedShort: {
+                type: 'integer',
+                minimum: 0,
+              },
+              unsignedByte: {
+                type: 'integer',
+                minimum: 0,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/UnsignedShape',
+        $ref: '#/$defs/Unsigned',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4513,29 +4971,34 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SignedShape',
-        title: 'Signed',
-        type: 'object',
-        properties: {
-          positiveInt: {
-            type: 'integer',
-            minimum: 1,
-          },
-          nonNegativeInt: {
-            type: 'integer',
-            minimum: 0,
-          },
-          negativeInt: {
-            type: 'integer',
-            maximum: -1,
-          },
-          nonPositiveInt: {
-            type: 'integer',
-            maximum: 0,
+        $defs: {
+          Signed: {
+            title: 'Signed',
+            type: 'object',
+            properties: {
+              positiveInt: {
+                type: 'integer',
+                minimum: 1,
+              },
+              nonNegativeInt: {
+                type: 'integer',
+                minimum: 0,
+              },
+              negativeInt: {
+                type: 'integer',
+                maximum: -1,
+              },
+              nonPositiveInt: {
+                type: 'integer',
+                maximum: 0,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/SignedShape',
+        $ref: '#/$defs/Signed',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4572,28 +5035,33 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/StringVariantsShape',
-        title: 'StringVariants',
-        type: 'object',
-        properties: {
-          normalized: {
-            type: 'string',
-          },
-          token: {
-            type: 'string',
-          },
-          language: {
-            type: 'string',
-          },
-          name: {
-            type: 'string',
-          },
-          ncName: {
-            type: 'string',
+        $defs: {
+          StringVariants: {
+            title: 'StringVariants',
+            type: 'object',
+            properties: {
+              normalized: {
+                type: 'string',
+              },
+              token: {
+                type: 'string',
+              },
+              language: {
+                type: 'string',
+              },
+              name: {
+                type: 'string',
+              },
+              ncName: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/StringVariantsShape',
+        $ref: '#/$defs/StringVariants',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -4618,17 +5086,22 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          worksFor: {
-            $ref: '#/$defs/Company',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              worksFor: {
+                $ref: '#/$defs/Company',
+              },
+            },
+            required: ['worksFor'],
+            additionalProperties: true,
           },
         },
-        required: ['worksFor'],
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4650,21 +5123,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          knows: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Person',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              knows: {
+                type: 'array',
+                items: {
+                  $ref: '#/$defs/Person',
+                },
+                minItems: 1,
+              },
             },
-            minItems: 1,
+            required: ['knows'],
+            additionalProperties: true,
           },
         },
-        required: ['knows'],
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4688,16 +5166,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/DocumentShape',
-        title: 'Document',
-        type: 'object',
-        properties: {
-          creator: {
-            anyOf: [{ $ref: '#/$defs/Person' }, { $ref: '#/$defs/Organization' }],
+        $defs: {
+          Document: {
+            title: 'Document',
+            type: 'object',
+            properties: {
+              creator: {
+                anyOf: [{ $ref: '#/$defs/Person' }, { $ref: '#/$defs/Organization' }],
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/DocumentShape',
+        $ref: '#/$defs/Document',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -4726,23 +5209,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-          },
-          friends: {
-            type: 'array',
-            items: {
-              $ref: '#/$defs/Person',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              friends: {
+                type: 'array',
+                items: {
+                  $ref: '#/$defs/Person',
+                },
+              },
             },
+            required: ['name'],
+            additionalProperties: true,
           },
         },
-        required: ['name'],
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4838,22 +5326,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/TeamShape',
-        title: 'Team',
-        type: 'object',
-        properties: {
-          members: {
-            type: 'array',
-            items: {
-              type: 'string',
+        $defs: {
+          Team: {
+            title: 'Team',
+            type: 'object',
+            properties: {
+              members: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 5,
+                maxItems: 5,
+              },
             },
-            minItems: 5,
-            maxItems: 5,
+            required: ['members'],
+            additionalProperties: true,
           },
         },
-        required: ['members'],
-        additionalProperties: true,
+        $id: 'http://example.org/TeamShape',
+        $ref: '#/$defs/Team',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4875,14 +5368,19 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/RestrictedShape',
-        title: 'Restricted',
-        type: 'object',
-        properties: {
-          forbiddenField: false,
+        $defs: {
+          Restricted: {
+            title: 'Restricted',
+            type: 'object',
+            properties: {
+              forbiddenField: false,
+            },
+            additionalProperties: true,
+          },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/RestrictedShape',
+        $ref: '#/$defs/Restricted',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -4907,18 +5405,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/CaseInsensitiveShape',
-        title: 'CaseInsensitive',
-        type: 'object',
-        properties: {
-          code: {
-            pattern: '^[a-z]+$',
-            type: 'string',
-            'x-shacl-flags': 'i',
+        $defs: {
+          CaseInsensitive: {
+            title: 'CaseInsensitive',
+            type: 'object',
+            properties: {
+              code: {
+                pattern: '^[a-z]+$',
+                type: 'string',
+                'x-shacl-flags': 'i',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/CaseInsensitiveShape',
+        $ref: '#/$defs/CaseInsensitive',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4941,18 +5444,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MultilineShape',
-        title: 'Multiline',
-        type: 'object',
-        properties: {
-          text: {
-            pattern: '^Line 1.*Line 2$',
-            type: 'string',
-            'x-shacl-flags': 's',
+        $defs: {
+          Multiline: {
+            title: 'Multiline',
+            type: 'object',
+            properties: {
+              text: {
+                pattern: '^Line 1.*Line 2$',
+                type: 'string',
+                'x-shacl-flags': 's',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/MultilineShape',
+        $ref: '#/$defs/Multiline',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -4975,18 +5483,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MultiFlagShape',
-        title: 'MultiFlag',
-        type: 'object',
-        properties: {
-          content: {
-            pattern: 'pattern',
-            type: 'string',
-            'x-shacl-flags': 'im',
+        $defs: {
+          MultiFlag: {
+            title: 'MultiFlag',
+            type: 'object',
+            properties: {
+              content: {
+                pattern: 'pattern',
+                type: 'string',
+                'x-shacl-flags': 'im',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/MultiFlagShape',
+        $ref: '#/$defs/MultiFlag',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -5008,16 +5521,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/UnconstrainedShape',
-        title: 'Unconstrained',
-        type: 'object',
-        properties: {
-          anything: {
-            type: 'array',
+        $defs: {
+          Unconstrained: {
+            title: 'Unconstrained',
+            type: 'object',
+            properties: {
+              anything: {
+                type: 'array',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/UnconstrainedShape',
+        $ref: '#/$defs/Unconstrained',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5033,11 +5551,16 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $defs: {
+          Empty: {
+            title: 'Empty',
+            type: 'object',
+            additionalProperties: true,
+          },
+        },
         $id: 'http://example.org/EmptyShape',
-        title: 'Empty',
-        type: 'object',
-        additionalProperties: true,
+        $ref: '#/$defs/Empty',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5058,15 +5581,20 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
+        $defs: {
+          MetadataOnly: {
+            additionalProperties: true,
+            title: 'MetadataOnly',
+            type: 'object',
+            'x-shacl-description': 'A shape with only metadata',
+            'x-shacl-message': 'Validation failed',
+            'x-shacl-name': 'Metadata Only Shape',
+            'x-shacl-severity': 'sh:Info',
+          },
+        },
         $id: 'http://example.org/MetadataOnlyShape',
+        $ref: '#/$defs/MetadataOnly',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        additionalProperties: true,
-        title: 'MetadataOnly',
-        type: 'object',
-        'x-shacl-description': 'A shape with only metadata',
-        'x-shacl-message': 'Validation failed',
-        'x-shacl-name': 'Metadata Only Shape',
-        'x-shacl-severity': 'sh:Info',
       });
     });
   });
@@ -5270,25 +5798,30 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FormShape',
-        title: 'Form',
-        type: 'object',
-        properties: {
-          field1: {
-            type: 'string',
-            'x-shacl-order': 1,
-          },
-          field2: {
-            type: 'string',
-            'x-shacl-order': 2,
-          },
-          field3: {
-            type: 'string',
-            'x-shacl-order': 3,
+        $defs: {
+          Form: {
+            title: 'Form',
+            type: 'object',
+            properties: {
+              field1: {
+                type: 'string',
+                'x-shacl-order': 1,
+              },
+              field2: {
+                type: 'string',
+                'x-shacl-order': 2,
+              },
+              field3: {
+                type: 'string',
+                'x-shacl-order': 3,
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/FormShape',
+        $ref: '#/$defs/Form',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -5312,18 +5845,23 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ManagerShape',
-        title: 'Manager',
-        type: 'object',
-        properties: {
-          employeeId: {
-            type: 'string',
-            pattern: '^MGR-[0-9]{4}$',
+        $defs: {
+          Manager: {
+            title: 'Manager',
+            type: 'object',
+            properties: {
+              employeeId: {
+                type: 'string',
+                pattern: '^MGR-[0-9]{4}$',
+              },
+            },
+            'x-shacl-targetObjectsOf': 'http://example.org/hasManager',
+            additionalProperties: true,
           },
         },
-        'x-shacl-targetObjectsOf': 'http://example.org/hasManager',
-        additionalProperties: true,
+        $id: 'http://example.org/ManagerShape',
+        $ref: '#/$defs/Manager',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5350,23 +5888,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/AuthorShape',
-        title: 'Author',
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            minLength: 1,
-          },
-          publications: {
-            type: 'integer',
-            minimum: 1,
+        $defs: {
+          Author: {
+            title: 'Author',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                minLength: 1,
+              },
+              publications: {
+                type: 'integer',
+                minimum: 1,
+              },
+            },
+            required: ['name'],
+            'x-shacl-targetSubjectsOf': 'http://example.org/wrote',
+            additionalProperties: true,
           },
         },
-        required: ['name'],
-        'x-shacl-targetSubjectsOf': 'http://example.org/wrote',
-        additionalProperties: true,
+        $id: 'http://example.org/AuthorShape',
+        $ref: '#/$defs/Author',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5391,23 +5934,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/PersonShape',
-        title: 'Person',
-        type: 'object',
-        properties: {
-          name: {
-            items: {
-              type: 'string',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              name: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
             },
-            minItems: 1,
-            type: 'array',
+            required: ['name'],
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+            'x-shacl-targetObjectsOf': 'http://example.org/knows',
+            additionalProperties: true,
           },
         },
-        required: ['name'],
-        'x-shacl-targetSubjectsOf': 'http://example.org/knows',
-        'x-shacl-targetObjectsOf': 'http://example.org/knows',
-        additionalProperties: true,
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5430,21 +5978,26 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/OrganizationShape',
-        title: 'Organization',
-        type: 'object',
-        properties: {
-          orgName: {
-            type: 'string',
+        $defs: {
+          Organization: {
+            title: 'Organization',
+            type: 'object',
+            properties: {
+              orgName: {
+                type: 'string',
+              },
+            },
+            'x-shacl-targetObjectsOf': [
+              'http://example.org/worksFor',
+              'http://example.org/memberOf',
+              'http://example.org/affiliatedWith',
+            ],
+            additionalProperties: true,
           },
         },
-        'x-shacl-targetObjectsOf': [
-          'http://example.org/worksFor',
-          'http://example.org/memberOf',
-          'http://example.org/affiliatedWith',
-        ],
-        additionalProperties: true,
+        $id: 'http://example.org/OrganizationShape',
+        $ref: '#/$defs/Organization',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5474,26 +6027,31 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/FriendShape',
-        title: 'Friend',
-        type: 'object',
-        properties: {
-          name: {
-            items: {
-              type: 'string',
+        $defs: {
+          Friend: {
+            title: 'Friend',
+            type: 'object',
+            properties: {
+              name: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+              mbox: {
+                type: 'string',
+                pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+              },
             },
-            minItems: 1,
-            type: 'array',
-          },
-          mbox: {
-            type: 'string',
-            pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+            required: ['name'],
+            'x-shacl-targetObjectsOf': 'http://xmlns.com/foaf/0.1/knows',
+            additionalProperties: true,
           },
         },
-        required: ['name'],
-        'x-shacl-targetObjectsOf': 'http://xmlns.com/foaf/0.1/knows',
-        additionalProperties: true,
+        $id: 'http://example.org/FriendShape',
+        $ref: '#/$defs/Friend',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -5524,23 +6082,28 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/CreatorShape',
-        title: 'Creator',
-        type: 'object',
-        properties: {
-          creatorId: {
-            type: 'string',
-            pattern: '^CREATOR-[0-9]{6}$',
-          },
-          verified: {
-            type: 'boolean',
-            const: true,
+        $defs: {
+          Creator: {
+            title: 'Creator',
+            type: 'object',
+            properties: {
+              creatorId: {
+                type: 'string',
+                pattern: '^CREATOR-[0-9]{6}$',
+              },
+              verified: {
+                type: 'boolean',
+                const: true,
+              },
+            },
+            required: ['creatorId'],
+            'x-shacl-targetSubjectsOf': 'http://purl.org/dc/terms/creator',
+            additionalProperties: true,
           },
         },
-        required: ['creatorId'],
-        'x-shacl-targetSubjectsOf': 'http://purl.org/dc/terms/creator',
-        additionalProperties: true,
+        $id: 'http://example.org/CreatorShape',
+        $ref: '#/$defs/Creator',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });
@@ -5973,42 +6536,47 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/RegistrationFormShape',
-        title: 'RegistrationForm',
-        type: 'object',
-        properties: {
-          username: {
-            type: 'string',
-            minLength: 3,
-            maxLength: 20,
-            pattern: '^[a-zA-Z0-9_]+$',
-          },
-          email: {
-            type: 'string',
-            pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
-          },
-          password: {
-            type: 'string',
-            minLength: 8,
-            maxLength: 128,
-            pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$',
-          },
-          confirmPassword: {
-            type: 'string',
-            'x-shacl-equals': 'password',
-          },
-          age: {
-            type: 'integer',
-            minimum: 18,
-          },
-          termsAccepted: {
-            type: 'boolean',
-            const: true,
+        $defs: {
+          RegistrationForm: {
+            title: 'RegistrationForm',
+            type: 'object',
+            properties: {
+              username: {
+                type: 'string',
+                minLength: 3,
+                maxLength: 20,
+                pattern: '^[a-zA-Z0-9_]+$',
+              },
+              email: {
+                type: 'string',
+                pattern: '^[\\w.-]+@[\\w.-]+\\.[\\w]+$',
+              },
+              password: {
+                type: 'string',
+                minLength: 8,
+                maxLength: 128,
+                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$',
+              },
+              confirmPassword: {
+                type: 'string',
+                'x-shacl-equals': 'password',
+              },
+              age: {
+                type: 'integer',
+                minimum: 18,
+              },
+              termsAccepted: {
+                type: 'boolean',
+                const: true,
+              },
+            },
+            required: ['username', 'email', 'password', 'confirmPassword', 'termsAccepted'],
+            additionalProperties: true,
           },
         },
-        required: ['username', 'email', 'password', 'confirmPassword', 'termsAccepted'],
-        additionalProperties: true,
+        $id: 'http://example.org/RegistrationFormShape',
+        $ref: '#/$defs/RegistrationForm',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6232,11 +6800,16 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $defs: {
+          Empty: {
+            title: 'Empty',
+            type: 'object',
+            additionalProperties: true,
+          },
+        },
         $id: 'http://example.org/EmptyShape',
-        title: 'Empty',
-        type: 'object',
-        additionalProperties: true,
+        $ref: '#/$defs/Empty',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6255,16 +6828,21 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/MinimalShape',
-        title: 'Minimal',
-        type: 'object',
-        properties: {
-          anything: {
-            type: 'array',
+        $defs: {
+          Minimal: {
+            title: 'Minimal',
+            type: 'object',
+            properties: {
+              anything: {
+                type: 'array',
+              },
+            },
+            additionalProperties: true,
           },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/MinimalShape',
+        $ref: '#/$defs/Minimal',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6291,22 +6869,27 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/RestrictedShape',
-        title: 'Restricted',
-        type: 'object',
-        properties: {
-          name: {
-            items: {
-              type: 'string',
+        $defs: {
+          Restricted: {
+            title: 'Restricted',
+            type: 'object',
+            properties: {
+              name: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+              forbidden: false,
             },
-            minItems: 1,
-            type: 'array',
+            required: ['name'],
+            additionalProperties: true,
           },
-          forbidden: false,
         },
-        required: ['name'],
-        additionalProperties: true,
+        $id: 'http://example.org/RestrictedShape',
+        $ref: '#/$defs/Restricted',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6330,15 +6913,20 @@ ex:PersonReferenceShape
       const schema = new IrSchemaConverter(ir).convert();
       // Should preserve both constraints even if contradictory
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContradictoryShape',
-        title: 'Contradictory',
-        type: 'object',
-        properties: {
-          items: false,
+        $defs: {
+          Contradictory: {
+            title: 'Contradictory',
+            type: 'object',
+            properties: {
+              items: false,
+            },
+            required: ['items'],
+            additionalProperties: true,
+          },
         },
-        required: ['items'],
-        additionalProperties: true,
+        $id: 'http://example.org/ContradictoryShape',
+        $ref: '#/$defs/Contradictory',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6361,14 +6949,19 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContradictoryStringShape',
-        title: 'ContradictoryString',
-        type: 'object',
-        properties: {
-          code: false,
+        $defs: {
+          ContradictoryString: {
+            title: 'ContradictoryString',
+            type: 'object',
+            properties: {
+              code: false,
+            },
+            additionalProperties: true,
+          },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ContradictoryStringShape',
+        $ref: '#/$defs/ContradictoryString',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6391,14 +6984,19 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ContradictoryNumberShape',
-        title: 'ContradictoryNumber',
-        type: 'object',
-        properties: {
-          value: false,
+        $defs: {
+          ContradictoryNumber: {
+            title: 'ContradictoryNumber',
+            type: 'object',
+            properties: {
+              value: false,
+            },
+            additionalProperties: true,
+          },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ContradictoryNumberShape',
+        $ref: '#/$defs/ContradictoryNumber',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6419,14 +7017,19 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/EmptyOrShape',
-        title: 'EmptyOr',
-        type: 'object',
-        properties: {
-          value: {},
+        $defs: {
+          EmptyOr: {
+            title: 'EmptyOr',
+            type: 'object',
+            properties: {
+              value: {},
+            },
+            additionalProperties: true,
+          },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/EmptyOrShape',
+        $ref: '#/$defs/EmptyOr',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6449,14 +7052,19 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/ZeroCardinalityShape',
-        title: 'ZeroCardinality',
-        type: 'object',
-        properties: {
-          value: false,
+        $defs: {
+          ZeroCardinality: {
+            title: 'ZeroCardinality',
+            type: 'object',
+            properties: {
+              value: false,
+            },
+            additionalProperties: true,
+          },
         },
-        additionalProperties: true,
+        $id: 'http://example.org/ZeroCardinalityShape',
+        $ref: '#/$defs/ZeroCardinality',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
 
@@ -6479,17 +7087,22 @@ ex:PersonReferenceShape
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       expect(schema).toStrictEqual({
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SingletonShape',
-        title: 'Singleton',
-        type: 'object',
-        properties: {
-          value: {
-            type: 'string',
+        $defs: {
+          Singleton: {
+            additionalProperties: true,
+            properties: {
+              value: {
+                type: 'string',
+              },
+            },
+            required: ['value'],
+            title: 'Singleton',
+            type: 'object',
           },
         },
-        required: ['value'],
-        additionalProperties: true,
+        $id: 'http://example.org/SingletonShape',
+        $ref: '#/$defs/Singleton',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
       });
     });
   });

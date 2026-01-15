@@ -24,7 +24,7 @@ describe('CLI', () => {
       const schema = JSON.parse(output) as JsonSchemaObjectType;
 
       expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
-      expect(schema.title).toBeDefined();
+      expect(schema.$defs).toBeDefined();
     });
 
     it('should show help with --help', () => {
