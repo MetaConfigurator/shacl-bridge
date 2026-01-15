@@ -55,59 +55,61 @@ export class IrSchemaConverter {
 
   private processBottomUp(shapeDef: ShapeDefinition): JsonSchemaObjectType {
     const stack = new Stack();
-    stack.push(new StackElementBuilder().shape(shapeDef).builder().context().isRoot(true));
+    stack.push(new StackElementBuilder().shape(shapeDef).isRoot(true));
     while (!stack.isEmpty()) {
-      const sb = stack.peek() ?? new StackElementBuilder();
-      if (!sb.getDependentsProcessed() && (sb.getShape().dependentShapes?.length ?? 0) > 0) {
-        stack.toggle(sb);
-        sb.getShape().dependentShapes?.forEach((dependentShape) => {
-          // Check if this dependent is a logical constraint fragment
-          const isLogicalFragment = this.isLogicalConstraintFragment(
-            sb.getShape(),
-            dependentShape.nodeKey
-          );
-          stack.push(
-            new StackElementBuilder()
-              .shape(dependentShape)
-              .context(new ConversionContext(dependentShape, isLogicalFragment))
-              .isLogicalFragment(isLogicalFragment)
-          );
-        });
-      } else {
-        const top = stack.pop();
-        if (top == null) continue;
-        if (!top.getIsRoot()) new ShapeConverter(top, this.processed).convert();
-        else top.getBuilder().title(shapeDef.targets[0]).type('object');
-        if ((top.getShape().dependentShapes?.length ?? 0) > 0) {
-          top.getShape().dependentShapes?.forEach((dependentShape) => {
-            const dependent = this.processed.get(dependentShape);
-            if (dependent != null) {
-              // Skip property merging for logical constraint fragments
-              if (dependent.isLogicalFragment) return;
-
-              top.getBuilder().properties({
-                ...(top.getBuilder().getKey('properties') as Record<string, JsonSchemaType>),
-                ...(dependent.builder.getKey('properties') as Record<string, JsonSchemaType>),
-              });
-              // Track required properties for all shapes, not just root
-              if (dependent.context.required)
-                top.getBuilder().requiredElement(dependent.shape.targets[0]);
-            }
-          });
-        }
-        if (top.getIsRoot()) {
-          top
-            .getBuilder()
-            .type('object')
-            .additionalProperties(!top.getShape().coreConstraints?.closed);
-
-          // Apply shape metadata to root shape
-          new ShapeMetadataConverter(top.getShape()).applyToBuilder(top.getBuilder());
-          top.getBuilder().mergeFrom(new ConstraintConverter(top, this.processed).convert());
-        }
-        this.processed.set(top.getShape(), top.build());
-      }
+      const top = stack.peek() ?? new StackElementBuilder();
+      if (!top.getDependentsProcessed() && (top.getShape().dependentShapes?.length ?? 0) > 0)
+        this.addDependentShapes(stack, top);
+      else this.buildJsonSchema(stack, shapeDef);
     }
     return this.processed.get(shapeDef)?.builder.build() ?? {};
+  }
+  private addDependentShapes(stack: Stack, sb: StackElementBuilder) {
+    stack.toggle(sb);
+    sb.getShape().dependentShapes?.forEach((dependentShape) => {
+      const isLogicalFragment = this.isLogicalConstraintFragment(
+        sb.getShape(),
+        dependentShape.nodeKey
+      );
+      stack.push(
+        new StackElementBuilder()
+          .shape(dependentShape)
+          .context(new ConversionContext(dependentShape, isLogicalFragment))
+          .isLogicalFragment(isLogicalFragment)
+      );
+    });
+  }
+
+  private buildJsonSchema(stack: Stack, shapeDef: ShapeDefinition) {
+    const top = stack.pop();
+    if (top == null) return;
+    if (!top.getIsRoot()) new ShapeConverter(top, this.processed).convert();
+    else top.getBuilder().title(shapeDef.targets[0]).type('object');
+    this.absorbDependentBuilders(top);
+    this.buildRoot(top);
+    this.processed.set(top.getShape(), top.build());
+  }
+
+  private buildRoot(top: StackElementBuilder) {
+    if (!top.getIsRoot()) return;
+    top.getBuilder().type('object').additionalProperties(!top.getShape().coreConstraints?.closed);
+    new ShapeMetadataConverter(top.getShape()).applyToBuilder(top.getBuilder());
+    top.getBuilder().mergeFrom(new ConstraintConverter(top, this.processed).convert());
+  }
+
+  private absorbDependentBuilders(top: StackElementBuilder) {
+    if ((top.getShape().dependentShapes?.length ?? 0) == 0) return;
+    top.getShape().dependentShapes?.forEach((dependentShape) => {
+      const dependent = this.processed.get(dependentShape);
+      if (dependent != null) {
+        if (dependent.isLogicalFragment) return;
+        top.getBuilder().properties({
+          ...(top.getBuilder().getKey('properties') as Record<string, JsonSchemaType>),
+          ...(dependent.builder.getKey('properties') as Record<string, JsonSchemaType>),
+        });
+        if (dependent.context.required)
+          top.getBuilder().requiredElement(dependent.shape.targets[0]);
+      }
+    });
   }
 }
