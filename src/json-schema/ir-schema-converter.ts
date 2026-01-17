@@ -11,13 +11,16 @@ import { StackElementBuilder } from '../stack/stack-element-builder';
 import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
 import { ConstraintConverter } from './converters/constraints/constraint-converter';
 import { Condition } from '../condition/condition';
+import { ShaclDocument } from '../shacl/shacl-document';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
   private shapeDefinitions: ShapeDefinition[] = [];
+  private shaclDocument: ShaclDocument;
 
   constructor(private readonly ir: IntermediateRepresentation) {
     this.shapeDefinitions = ir.shapeDefinitions;
+    this.shaclDocument = ir.shaclDocument;
   }
 
   convert(): JsonSchemaObjectType {
@@ -39,6 +42,7 @@ export class IrSchemaConverter {
       .$id(this.shapeDefinitions[0].nodeKey)
       .$schema(JSON_SCHEMA_DRAFT)
       .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`)
+      .customProperty('x-shacl-prefixes', this.addPrefixes())
       .build();
   }
 
@@ -111,5 +115,14 @@ export class IrSchemaConverter {
           top.getBuilder().requiredElement(dependent.shape.targets[0]);
       }
     });
+  }
+
+  private addPrefixes(): Record<string, string> {
+    const prefixes = this.shaclDocument.prefix;
+    const prefixMap: Record<string, string> = {};
+    Object.keys(prefixes).forEach((key) => {
+      prefixMap[key] = prefixes[key] as unknown as string;
+    });
+    return prefixMap;
   }
 }
