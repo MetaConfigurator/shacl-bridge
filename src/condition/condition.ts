@@ -76,7 +76,7 @@ export class Condition<T> {
     if (functionToExecute) {
       functionToExecute(candidate);
     } else {
-      logger.info('Condition satisfied, but no function to execute.');
+      logger.debug('Condition satisfied, but no function to execute.');
     }
     return andConditionResult && orConditionResult;
   }
