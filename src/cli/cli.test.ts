@@ -41,24 +41,6 @@ describe('CLI', () => {
     });
   });
 
-  // describe('--include-metadata option', () => {
-  //   it('should not include metadata by default', () => {
-  //     const output = runCli(simpleShaclPath);
-  //     const schema = JSON.parse(output) as JsonSchemaObjectType;
-  //
-  //     expect(schema.Person['x-shacl-targetClass']).toBeUndefined();
-  //   });
-  //
-  //   it('should include metadata when flag is set', () => {
-  //     const output = runCli(`${simpleShaclPath} --include-metadata`);
-  //     const schema = JSON.parse(output) as JsonSchemaObjectType;
-  //
-  //     expect(schema.$defs?.Person['x-shacl-targetClass']).toEqual([
-  //       'http://xmlns.com/foaf/0.1/Person',
-  //     ]);
-  //   });
-  // });
-
   describe('--output option', () => {
     it('should write to file when --output is specified', () => {
       const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-test-'));
