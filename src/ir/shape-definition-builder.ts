@@ -5,6 +5,7 @@ import logger from '../logger';
 import { NodeKind } from './meta-model/node-kind';
 import { AdditionalProperty, ShapeDefinition } from './meta-model/shape-definition';
 import type { Term } from 'n3';
+import { SparqlConstraint } from './meta-model/sparql-constraint';
 
 export class ShapeDefinitionBuilder {
   private readonly nodeKey: string;
@@ -13,6 +14,9 @@ export class ShapeDefinitionBuilder {
   private coreConstraints: Partial<CoreConstraints> = {};
   private dependentShapeDefinitions: ShapeDefinition[] = [];
   private readonly additionalProperties: AdditionalProperty[] = [];
+  private sparqlConstraintBlankNodes: string[] = [];
+  private currentSparqlConstraint: Partial<SparqlConstraint> = {};
+  private isSparqlConstraintNode = false;
 
   constructor(nodeKey: string) {
     this.nodeKey = nodeKey;
@@ -330,6 +334,12 @@ export class ShapeDefinitionBuilder {
     // Default if not found yet
     this.shape.type ??= SHAPE_TYPE.NODE_SHAPE;
 
+    // If this is a SPARQL constraint node, add the constraint to coreConstraints
+    if (this.isSparqlConstraintNode && Object.keys(this.currentSparqlConstraint).length > 0) {
+      this.coreConstraints.sparqlConstraints ??= [];
+      this.coreConstraints.sparqlConstraints.push(this.currentSparqlConstraint as SparqlConstraint);
+    }
+
     return {
       nodeKey: this.nodeKey,
       targets: this.targets,
@@ -390,6 +400,58 @@ export class ShapeDefinitionBuilder {
     this.coreConstraints.flags = flags;
     return this;
   }
+
+  // SPARQL constraint methods
+  setSparqlConstraint(blankNodeId: string) {
+    // Track blank node that contains SPARQL constraint
+    this.sparqlConstraintBlankNodes.push(blankNodeId);
+    return this;
+  }
+
+  markAsSparqlConstraintNode() {
+    // Mark this builder as constructing a SPARQL constraint node
+    this.isSparqlConstraintNode = true;
+    return this;
+  }
+
+  setSparqlMessage(message: string) {
+    if (this.isSparqlConstraintNode) {
+      this.currentSparqlConstraint.message = message;
+    }
+    return this;
+  }
+
+  setSparqlSelect(query: string) {
+    if (this.isSparqlConstraintNode) {
+      this.currentSparqlConstraint.select = query;
+    }
+    return this;
+  }
+
+  setSparqlAsk(query: string) {
+    if (this.isSparqlConstraintNode) {
+      this.currentSparqlConstraint.ask = query;
+    }
+    return this;
+  }
+
+  buildSparqlConstraint(): SparqlConstraint | null {
+    if (!this.isSparqlConstraintNode) {
+      return null;
+    }
+    return this.currentSparqlConstraint as SparqlConstraint;
+  }
+
+  addSparqlConstraint(constraint: SparqlConstraint) {
+    this.coreConstraints.sparqlConstraints ??= [];
+    this.coreConstraints.sparqlConstraints.push(constraint);
+    return this;
+  }
+
+  getSparqlConstraintBlankNodes(): string[] {
+    return this.sparqlConstraintBlankNodes;
+  }
+
   /**
    * Extracts values from an RDF list if the identifier is a list head.
    * Otherwise returns the identifier as a single-element array.
