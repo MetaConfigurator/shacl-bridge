@@ -543,6 +543,22 @@ export class ConstraintConverter {
             .ifSatisfied(() => builder.additionalProperties(false))
             .execute();
         })
+        .with('sparqlConstraints', () => {
+          new Condition()
+            .on({
+              key: 'sparqlConstraints',
+              context: this.context,
+              constraints: this.constraints,
+            } as ConstraintCandidate)
+            .must(isNotNull)
+            .ifSatisfied((candidate: ConstraintCandidate) => {
+              const sparqlConstraints = candidate.constraints.sparqlConstraints;
+              if (sparqlConstraints && sparqlConstraints.length > 0) {
+                builder.customProperty(`${PREFIX}-sparql`, sparqlConstraints);
+              }
+            })
+            .execute();
+        })
         .otherwise((key) => {
           if (key == 'property') return;
           new Condition()

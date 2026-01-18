@@ -1,4 +1,5 @@
 import { NodeKind } from './node-kind';
+import { SparqlConstraint } from './sparql-constraint';
 
 export interface CoreConstraints {
   property?: string[];
@@ -38,4 +39,5 @@ export interface CoreConstraints {
   defaultValue?: string;
   order?: number | string;
   flags?: string;
+  sparqlConstraints?: SparqlConstraint[];
 }

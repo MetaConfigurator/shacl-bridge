@@ -13,6 +13,7 @@ import isBlankNode = Util.isBlankNode;
 export class ShapeBuilder {
   private readonly resolved = new Map<string, ShapeDefinition>();
   private readonly termCache = new Map<string, Term>();
+  private readonly sparqlConstraintNodes = new Set<string>();
 
   constructor(
     private readonly shaclDocument: ShaclDocument,
@@ -26,6 +27,12 @@ export class ShapeBuilder {
 
   build(): ShapeDefinition[] {
     const { quads, shapes } = this.index;
+
+    [...quads.keys()].forEach((subject) => {
+      if (this.isSparqlConstraintNode(quads.get(subject) ?? [])) {
+        this.sparqlConstraintNodes.add(subject.value);
+      }
+    });
 
     [...quads.keys()].forEach((subject) => {
       this.buildAndRegisterShape(subject, quads.get(subject) ?? []);
@@ -43,6 +50,12 @@ export class ShapeBuilder {
 
   private getCanonicalTerm(term: Term): Term {
     return this.termCache.get(term.value) ?? term;
+  }
+
+  private isSparqlConstraintNode(quads: Quad[]): boolean {
+    return quads.some(
+      (q) => q.predicate.value.endsWith('select') || q.predicate.value.endsWith('ask')
+    );
   }
 
   private buildAndRegisterShape(subject: Term, quads: Quad[]): void {
@@ -64,10 +77,32 @@ export class ShapeBuilder {
       throw new Error(`Shape '${subject.value}' was not created in first pass`);
     }
 
-    shapeDefinition.dependentShapes = [...(dependencies.get(canonicalSubject) ?? new Set())]
-      .filter((dep) => !(dep.value in lists))
-      .map((dep) => this.resolved.get(dep.value))
-      .filter((shape) => shape !== undefined);
+    const deps = [...(dependencies.get(canonicalSubject) ?? new Set())].filter(
+      (dep) => !(dep.value in lists)
+    );
+
+    const sparqlConstraints: ShapeDefinition[] = [];
+
+    deps.forEach((dep) => {
+      const depShape = this.resolved.get(dep.value);
+      if (depShape) {
+        if (this.sparqlConstraintNodes.has(dep.value)) sparqlConstraints.push(depShape);
+        else {
+          shapeDefinition.dependentShapes ??= [];
+          shapeDefinition.dependentShapes.push(depShape);
+        }
+      }
+    });
+
+    sparqlConstraints.forEach((constraintDef) => {
+      if (constraintDef.coreConstraints?.sparqlConstraints) {
+        shapeDefinition.coreConstraints ??= {};
+        shapeDefinition.coreConstraints.sparqlConstraints ??= [];
+        shapeDefinition.coreConstraints.sparqlConstraints.push(
+          ...constraintDef.coreConstraints.sparqlConstraints
+        );
+      }
+    });
 
     // Handle property shape type override for blank nodes
     const isBlankNode = blanks.some((blank) => blank.value === subject.value);
@@ -92,7 +127,13 @@ export class ShapeBuilder {
     const builder = new ShapeDefinitionBuilder(nodeKey);
     builder.setTargets(getTarget(this.index.targets, nodeKey));
 
+    // Mark if this is a SPARQL constraint node
+    if (this.sparqlConstraintNodes.has(nodeKey)) {
+      builder.markAsSparqlConstraintNode();
+    }
+
     const lists = this.shaclDocument.lists;
+    const isSparqlConstraint = this.sparqlConstraintNodes.has(nodeKey);
     quads.forEach((quad) => {
       const predicate = quad.predicate.value;
       const object = quad.object.value;
@@ -107,7 +148,13 @@ export class ShapeBuilder {
         .with(P.string.endsWith('targetObjectsOf'), () => builder.setTargetObjectsOf(object))
         .with(P.string.endsWith('targetSubjectsOf'), () => builder.setTargetSubjectsOf(object))
         .with(P.string.endsWith('deactivated'), () => builder.setDeactivated(object))
-        .with(P.string.endsWith('message'), () => builder.setMessage(object))
+        .with(P.string.endsWith('message'), () => {
+          if (isSparqlConstraint) {
+            builder.setSparqlMessage(object);
+          } else {
+            builder.setMessage(object);
+          }
+        })
         .with(P.string.endsWith('severity'), () => builder.setSeverity(object))
         .with(P.string.endsWith('pattern'), () => builder.setPattern(object))
         .with(P.string.endsWith('class'), () => builder.setClass(object))
@@ -147,6 +194,9 @@ export class ShapeBuilder {
         .with(P.string.endsWith('disjoint'), () => builder.setDisjoint(object, lists))
         .with(P.string.endsWith('order'), () => builder.setOrder(object))
         .with(P.string.endsWith('flags'), () => builder.setFlags(object))
+        .with(P.string.endsWith('sparql'), () => builder.setSparqlConstraint(object))
+        .with(P.string.endsWith('select'), () => builder.setSparqlSelect(object))
+        .with(P.string.endsWith('ask'), () => builder.setSparqlAsk(object))
         .otherwise(() => {
           // Capture non-SHACL predicates as additional properties
           builder.setAdditionalProperty(predicate, quad.object);
