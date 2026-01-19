@@ -10,7 +10,7 @@ async function getIr(content: string): Promise<IntermediateRepresentation> {
   return new IntermediateRepresentationBuilder(shaclDocument).build();
 }
 
-describe('Target Numbering', () => {
+describe('IR Schema Converter - Targets', () => {
   describe('Multiple Duplicates (3+)', () => {
     it('should assign sequential numbers for 3+ shapes with same target', async () => {
       const content = `
