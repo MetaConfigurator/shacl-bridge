@@ -39,6 +39,7 @@ export class TargetResolver {
         )
       )
     );
+    this.numberDuplicates(targets);
     return targets;
   }
 
@@ -100,5 +101,36 @@ export class TargetResolver {
     return noTargets
       ? [extractStrippedName(subject.value)]
       : [...new Set([...targetClasses, ...targetNodes, ...targetSubjects, ...targetObjects])];
+  }
+
+  private numberDuplicates(targets: Map<Term, string[]>) {
+    // Filter to only include named shapes (exclude blank nodes)
+    const namedShapeTargets = [...targets.entries()].filter(([term]) => !isBlankNode(term));
+
+    // Count how many times each target appears across named shapes only
+    const targetCounts = new Map<string, number>();
+    namedShapeTargets.forEach(([, targetList]) => {
+      targetList.forEach((target) => {
+        targetCounts.set(target, (targetCounts.get(target) ?? 0) + 1);
+      });
+    });
+
+    // Track current index for each duplicate target
+    const targetIndexes = new Map<string, number>();
+
+    // Update targets with numbers for duplicates (only for named shapes)
+    namedShapeTargets.forEach(([term, targetList]) => {
+      const numberedTargets = targetList.map((target) => {
+        const count = targetCounts.get(target) ?? 0;
+        if (count > 1) {
+          // This target appears multiple times, assign a number
+          const currentIndex = (targetIndexes.get(target) ?? 0) + 1;
+          targetIndexes.set(target, currentIndex);
+          return `${target}_${String(currentIndex)}`;
+        }
+        return target;
+      });
+      targets.set(term, numberedTargets);
+    });
   }
 }

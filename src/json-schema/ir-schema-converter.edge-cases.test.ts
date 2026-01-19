@@ -2153,4 +2153,70 @@ describe('IR Schema Converter - Edge Cases', () => {
       });
     });
   });
+
+  describe('Same Targets', () => {
+    it('should assign numbered targets for same targets', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      
+      ex:PersonShape
+          a sh:NodeShape ;
+          sh:targetClass ex:Person ;
+          sh:property [
+              sh:path ex:name ;
+              sh:datatype xsd:string ;
+              sh:minCount 1 ;
+              sh:maxCount 1 ;
+          ] .
+          
+      ex:HumanShape
+          a sh:NodeShape ;
+          sh:targetClass ex:Person ;
+          sh:property [
+              sh:path ex:address ;
+              sh:datatype xsd:string ;
+              sh:minCount 1 ;
+              sh:maxCount 1 ;
+          ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person_1: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            required: ['name'],
+            title: 'Person_1',
+            type: 'object',
+          },
+          Person_2: {
+            additionalProperties: true,
+            properties: {
+              address: {
+                type: 'string',
+              },
+            },
+            required: ['address'],
+            title: 'Person_2',
+            type: 'object',
+          },
+        },
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
+    });
+  });
 });

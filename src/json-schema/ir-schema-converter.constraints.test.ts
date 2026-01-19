@@ -1976,15 +1976,47 @@ describe('IR Schema Converter - Constraints', () => {
       expect(schema).toStrictEqual({
         $defs: {
           Node1: {
-            title: 'Node1',
-            type: 'object',
+            additionalProperties: true,
             properties: {
               value: {
                 type: 'string',
               },
             },
             required: ['value'],
+            title: 'Node1',
+            type: 'object',
+            'x-shacl-targetNodes': [
+              'http://example.org/Node1',
+              'http://example.org/Node2',
+              'http://example.org/Node3',
+            ],
+          },
+          Node2: {
             additionalProperties: true,
+            properties: {
+              value: {
+                type: 'string',
+              },
+            },
+            required: ['value'],
+            title: 'Node1',
+            type: 'object',
+            'x-shacl-targetNodes': [
+              'http://example.org/Node1',
+              'http://example.org/Node2',
+              'http://example.org/Node3',
+            ],
+          },
+          Node3: {
+            additionalProperties: true,
+            properties: {
+              value: {
+                type: 'string',
+              },
+            },
+            required: ['value'],
+            title: 'Node1',
+            type: 'object',
             'x-shacl-targetNodes': [
               'http://example.org/Node1',
               'http://example.org/Node2',
@@ -1996,8 +2028,8 @@ describe('IR Schema Converter - Constraints', () => {
         $ref: '#/$defs/Node1',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -2118,15 +2150,28 @@ describe('IR Schema Converter - Constraints', () => {
       expect(schema).toStrictEqual({
         $defs: {
           Person: {
-            title: 'Person',
-            type: 'object',
+            additionalProperties: true,
             properties: {
               identifier: {
                 type: 'string',
               },
             },
             required: ['identifier'],
+            title: 'Person',
+            type: 'object',
+            'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+          },
+          SpecialPerson: {
             additionalProperties: true,
+            properties: {
+              identifier: {
+                type: 'string',
+              },
+            },
+            required: ['identifier'],
+            title: 'Person',
+            type: 'object',
             'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
             'x-shacl-targetSubjectsOf': 'http://example.org/knows',
           },
@@ -2135,8 +2180,8 @@ describe('IR Schema Converter - Constraints', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
