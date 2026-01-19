@@ -1999,7 +1999,7 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             required: ['value'],
-            title: 'Node1',
+            title: 'Node2',
             type: 'object',
             'x-shacl-targetNodes': [
               'http://example.org/Node1',
@@ -2015,7 +2015,7 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             required: ['value'],
-            title: 'Node1',
+            title: 'Node3',
             type: 'object',
             'x-shacl-targetNodes': [
               'http://example.org/Node1',
@@ -2170,7 +2170,7 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             required: ['identifier'],
-            title: 'Person',
+            title: 'SpecialPerson',
             type: 'object',
             'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
             'x-shacl-targetSubjectsOf': 'http://example.org/knows',

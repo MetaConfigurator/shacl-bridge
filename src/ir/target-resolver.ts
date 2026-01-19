@@ -1,6 +1,9 @@
 import { Quad, Quad_Subject, Term, Util } from 'n3';
 import {
+  RDF_TYPE,
+  SHACL_NODE_SHAPE,
   SHACL_PATH,
+  SHACL_PROPERTY_SHAPE,
   SHACL_TARGET_CLASS,
   SHACL_TARGET_NODE,
   SHACL_TARGET_OBJECTS_OF,
@@ -43,7 +46,6 @@ export class TargetResolver {
     return targets;
   }
 
-  // TODO: Handling different prefixes for SHACL
   private getTargetDeclarations(quads: Map<Term, Quad[]>, shape: Term) {
     return quads
       .get(shape)
@@ -103,13 +105,23 @@ export class TargetResolver {
       : [...new Set([...targetClasses, ...targetNodes, ...targetSubjects, ...targetObjects])];
   }
 
-  private numberDuplicates(targets: Map<Term, string[]>) {
-    // Filter to only include named shapes (exclude blank nodes)
-    const namedShapeTargets = [...targets.entries()].filter(([term]) => !isBlankNode(term));
+  private isShaclShape(term: Term): boolean {
+    return this.shaclDocument.store
+      .getQuads(term, RDF_TYPE, null, this.shaclDocument.graphId)
+      .some(
+        (quad) =>
+          quad.object.value === SHACL_NODE_SHAPE || quad.object.value === SHACL_PROPERTY_SHAPE
+      );
+  }
 
-    // Count how many times each target appears across named shapes only
+  private numberDuplicates(targets: Map<Term, string[]>) {
+    const shaclShapeTargets = [...targets.entries()]
+      .filter(([term]) => !isBlankNode(term))
+      .filter(([term]) => this.isShaclShape(term));
+
+    // Count how many times each target appears across SHACL shapes only
     const targetCounts = new Map<string, number>();
-    namedShapeTargets.forEach(([, targetList]) => {
+    shaclShapeTargets.forEach(([, targetList]) => {
       targetList.forEach((target) => {
         targetCounts.set(target, (targetCounts.get(target) ?? 0) + 1);
       });
@@ -118,8 +130,8 @@ export class TargetResolver {
     // Track current index for each duplicate target
     const targetIndexes = new Map<string, number>();
 
-    // Update targets with numbers for duplicates (only for named shapes)
-    namedShapeTargets.forEach(([term, targetList]) => {
+    // Update targets with numbers for duplicates (only for SHACL shapes)
+    shaclShapeTargets.forEach(([term, targetList]) => {
       const numberedTargets = targetList.map((target) => {
         const count = targetCounts.get(target) ?? 0;
         if (count > 1) {

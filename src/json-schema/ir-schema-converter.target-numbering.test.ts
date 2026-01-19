@@ -45,12 +45,48 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      expect(schema.$defs).toHaveProperty('Person_1');
-      expect(schema.$defs).toHaveProperty('Person_2');
-      expect(schema.$defs).toHaveProperty('Person_3');
-      // expect(schema.$defs?.Person_1.properties).toHaveProperty('name');
-      // expect(schema.$defs?.Person_2.properties).toHaveProperty('age');
-      // expect(schema.$defs?.Person_3.properties).toHaveProperty('email');
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person_1: {
+            title: 'Person_1',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Person_2: {
+            title: 'Person_2',
+            type: 'object',
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
+          },
+          Person_3: {
+            title: 'Person_3',
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/PersonShape1',
+        $ref: '#/$defs/Person_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 
@@ -96,17 +132,58 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // Both Person and Organization should have _1 and _2 variants
-      expect(schema.$defs).toHaveProperty('Person_1');
-      expect(schema.$defs).toHaveProperty('Person_2');
-      expect(schema.$defs).toHaveProperty('Organization_1');
-      expect(schema.$defs).toHaveProperty('Organization_2');
-
-      // Verify correct properties assigned
-      // expect(schema.$defs?.Person_1.properties).toHaveProperty('name');
-      // expect(schema.$defs?.Person_2.properties).toHaveProperty('age');
-      // expect(schema.$defs?.Organization_1.properties).toHaveProperty('orgName');
-      // expect(schema.$defs?.Organization_2.properties).toHaveProperty('taxId');
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person_1: {
+            title: 'Person_1',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Person_2: {
+            title: 'Person_2',
+            type: 'object',
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
+          },
+          Organization_1: {
+            title: 'Organization_1',
+            type: 'object',
+            properties: {
+              orgName: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Organization_2: {
+            title: 'Organization_2',
+            type: 'object',
+            properties: {
+              taxId: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/PersonShape1',
+        $ref: '#/$defs/Person_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 
@@ -152,15 +229,58 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // Person should be numbered (duplicate)
-      expect(schema.$defs).toHaveProperty('Person_1');
-      expect(schema.$defs).toHaveProperty('Person_2');
-
-      // Organization and Product should NOT be numbered (unique)
-      expect(schema.$defs).toHaveProperty('Organization');
-      expect(schema.$defs).toHaveProperty('Product');
-      expect(schema.$defs).not.toHaveProperty('Organization_1');
-      expect(schema.$defs).not.toHaveProperty('Product_1');
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person_1: {
+            title: 'Person_1',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Person_2: {
+            title: 'Person_2',
+            type: 'object',
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
+          },
+          Organization: {
+            title: 'Organization',
+            type: 'object',
+            properties: {
+              orgName: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Product: {
+            title: 'Product',
+            type: 'object',
+            properties: {
+              price: {
+                type: 'number',
+              },
+            },
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/PersonShape1',
+        $ref: '#/$defs/Person_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 
@@ -198,20 +318,53 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // All should be unnumbered
-      expect(schema.$defs).toHaveProperty('Person');
-      expect(schema.$defs).toHaveProperty('Organization');
-      expect(schema.$defs).toHaveProperty('Product');
-
-      // None should have numbers
-      expect(schema.$defs).not.toHaveProperty('Person_1');
-      expect(schema.$defs).not.toHaveProperty('Organization_1');
-      expect(schema.$defs).not.toHaveProperty('Product_1');
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Organization: {
+            title: 'Organization',
+            type: 'object',
+            properties: {
+              orgName: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Product: {
+            title: 'Product',
+            type: 'object',
+            properties: {
+              price: {
+                type: 'number',
+              },
+            },
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/PersonShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 
   describe('Single Shape with Multiple Targets', () => {
-    it('should handle shapes with multiple targetClass declarations', async () => {
+    it('should create entries for all targets when shape has multiple targetClass', async () => {
       const content = `
         @prefix sh: <http://www.w3.org/ns/shacl#> .
         @prefix ex: <http://example.org/> .
@@ -237,13 +390,262 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // Person appears twice, so both should be numbered
-      expect(schema.$defs).toHaveProperty('Person_1');
-      expect(schema.$defs).toHaveProperty('Person_2');
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person_1: {
+            title: 'Person_1',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Employee: {
+            title: 'Employee',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Person_2: {
+            title: 'Person_2',
+            type: 'object',
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/PersonOrEmployeeShape',
+        $ref: '#/$defs/Person_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
+    });
 
-      // Employee appears once, should not be numbered
-      expect(schema.$defs).toHaveProperty('Employee');
-      expect(schema.$defs).not.toHaveProperty('Employee_1');
+    it('should create entries for all targets without numbering when no duplicates', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:MultiTargetShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:targetClass ex:Employee ;
+            sh:targetClass ex:User ;
+            sh:property [
+                sh:path ex:id ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+
+      expect(schema).toStrictEqual({
+        $defs: {
+          Employee: {
+            additionalProperties: true,
+            properties: {
+              id: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+            },
+            required: ['id'],
+            title: 'Employee',
+            type: 'object',
+          },
+          Person: {
+            additionalProperties: true,
+            properties: {
+              id: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+            },
+            required: ['id'],
+            title: 'Person',
+            type: 'object',
+          },
+          User: {
+            additionalProperties: true,
+            properties: {
+              id: {
+                items: {
+                  type: 'string',
+                },
+                minItems: 1,
+                type: 'array',
+              },
+            },
+            required: ['id'],
+            title: 'User',
+            type: 'object',
+          },
+        },
+        $id: 'http://example.org/MultiTargetShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
+    });
+
+    it('should handle multiple shapes each with multiple targets', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:Shape1
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:targetClass ex:Employee ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+            ] .
+
+        ex:Shape2
+            a sh:NodeShape ;
+            sh:targetClass ex:Manager ;
+            sh:targetClass ex:Director ;
+            sh:property [
+                sh:path ex:level ;
+                sh:datatype xsd:integer ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Employee: {
+            title: 'Employee',
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            additionalProperties: true,
+          },
+          Manager: {
+            title: 'Manager',
+            type: 'object',
+            properties: {
+              level: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
+          },
+          Director: {
+            title: 'Director',
+            type: 'object',
+            properties: {
+              level: {
+                type: 'integer',
+              },
+            },
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/Shape1',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
+    });
+
+    it('should handle mix of targetClass and targetNode on same shape', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:MixedTargetShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:targetNode ex:john ;
+            sh:property [
+                sh:path ex:name ;
+                sh:datatype xsd:string ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'Person',
+            type: 'object',
+            'x-shacl-targetNodes': ['http://example.org/john'],
+          },
+          john: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'john',
+            type: 'object',
+            'x-shacl-targetNodes': ['http://example.org/john'],
+          },
+        },
+        $id: 'http://example.org/MixedTargetShape',
+        $ref: '#/$defs/Person',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 
@@ -273,9 +675,40 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // john should be numbered as it appears twice
-      expect(schema.$defs).toHaveProperty('john_1');
-      expect(schema.$defs).toHaveProperty('john_2');
+      expect(schema).toStrictEqual({
+        $defs: {
+          john_1: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'john_1',
+            type: 'object',
+            'x-shacl-targetNodes': ['http://example.org/john'],
+          },
+          john_2: {
+            additionalProperties: true,
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            title: 'john_2',
+            type: 'object',
+            'x-shacl-targetNodes': ['http://example.org/john'],
+          },
+        },
+        $id: 'http://example.org/JohnShape1',
+        $ref: '#/$defs/john_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
 
     it('should number duplicate targetSubjectsOf declarations', async () => {
@@ -307,11 +740,75 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // Should have numbered entries for alice and charlie
-      expect(schema.$defs).toHaveProperty('alice_1');
-      expect(schema.$defs).toHaveProperty('alice_2');
-      expect(schema.$defs).toHaveProperty('charlie_1');
-      expect(schema.$defs).toHaveProperty('charlie_2');
+      expect(schema).toStrictEqual({
+        $defs: {
+          alice: {
+            additionalProperties: true,
+            title: 'alice',
+            type: 'object',
+            'x-shacl-knows': 'http://example.org/bob',
+          },
+          alice_1: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'alice_1',
+            type: 'object',
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+          },
+          alice_2: {
+            additionalProperties: true,
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            title: 'alice_2',
+            type: 'object',
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+          },
+          charlie: {
+            additionalProperties: true,
+            title: 'charlie',
+            type: 'object',
+            'x-shacl-knows': 'http://example.org/dave',
+          },
+          charlie_1: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'charlie_1',
+            type: 'object',
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+          },
+          charlie_2: {
+            additionalProperties: true,
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            title: 'charlie_2',
+            type: 'object',
+            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
+          },
+        },
+        $id: 'http://example.org/alice',
+        $ref: '#/$defs/alice',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
 
     it('should number duplicate targetObjectsOf declarations', async () => {
@@ -342,9 +839,52 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // bob should be numbered as it appears twice
-      expect(schema.$defs).toHaveProperty('bob_1');
-      expect(schema.$defs).toHaveProperty('bob_2');
+      expect(schema).toStrictEqual({
+        $defs: {
+          alice: {
+            additionalProperties: true,
+            title: 'alice',
+            type: 'object',
+            'x-shacl-knows': 'http://example.org/bob',
+          },
+          bob_1: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'bob_1',
+            type: 'object',
+            'x-shacl-targetObjectsOf': 'http://example.org/knows',
+          },
+          bob_2: {
+            additionalProperties: true,
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            title: 'bob_2',
+            type: 'object',
+            'x-shacl-targetObjectsOf': 'http://example.org/knows',
+          },
+          charlie: {
+            additionalProperties: true,
+            title: 'charlie',
+            type: 'object',
+            'x-shacl-knows': 'http://example.org/bob',
+          },
+        },
+        $id: 'http://example.org/alice',
+        $ref: '#/$defs/alice',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 
@@ -382,13 +922,49 @@ describe('Target Numbering', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // targetClass Person appears twice
-      expect(schema.$defs).toHaveProperty('Person_1');
-      expect(schema.$defs).toHaveProperty('Person_2');
-
-      // targetNode Person appears once - should be numbered as _3
-      // because it's the same name "Person" appearing a third time overall
-      expect(schema.$defs).toHaveProperty('Person_3');
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person_1: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+            title: 'Person_1',
+            type: 'object',
+          },
+          Person_2: {
+            additionalProperties: true,
+            properties: {
+              age: {
+                type: 'integer',
+              },
+            },
+            title: 'Person_2',
+            type: 'object',
+          },
+          Person_3: {
+            additionalProperties: true,
+            properties: {
+              id: {
+                type: 'string',
+              },
+            },
+            title: 'Person_3',
+            type: 'object',
+            'x-shacl-targetNodes': ['http://example.org/Person'],
+          },
+        },
+        $id: 'http://example.org/PersonShape1',
+        $ref: '#/$defs/Person_1',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
     });
   });
 });

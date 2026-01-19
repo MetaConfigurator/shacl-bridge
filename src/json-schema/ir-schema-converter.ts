@@ -33,9 +33,10 @@ export class IrSchemaConverter {
       .forEach((element) => {
         const { shape, schema } = element;
         shape.targets.forEach((target) => {
+          const schemaForTarget = { ...schema, title: target };
           builder.$defs({
             ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
-            [target]: schema,
+            [target]: schemaForTarget,
           });
         });
       });
