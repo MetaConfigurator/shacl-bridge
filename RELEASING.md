@@ -30,7 +30,7 @@ Use conventional commit messages to trigger automatic releases:
 ### Types and Version Bumps
 
 | Commit Type        | Version Bump      | Example                               |
-|--------------------|-------------------|---------------------------------------|
+| ------------------ | ----------------- | ------------------------------------- |
 | `feat:`            | **Minor** (0.1.0) | `feat: add JSON-LD support`           |
 | `fix:`             | **Patch** (0.0.1) | `fix: resolve blank node references`  |
 | `perf:`            | **Patch** (0.0.1) | `perf: optimize indexing performance` |
