@@ -1,0 +1,35 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "sh": "http://www.w3.org/ns/shacl#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "ex:PersonShape",
+      "@type": "sh:NodeShape",
+      "sh:targetClass": { "@id": "foaf:Person" },
+      "sh:property": [
+        {
+          "sh:path": { "@id": "ex:ssn" },
+          "sh:maxCount": 1,
+          "sh:datatype": { "@id": "xsd:string" },
+          "sh:pattern": "^\\d{3}-\\d{2}-\\d{4}$"
+        },
+        {
+          "sh:path": { "@id": "ex:worksFor" },
+          "sh:class": { "@id": "ex:Company" },
+          "sh:nodeKind": { "@id": "sh:IRI" }
+        }
+      ],
+      "sh:closed": true,
+      "sh:ignoredProperties": {
+        "@list": [
+          { "@id": "rdf:type" }
+        ]
+      }
+    }
+  ]
+}

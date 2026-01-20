@@ -8,6 +8,7 @@ describe('CLI', () => {
   const cliPath = path.join(__dirname, '../../dist/cli/cli.js');
   const samplesDir = path.join(__dirname, '../../samples/shacl');
   const simpleShaclPath = path.join(samplesDir, 'simple-shacl.ttl');
+  const simpleJsonLdPath = path.join(samplesDir, 'simple-shacl.jsonld');
 
   const runCli = (args: string): string => {
     return execSync(`node ${cliPath} ${args}`, { encoding: 'utf-8' });
@@ -69,6 +70,56 @@ describe('CLI', () => {
       expect(() => {
         runCli('');
       }).toThrow();
+    });
+  });
+
+  describe('--json-ld flag', () => {
+    it('should parse JSON-LD file with --json-ld flag', () => {
+      const output = runCli(`-i ${simpleJsonLdPath} --json-ld`);
+      const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+      expect(schema.$defs).toBeDefined();
+      expect(Object.keys(schema.$defs ?? {}).length).toBeGreaterThan(0);
+    });
+
+    it('should write JSON-LD output to file with --output', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-jsonld-test-'));
+      const outputPath = path.join(tempDir, 'schema-jsonld.json');
+
+      try {
+        runCli(`--input ${simpleJsonLdPath} --json-ld --output ${outputPath}`);
+        expect(fs.existsSync(outputPath)).toBe(true);
+
+        const content = fs.readFileSync(outputPath, 'utf-8');
+        const schema = JSON.parse(content) as JsonSchemaObjectType;
+
+        expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+        expect(schema.$defs).toBeDefined();
+        expect(Object.keys(schema.$defs ?? {}).length).toBeGreaterThan(0);
+      } finally {
+        fs.rmSync(tempDir, { recursive: true });
+      }
+    });
+
+    it('should produce equivalent output for Turtle and JSON-LD formats', () => {
+      const turtleOutput = runCli(`-i ${simpleShaclPath}`);
+      const jsonLdOutput = runCli(`-i ${simpleJsonLdPath} --json-ld`);
+
+      const turtleSchema = JSON.parse(turtleOutput) as JsonSchemaObjectType;
+      const jsonLdSchema = JSON.parse(jsonLdOutput) as JsonSchemaObjectType;
+
+      // Both should have the same schema version
+      expect(turtleSchema.$schema).toBe(jsonLdSchema.$schema);
+
+      // Both should have definitions
+      expect(turtleSchema.$defs).toBeDefined();
+      expect(jsonLdSchema.$defs).toBeDefined();
+
+      // Should have similar number of shape definitions
+      const turtleDefsCount = Object.keys(turtleSchema.$defs ?? {}).length;
+      const jsonLdDefsCount = Object.keys(jsonLdSchema.$defs ?? {}).length;
+      expect(turtleDefsCount).toBe(jsonLdDefsCount);
     });
   });
 });
