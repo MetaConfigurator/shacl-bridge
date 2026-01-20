@@ -3,3 +3,4 @@ node_modules
 package-lock.json/.github/workflows/node.js.yml
 samples/shacl/*
 .github/*
+CHANGELOG.md
