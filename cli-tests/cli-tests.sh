@@ -116,4 +116,45 @@ fi
 echo -e "${GREEN}Correctly handles nonexistent files${NC}"
 
 echo ""
+echo "Test 6: Convert JSON-LD file with --json-ld flag"
+JSONLD_OUTPUT_FILE="$TEMP_DIR/test-jsonld-output.json"
+shacl-bridge -i samples/shacl/simple-shacl.jsonld --json-ld -o "$JSONLD_OUTPUT_FILE"
+
+if [ ! -f "$JSONLD_OUTPUT_FILE" ]; then
+    echo -e "${RED}JSON-LD output file was not created${NC}"
+    exit 1
+fi
+
+# Validate JSON structure
+if ! jq empty "$JSONLD_OUTPUT_FILE" 2>/dev/null; then
+    echo -e "${RED}JSON-LD output is not valid JSON${NC}"
+    exit 1
+fi
+
+JSONLD_SCHEMA_VERSION=$(jq -r '."$schema"' "$JSONLD_OUTPUT_FILE")
+if [ "$JSONLD_SCHEMA_VERSION" != "https://json-schema.org/draft/2020-12/schema" ]; then
+    echo -e "${RED}Invalid schema version in JSON-LD output${NC}"
+    exit 1
+fi
+
+JSONLD_DEFS_COUNT=$(jq '."$defs" | length' "$JSONLD_OUTPUT_FILE")
+if [ "$JSONLD_DEFS_COUNT" -lt 1 ]; then
+    echo -e "${RED}No definitions found in JSON-LD output${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Successfully converted JSON-LD to JSON Schema${NC}"
+echo "  Output file size: $(wc -c < "$JSONLD_OUTPUT_FILE") bytes"
+echo "  Number of definitions: $JSONLD_DEFS_COUNT"
+
+echo ""
+echo "Test 7: Convert JSON-LD to stdout with --json-ld flag"
+JSONLD_STDOUT_OUTPUT=$(shacl-bridge -i samples/shacl/simple-shacl.jsonld --json-ld)
+if ! echo "$JSONLD_STDOUT_OUTPUT" | jq empty 2>/dev/null; then
+    echo -e "${RED}JSON-LD stdout output is not valid JSON${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Successfully output JSON-LD conversion to stdout${NC}"
+
+echo ""
 echo -e "${GREEN}All tests passed!${NC}"

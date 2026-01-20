@@ -1,8 +1,10 @@
 import { ShaclParser } from './shacl-parser';
+import * as fs from 'fs';
 
 describe('SHACL Parser', () => {
   const pathToSimpleShacl = 'samples/shacl/simple-shacl.ttl';
   const pathToComplexShacl = 'samples/shacl/complex-shacl.ttl';
+  const pathToSimpleJsonLd = 'samples/shacl/simple-shacl.jsonld';
 
   it('should parse simple shacl file accurately', async () => {
     const shaclDocument = await new ShaclParser().withPath(pathToSimpleShacl).parse();
@@ -77,24 +79,80 @@ describe('SHACL Parser', () => {
   it('should throw error when trying to set both options, final option is content', () => {
     expect(() =>
       new ShaclParser().withPath(pathToSimpleShacl).withContent('some content').parse()
-    ).toThrow(new Error('Cannot set content after specifying a file path'));
+    ).toThrow(new Error('Cannot set an(other) option after specifying it once'));
   });
 
   it('should throw error when trying to set both options, final option is path', () => {
     expect(() =>
       new ShaclParser().withContent('some content').withPath(pathToSimpleShacl).parse()
-    ).toThrow(new Error('Cannot set a file path after specifying content'));
+    ).toThrow(new Error('Cannot set an(other) option after specifying it once'));
   });
 
   it('should throw error when trying to set content more than once', () => {
     expect(() =>
       new ShaclParser().withContent('some content').withContent('some content').parse()
-    ).toThrow(new Error('Cannot set content more than once'));
+    ).toThrow(new Error('Cannot set an(other) option after specifying it once'));
   });
 
   it('should throw error when trying to set file path more than once', () => {
     expect(() =>
       new ShaclParser().withPath(pathToSimpleShacl).withPath(pathToSimpleShacl).parse()
-    ).toThrow(new Error('Cannot set a file path more than once'));
+    ).toThrow(new Error('Cannot set an(other) option after specifying it once'));
+  });
+
+  it('should parse JSON-LD file with withJsonLdPath', async () => {
+    const shaclDocument = await new ShaclParser().withJsonLdPath(pathToSimpleJsonLd).parse();
+    expect(shaclDocument).toBeDefined();
+    expect(shaclDocument.store.size).toBeGreaterThan(0);
+
+    // Verify key triples are present
+    const quads = shaclDocument.store.getQuads(null, null, null, null);
+    const tripleStrings = quads.map(
+      (q) => `${q.subject.value} ${q.predicate.value} ${q.object.value}`
+    );
+
+    expect(
+      tripleStrings.some((s) =>
+        s.includes('http://example.org/PersonShape http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+      )
+    ).toBe(true);
+    expect(
+      tripleStrings.some((s) =>
+        s.includes('http://example.org/PersonShape http://www.w3.org/ns/shacl#targetClass')
+      )
+    ).toBe(true);
+  });
+
+  it('should parse JSON-LD content with withJsonLdContent', async () => {
+    const jsonLdContent = fs.readFileSync(pathToSimpleJsonLd, 'utf8');
+    const shaclDocument = await new ShaclParser().withJsonLdContent(jsonLdContent).parse();
+
+    expect(shaclDocument).toBeDefined();
+    expect(shaclDocument.store.size).toBeGreaterThan(0);
+
+    // Verify key triples are present
+    const quads = shaclDocument.store.getQuads(null, null, null, null);
+    const tripleStrings = quads.map(
+      (q) => `${q.subject.value} ${q.predicate.value} ${q.object.value}`
+    );
+
+    expect(
+      tripleStrings.some((s) =>
+        s.includes('http://example.org/PersonShape http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+      )
+    ).toBe(true);
+  });
+
+  it('should throw error when mixing JSON-LD and Turtle methods', () => {
+    expect(() =>
+      new ShaclParser().withJsonLdPath(pathToSimpleJsonLd).withPath(pathToSimpleShacl).parse()
+    ).toThrow(new Error('Cannot set an(other) option after specifying it once'));
+  });
+
+  it('should throw error when trying to set JSON-LD content more than once', () => {
+    const jsonLdContent = fs.readFileSync(pathToSimpleJsonLd, 'utf8');
+    expect(() =>
+      new ShaclParser().withJsonLdContent(jsonLdContent).withJsonLdContent(jsonLdContent).parse()
+    ).toThrow(new Error('Cannot set an(other) option after specifying it once'));
   });
 });

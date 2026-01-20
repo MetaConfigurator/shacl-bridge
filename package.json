@@ -22,6 +22,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/jest": "^30.0.0",
+    "@types/jsonld": "^1.5.15",
     "@types/n3": "^1.26.1",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
@@ -38,6 +39,7 @@
   "dependencies": {
     "clipboardy": "^5.0.2",
     "commander": "^14.0.2",
+    "jsonld": "^9.0.0",
     "n3": "^2.0.1",
     "pino": "^10.2.0",
     "ts-pattern": "^5.9.0"

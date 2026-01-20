@@ -131,6 +131,54 @@ try {
     Write-Host "Correctly handles nonexistent files" -ForegroundColor Green
 
     Write-Host ""
+    Write-Host "Test 6: Convert JSON-LD file with --json-ld flag"
+    $jsonLdOutputFile = Join-Path $TempDir "test-jsonld-output.json"
+    shacl-bridge -i samples/shacl/simple-shacl.jsonld --json-ld -o $jsonLdOutputFile
+    if ($LASTEXITCODE -ne 0) { throw "JSON-LD conversion failed" }
+
+    if (-not (Test-Path $jsonLdOutputFile)) {
+        Write-Host "JSON-LD output file was not created" -ForegroundColor Red
+        exit 1
+    }
+
+    # Validate JSON structure
+    try {
+        $jsonLdContent = Get-Content $jsonLdOutputFile -Raw | ConvertFrom-Json
+    } catch {
+        Write-Host "JSON-LD output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    if ($jsonLdContent.'$schema' -ne "https://json-schema.org/draft/2020-12/schema") {
+        Write-Host "Invalid schema version in JSON-LD output" -ForegroundColor Red
+        exit 1
+    }
+
+    $jsonLdDefsCount = ($jsonLdContent.'$defs' | Get-Member -MemberType NoteProperty).Count
+    if ($jsonLdDefsCount -lt 1) {
+        Write-Host "No definitions found in JSON-LD output" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "Successfully converted JSON-LD to JSON Schema" -ForegroundColor Green
+    $jsonLdFileSize = (Get-Item $jsonLdOutputFile).Length
+    Write-Host "  Output file size: $jsonLdFileSize bytes"
+    Write-Host "  Number of definitions: $jsonLdDefsCount"
+
+    Write-Host ""
+    Write-Host "Test 7: Convert JSON-LD to stdout with --json-ld flag"
+    $jsonLdStdoutOutput = shacl-bridge -i samples/shacl/simple-shacl.jsonld --json-ld
+    if ($LASTEXITCODE -ne 0) { throw "JSON-LD stdout conversion failed" }
+
+    try {
+        $jsonLdStdoutOutput | ConvertFrom-Json | Out-Null
+        Write-Host "Successfully output JSON-LD conversion to stdout" -ForegroundColor Green
+    } catch {
+        Write-Host "JSON-LD stdout output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
     Write-Host "All tests passed!" -ForegroundColor Green
 
 } finally {
