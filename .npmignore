@@ -1,0 +1,58 @@
+# Source files
+src/
+*.test.ts
+*.test.js
+__tests__/
+
+# Compiled test files
+dist/**/*.test.js
+dist/**/*.test.d.ts
+
+# Configuration files
+.github/
+.husky/
+.vscode/
+tsconfig.json
+jest.config.js
+eslint.config.mts
+.prettierrc
+.prettierignore
+.editorconfig
+.releaserc.json
+
+# Development files
+samples/
+node_modules/
+coverage/
+.DS_Store
+*.log
+npm-debug.log*
+.env
+.env.local
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (keeping only README.md)
+CLAUDE.md
+CONTRIBUTING.md
+RELEASING.md
+
+# CI/CD
+.github/*
+
+# Hidden Folders
+.claude/*
+.clinic/*
+.devcontainer/*
+.idea/*
+.husky/*
+.prettierrc.json
+cli-tests/*
+junit.xml
+
+# Samples and Test Folders
+output/*
+samples/*
