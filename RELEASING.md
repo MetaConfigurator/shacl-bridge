@@ -83,17 +83,17 @@ git commit -m "chore: update dependencies"
 
 1. **Push to main branch**: Merge a PR or push commits directly to `main`
 2. **CI runs**: The release workflow automatically:
-    - Installs dependencies
-    - Runs build (`npm run build`)
-    - Runs tests (`npm test`)
-    - Analyzes commits since last release
-    - Determines next version based on commit types
-    - Updates version in `package.json` and `package-lock.json`
-    - Generates/updates `CHANGELOG.md`
-    - Creates a git tag (e.g., `v1.2.3`)
-    - Publishes to npm registry
-    - Creates a GitHub release with release notes
-    - Commits changes back to main with `[skip ci]`
+   - Installs dependencies
+   - Runs build (`npm run build`)
+   - Runs tests (`npm test`)
+   - Analyzes commits since last release
+   - Determines next version based on commit types
+   - Updates version in `package.json` and `package-lock.json`
+   - Generates/updates `CHANGELOG.md`
+   - Creates a git tag (e.g., `v1.2.3`)
+   - Publishes to npm registry
+   - Creates a GitHub release with release notes
+   - Commits changes back to main with `[skip ci]`
 
 ### Manual Testing Before Release
 
@@ -126,24 +126,24 @@ Configure these secrets in your GitHub repository settings (Settings → Secrets
 
 1. **GITHUB_TOKEN**: Automatically provided by GitHub Actions (no setup needed)
 2. **NPM_TOKEN**: Required for npm publishing
-    - Log in to npmjs.com
-    - Go to Access Tokens → Generate New Token
-    - Choose "Automation" type
-    - Copy the token
-    - Add as `NPM_TOKEN` secret in GitHub
+   - Log in to npmjs.com
+   - Go to Access Tokens → Generate New Token
+   - Choose "Automation" type
+   - Copy the token
+   - Add as `NPM_TOKEN` secret in GitHub
 
 ### Repository Settings
 
 1. **Branch Protection** (recommended):
-    - Go to Settings → Branches
-    - Add rule for `main` branch
-    - Enable "Require a pull request before merging"
-    - Enable "Require status checks to pass before merging"
+   - Go to Settings → Branches
+   - Add rule for `main` branch
+   - Enable "Require a pull request before merging"
+   - Enable "Require status checks to pass before merging"
 
 2. **GitHub Actions Permissions**:
-    - Go to Settings → Actions → General
-    - Under "Workflow permissions", select "Read and write permissions"
-    - Enable "Allow GitHub Actions to create and approve pull requests"
+   - Go to Settings → Actions → General
+   - Under "Workflow permissions", select "Read and write permissions"
+   - Enable "Allow GitHub Actions to create and approve pull requests"
 
 ## First Release
 
