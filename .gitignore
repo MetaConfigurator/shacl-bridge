@@ -25,3 +25,17 @@ output/
 .clinic/
 
 .devcontainer/
+
+# Sensitive files
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*credentials*
+*secret*
+
+# OS files
+.DS_Store
+Thumbs.db
