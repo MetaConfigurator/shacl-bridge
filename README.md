@@ -49,3 +49,5 @@ npm run lint         # Lint code
 ## License
 
 MIT
+
+Test
