@@ -33,7 +33,7 @@ shacl-bridge -i input.jsonld --json-ld
 ## Features
 
 - Convert SHACL to JSON Schema
-- Support for Turtle and JSON-LD input formats
+- Supports Turtle and JSON-LD input formats
 - Comprehensive SHACL constraint support
 - Automatic blank node resolution
 
