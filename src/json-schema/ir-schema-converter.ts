@@ -26,26 +26,49 @@ export class IrSchemaConverter {
   convert(): JsonSchemaObjectType {
     const builder = new JsonSchemaObjectBuilder();
     if (this.shapeDefinitions.length == 0) return builder.build();
-    this.shapeDefinitions
-      .map((shapeDefinition) => {
-        return { shape: shapeDefinition, schema: this.processBottomUp(shapeDefinition) };
-      })
-      .forEach((element) => {
-        const { shape, schema } = element;
-        shape.targets.forEach((target) => {
-          const schemaForTarget = { ...schema, title: target };
-          builder.$defs({
-            ...(builder.getKey('$defs') as Record<string, JsonSchemaType>),
-            [target]: schemaForTarget,
-          });
-        });
-      });
+
+    const targetToShapesMap = this.groupShapesByTarget();
+
+    const mergedSchemas = new Map<string, JsonSchemaObjectType>();
+
+    targetToShapesMap.forEach((shapes, target) => {
+      const schemasForTarget = shapes.map((shape) => this.processBottomUp(shape));
+      const mergedSchema = this.mergeSchemas(schemasForTarget, target);
+      mergedSchemas.set(target, mergedSchema);
+    });
+
+    const defs: Record<string, JsonSchemaType> = {};
+    mergedSchemas.forEach((schema, target) => {
+      defs[target] = schema;
+    });
+
     return builder
       .$id(this.shapeDefinitions[0].nodeKey)
       .$schema(JSON_SCHEMA_DRAFT)
+      .$defs(defs)
       .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`)
       .customProperty('x-shacl-prefixes', this.addPrefixes())
       .build();
+  }
+
+  private groupShapesByTarget(): Map<string, ShapeDefinition[]> {
+    const targetToShapesMap = new Map<string, ShapeDefinition[]>();
+    this.shapeDefinitions.forEach((shape) => {
+      shape.targets.forEach((target) => {
+        const existing = targetToShapesMap.get(target) ?? [];
+        existing.push(shape);
+        targetToShapesMap.set(target, existing);
+      });
+    });
+    return targetToShapesMap;
+  }
+
+  private mergeSchemas(schemas: JsonSchemaObjectType[], target: string): JsonSchemaObjectType {
+    if (schemas.length === 0) return {};
+    if (schemas.length === 1) return { ...schemas[0], title: target };
+    const baseBuilder = new JsonSchemaObjectBuilder().title(target);
+    schemas.forEach((schema) => baseBuilder.deepMerge(schema));
+    return baseBuilder.build();
   }
 
   private isLogicalConstraintFragment(parentShape: ShapeDefinition, childNodeKey: string): boolean {

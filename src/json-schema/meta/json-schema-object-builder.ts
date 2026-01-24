@@ -427,4 +427,40 @@ export class JsonSchemaObjectBuilder {
     });
     return this;
   }
+
+  /**
+   * Deep merges another schema into this one.
+   * Used for combining multiple SHACL shapes targeting the same class.
+   * - Properties are merged (combined from both schemas)
+   * - Required arrays are merged (union of both)
+   * - additionalProperties: false takes precedence (closed shapes)
+   * - Other properties from source are added if not present
+   */
+  deepMerge(source: JsonSchemaObjectType): this {
+    // Merge properties
+    if (source.properties) {
+      this.schema.properties = {
+        ...this.schema.properties,
+        ...source.properties,
+      };
+    }
+
+    // Merge required fields (union)
+    if (source.required)
+      this.schema.required = [...new Set([...(this.schema.required ?? []), ...source.required])];
+
+    // Handle additionalProperties - if any shape is closed (false), result is closed
+    if (source.additionalProperties === false) this.schema.additionalProperties = false;
+    else this.schema.additionalProperties ??= source.additionalProperties;
+
+    // Merge other keys that don't conflict
+    Object.keys(source)
+      .filter((key) => !['properties', 'additionalProperties', 'required', 'title'].includes(key))
+      .filter((key) => this.schema[key] === undefined)
+      .forEach((key) => {
+        this.schema[key] = source[key];
+      });
+
+    return this;
+  }
 }
