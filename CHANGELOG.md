@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/GeezFORCE/shacl-bridge/compare/v1.0.0...v1.0.1) (2026-01-24)
+
+
+### Bug Fixes
+
+* **conversion:** merge schemas with same targets ([#56](https://github.com/GeezFORCE/shacl-bridge/issues/56)) ([d25222a](https://github.com/GeezFORCE/shacl-bridge/commit/d25222a7cfa79d355441a6935d970e322be0d55c))
+
 # 1.0.0 (2026-01-20)
 
 
