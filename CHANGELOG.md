@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.0.1...v1.1.0) (2026-01-26)
+
+
+### Features
+
+* **conversion:** add support for language tags ([#63](https://github.com/GeezFORCE/shacl-bridge/issues/63)) ([967cde5](https://github.com/GeezFORCE/shacl-bridge/commit/967cde52165550d82b7fca555c06f07e10e6d3c9))
+
 ## [1.0.1](https://github.com/GeezFORCE/shacl-bridge/compare/v1.0.0...v1.0.1) (2026-01-24)
 
 
