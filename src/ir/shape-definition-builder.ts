@@ -3,7 +3,7 @@ import { CoreConstraints } from './meta-model/core-constraints';
 import { match, P } from 'ts-pattern';
 import logger from '../logger';
 import { NodeKind } from './meta-model/node-kind';
-import { AdditionalProperty, ShapeDefinition } from './meta-model/shape-definition';
+import { AdditionalProperty, RdfValue, ShapeDefinition } from './meta-model/shape-definition';
 import type { Term } from 'n3';
 import { SparqlConstraint } from './meta-model/sparql-constraint';
 
@@ -78,8 +78,9 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  setMessage(msg: string) {
-    this.shape.message = msg;
+  setMessage(msg: Term) {
+    this.shape.message ??= [];
+    this.shape.message.push(this.getRdfValueFromTerm(msg));
     return this;
   }
 
@@ -283,51 +284,52 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
+  setQualifiedValueShapesDisjoint(flag: string) {
+    this.coreConstraints.qualifiedValueShapesDisjoint = flag.endsWith('true');
+    return this;
+  }
+
   setAdditionalProperty(predicate: string, object: Term) {
-    // Extract RDF value information from the N3 term
-    let rdfValue: AdditionalProperty['value'];
-
-    if (object.termType === 'Literal') {
-      // Type-cast to access Literal-specific properties
-      const literal = object as unknown as {
-        value: string;
-        language?: string;
-        datatype: { value: string };
-      };
-
-      // Handle language-tagged strings
-      if (literal.language) {
-        rdfValue = {
-          type: 'langString',
-          value: literal.value,
-          language: literal.language,
-        };
-      } else {
-        rdfValue = {
-          type: 'literal',
-          value: literal.value,
-          datatype: literal.datatype.value,
-        };
-      }
-    } else if (object.termType === 'NamedNode') {
-      rdfValue = {
-        type: 'uri',
-        value: object.value,
-      };
-    } else {
-      // For blank nodes or other types, store as URI
-      rdfValue = {
-        type: 'uri',
-        value: object.value,
-      };
-    }
-
+    const rdfValueFromTerm = this.getRdfValueFromTerm(object);
     this.additionalProperties.push({
       predicate,
-      value: rdfValue,
+      value: rdfValueFromTerm,
     });
-
     return this;
+  }
+
+  private getRdfValueFromTerm(object: Term) {
+    return match(object.termType)
+      .with('Literal', () => {
+        const literal = object as {
+          value: string;
+          language?: string;
+          datatype: { value: string };
+        };
+        return literal.language
+          ? {
+              type: 'langString',
+              value: literal.value,
+              language: literal.language,
+            }
+          : {
+              type: 'literal',
+              value: literal.value,
+              datatype: literal.datatype.value,
+            };
+      })
+      .with('NamedNode', () => {
+        return {
+          type: 'uri',
+          value: object.value,
+        };
+      })
+      .otherwise(() => {
+        return {
+          type: 'uri',
+          value: object.value,
+        };
+      }) as RdfValue;
   }
 
   build(): ShapeDefinition {

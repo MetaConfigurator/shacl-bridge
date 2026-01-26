@@ -1,3 +1,5 @@
+import { RdfValue } from './shape-definition';
+
 export enum SHAPE_TYPE {
   NODE_SHAPE = 'sh:NodeShape',
   PROPERTY_SHAPE = 'sh:PropertyShape',
@@ -18,6 +20,6 @@ export interface Shape {
   targetObjectsOf?: string[];
   targetSubjectsOf?: string[];
   deactivated?: boolean;
-  message?: string;
+  message?: RdfValue[];
   severity?: SEVERITY;
 }

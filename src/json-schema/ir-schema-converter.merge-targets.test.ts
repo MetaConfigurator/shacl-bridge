@@ -1305,7 +1305,11 @@ describe('IR Schema Converter - Merge Targets', () => {
               },
             },
             additionalProperties: true,
-            'x-shacl-message': 'Person validation failed',
+            'x-shacl-message': {
+              datatype: 'http://www.w3.org/2001/XMLSchema#string',
+              type: 'literal',
+              value: 'Person validation failed',
+            },
           },
         },
         $id: 'http://example.org/PersonShape1',

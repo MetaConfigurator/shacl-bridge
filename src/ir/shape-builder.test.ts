@@ -277,7 +277,7 @@ describe('TopologicalShapeBuilder', () => {
       expect(result).toHaveLength(1);
       expect(result[0].shape?.severity).toBe('sh:Warning');
       expect(result[0].shape?.deactivated).toBe(true);
-      expect(result[0].shape?.message).toBe('This is deprecated');
+      expect(result[0].shape?.message?.[0].value).toBe('This is deprecated');
     });
 
     it('should handle qualified value shapes', async () => {

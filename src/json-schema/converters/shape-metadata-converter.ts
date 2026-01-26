@@ -1,7 +1,7 @@
 import { Shape } from '../../ir/meta-model/shape';
 import { JsonSchemaObjectBuilder } from '../meta/json-schema-object-builder';
 import { match } from 'ts-pattern';
-import { AdditionalProperty, ShapeDefinition } from '../../ir/meta-model/shape-definition';
+import { AdditionalProperty, RdfValue, ShapeDefinition, } from '../../ir/meta-model/shape-definition';
 import { extractStrippedName } from '../../util/helpers';
 
 const PREFIX = 'x-shacl';
@@ -22,7 +22,10 @@ export class ShapeMetadataConverter {
       match(key)
         .with('message', () => {
           if (this.shape?.message == null) return;
-          builder.customProperty(`${PREFIX}-message`, this.shape.message);
+          builder.customProperty(
+            `${PREFIX}-message`,
+            this.shape.message.length == 1 ? this.shape.message[0] : this.shape.message
+          );
         })
         .with('severity', () => {
           if (this.shape?.severity == null) return;
@@ -82,7 +85,21 @@ export class ShapeMetadataConverter {
 
     this.additionalProperties.forEach((additionalProperty: AdditionalProperty) => {
       const { predicate, value } = additionalProperty;
-      builder.customProperty(`${PREFIX}-${extractStrippedName(predicate)}`, value.value);
+      this.handleRdfValue(`${PREFIX}-${extractStrippedName(predicate)}`, value, builder);
     });
+  }
+
+  private handleRdfValue(key: string, value: RdfValue, builder: JsonSchemaObjectBuilder) {
+    const transformedValue = Object.entries(value).reduce(
+      (acc, [k, v]) => ({ ...acc, [k]: extractStrippedName(v) }),
+      {} as RdfValue
+    );
+    if (builder.getKey(key) != null) {
+      const existingValues = Array.isArray(builder.getKey(key))
+        ? (builder.getKey(key) as RdfValue[])
+        : [builder.getKey(key) as RdfValue];
+      const values = [transformedValue, ...existingValues];
+      builder.customProperty(key, values);
+    } else builder.customProperty(key, transformedValue);
   }
 }
