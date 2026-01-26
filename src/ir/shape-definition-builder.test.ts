@@ -17,15 +17,20 @@ describe('ShapeDefinitionBuilder', () => {
 
     it('should support method chaining', () => {
       const builder = new ShapeDefinitionBuilder('http://example.org/PersonShape');
+      const literalTerm = {
+        termType: 'Literal',
+        value: 'Test message',
+        datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+      };
       const result = builder
         .setType('http://www.w3.org/ns/shacl#NodeShape')
         .setTargetClass('http://xmlns.com/foaf/0.1/Person')
-        .setMessage('Test message')
+        .setMessage(literalTerm as Term)
         .build();
 
       expect(result.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
       expect(result.shape?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
-      expect(result.shape?.message).toBe('Test message');
+      expect(result.shape?.message?.[0].value).toBe('Test message');
     });
   });
 
@@ -115,10 +120,13 @@ describe('ShapeDefinitionBuilder', () => {
   describe('setMessage', () => {
     it('should set validation message', () => {
       const builder = new ShapeDefinitionBuilder('test');
-      builder.setMessage('Value must be provided');
+      builder.setMessage({
+        termType: 'Literal',
+        value: 'Value must be provided',
+        datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+      } as Term);
       const result = builder.build();
-
-      expect(result.shape?.message).toBe('Value must be provided');
+      expect(result.shape?.message?.[0].value).toBe('Value must be provided');
     });
   });
 
@@ -665,7 +673,11 @@ describe('ShapeDefinitionBuilder', () => {
       const result = builder
         .setType('http://www.w3.org/ns/shacl#NodeShape')
         .setTargetClass('http://xmlns.com/foaf/0.1/Person')
-        .setMessage('Person shape violation')
+        .setMessage({
+          termType: 'Literal',
+          value: 'Person shape violation',
+          datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+        } as Term)
         .setSeverity('http://www.w3.org/ns/shacl#Violation')
         .setDeactivated('false')
         .setProperty('n3-3')
@@ -678,7 +690,7 @@ describe('ShapeDefinitionBuilder', () => {
       expect(result.nodeKey).toBe('http://example.org/PersonShape');
       expect(result.shape?.type).toBe(SHAPE_TYPE.NODE_SHAPE);
       expect(result.shape?.targetClasses?.[0]).toBe('http://xmlns.com/foaf/0.1/Person');
-      expect(result.shape?.message).toBe('Person shape violation');
+      expect(result.shape?.message?.[0].value).toBe('Person shape violation');
       expect(result.shape?.severity).toBe(SEVERITY.VIOLATION);
       expect(result.shape?.deactivated).toBe(false);
       expect(result.coreConstraints?.property).toEqual(['n3-3', 'n3-4', 'n3-5']);
@@ -690,7 +702,11 @@ describe('ShapeDefinitionBuilder', () => {
       const builder = new ShapeDefinitionBuilder('n3-3');
       const result = builder
         .setPath('http://xmlns.com/foaf/0.1/name')
-        .setMessage('Name must start with a capital letter and be a string.')
+        .setMessage({
+          termType: 'Literal',
+          value: 'Name must start with a capital letter and be a string.',
+          datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+        } as Term)
         .setMinCount('1')
         .setPattern('^[A-Z].*')
         .build();
@@ -698,7 +714,9 @@ describe('ShapeDefinitionBuilder', () => {
       expect(result.nodeKey).toBe('n3-3');
       expect(result.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
       expect(result.shape?.path).toBe('http://xmlns.com/foaf/0.1/name');
-      expect(result.shape?.message).toBe('Name must start with a capital letter and be a string.');
+      expect(result.shape?.message?.[0].value).toBe(
+        'Name must start with a capital letter and be a string.'
+      );
       expect(result.coreConstraints?.minCount).toBe(1);
       expect(result.coreConstraints?.pattern).toBe('^[A-Z].*');
     });
@@ -707,7 +725,11 @@ describe('ShapeDefinitionBuilder', () => {
       const builder = new ShapeDefinitionBuilder('n3-4');
       const result = builder
         .setPath('http://xmlns.com/foaf/0.1/age')
-        .setMessage('Age should be an integer between 0 and 150.')
+        .setMessage({
+          termType: 'Literal',
+          value: 'Age should be an integer between 0 and 150.',
+          datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+        } as Term)
         .setMinCount('1')
         .setMinInclusive('0')
         .setMaxInclusive('150')
@@ -736,7 +758,11 @@ describe('ShapeDefinitionBuilder', () => {
       const builder = new ShapeDefinitionBuilder('n3-31');
       const result = builder
         .setPath('http://example.org/score')
-        .setMessage('Scores must be decimals between 0 and 100; between 1 and 10 entries.')
+        .setMessage({
+          termType: 'Literal',
+          value: 'Scores must be decimals between 0 and 100; between 1 and 10 entries.',
+          datatype: { value: 'http://www.w3.org/2001/XMLSchema#string' },
+        } as Term)
         .setQualifiedValueShape('n3-32')
         .setQualifiedMinCount('1')
         .setQualifiedMaxCount('10')

@@ -3328,12 +3328,20 @@ describe('IR Schema Converter - Constraints', () => {
           Person: {
             title: 'Person',
             type: 'object',
-            'x-shacl-message': 'Person validation failed',
+            'x-shacl-message': {
+              datatype: 'http://www.w3.org/2001/XMLSchema#string',
+              type: 'literal',
+              value: 'Person validation failed',
+            },
             properties: {
               email: {
                 type: 'string',
                 pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-                'x-shacl-message': 'Email must be a valid email address',
+                'x-shacl-message': {
+                  datatype: 'http://www.w3.org/2001/XMLSchema#string',
+                  type: 'literal',
+                  value: 'Email must be a valid email address',
+                },
               },
             },
             required: ['email'],
@@ -3436,29 +3444,37 @@ describe('IR Schema Converter - Constraints', () => {
       expect(schema).toStrictEqual({
         $defs: {
           ValidationTest: {
-            title: 'ValidationTest',
-            type: 'object',
-            'x-shacl-message': 'Shape validation constraints not met',
-            'x-shacl-severity': 'sh:Violation',
+            additionalProperties: true,
             properties: {
               username: {
-                type: 'string',
-                minLength: 3,
                 maxLength: 20,
-                'x-shacl-message': 'Username must be between 3 and 20 characters',
+                minLength: 3,
+                type: 'string',
+                'x-shacl-message': {
+                  datatype: 'http://www.w3.org/2001/XMLSchema#string',
+                  type: 'literal',
+                  value: 'Username must be between 3 and 20 characters',
+                },
                 'x-shacl-severity': 'sh:Warning',
               },
             },
             required: ['username'],
-            additionalProperties: true,
+            title: 'ValidationTest',
+            type: 'object',
+            'x-shacl-message': {
+              datatype: 'http://www.w3.org/2001/XMLSchema#string',
+              type: 'literal',
+              value: 'Shape validation constraints not met',
+            },
+            'x-shacl-severity': 'sh:Violation',
           },
         },
         $id: 'http://example.org/ValidationShape',
         $ref: '#/$defs/ValidationTest',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });

@@ -152,7 +152,7 @@ export class ShapeBuilder {
           if (isSparqlConstraint) {
             builder.setSparqlMessage(object);
           } else {
-            builder.setMessage(object);
+            builder.setMessage(quad.object);
           }
         })
         .with(P.string.endsWith('severity'), () => builder.setSeverity(object))
@@ -185,6 +185,9 @@ export class ShapeBuilder {
         .with(P.string.endsWith('xone'), () => builder.xone(object, lists))
         .with(P.string.endsWith('qualifiedValueShape'), () =>
           builder.setQualifiedValueShape(object)
+        )
+        .with(P.string.endsWith('qualifiedValueShapesDisjoint'), () =>
+          builder.setQualifiedValueShapesDisjoint(object)
         )
         .with(P.string.endsWith('languageIn'), () => builder.setLanguageIn(object, lists))
         .with(P.string.endsWith('equals'), () => builder.setEquals(object))
