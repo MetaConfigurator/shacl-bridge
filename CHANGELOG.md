@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.1.0...v1.2.0) (2026-01-27)
+
+
+### Features
+
+* **conversion:** handle multiple properties having same SHACL path ([#64](https://github.com/GeezFORCE/shacl-bridge/issues/64)) ([091a677](https://github.com/GeezFORCE/shacl-bridge/commit/091a67777701ce8a8d55159f727b08d470c18fbc))
+
 # [1.1.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.0.1...v1.1.0) (2026-01-26)
 
 
