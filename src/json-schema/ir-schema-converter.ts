@@ -93,6 +93,7 @@ export class IrSchemaConverter {
     }
     return this.processed.get(shapeDef)?.builder.build() ?? {};
   }
+
   private addDependentShapes(stack: Stack, sb: StackElementBuilder) {
     stack.toggle(sb);
     sb.getShape().dependentShapes?.forEach((dependentShape) => {
@@ -132,12 +133,10 @@ export class IrSchemaConverter {
       const dependent = this.processed.get(dependentShape);
       if (dependent != null) {
         if (dependent.isLogicalFragment) return;
-        top.getBuilder().properties({
-          ...(top.getBuilder().getKey('properties') as Record<string, JsonSchemaType>),
-          ...(dependent.builder.getKey('properties') as Record<string, JsonSchemaType>),
-        });
-        if (dependent.context.required)
+        top.getBuilder().deepMerge(dependent.builder.build());
+        if (dependent.context.required) {
           top.getBuilder().requiredElement(dependent.shape.targets[0]);
+        }
       }
     });
   }

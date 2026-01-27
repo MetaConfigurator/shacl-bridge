@@ -47,6 +47,7 @@ export class ConversionContext {
       .allOf((constraints) => constraints.qualifiedValueShape == null)
       .anyOf((constraints) => constraints.datatype != null)
       .anyOf((constraints) => constraints.in != null)
+      .anyOf((constraints) => constraints.hasValue != null)
       .anyOf(() => this.hasLogicalConstraints())
       .anyOf(() => this.hasStringConstraints())
       .anyOf(() => this.hasPrimitiveNodeKind())

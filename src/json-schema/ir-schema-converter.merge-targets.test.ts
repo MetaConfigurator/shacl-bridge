@@ -988,24 +988,32 @@ describe('IR Schema Converter - Merge Targets', () => {
       expect(schema).toStrictEqual({
         $defs: {
           Person: {
-            title: 'Person',
-            type: 'object',
+            additionalProperties: true,
             properties: {
               name: {
-                type: 'string',
-                minLength: 10,
+                allOf: [
+                  {
+                    minLength: 5,
+                    type: 'string',
+                  },
+                  {
+                    minLength: 10,
+                    type: 'string',
+                  },
+                ],
               },
             },
             required: ['name'],
-            additionalProperties: true,
+            title: 'Person',
+            type: 'object',
           },
         },
         $id: 'http://example.org/PersonShape1',
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -1032,9 +1040,8 @@ describe('IR Schema Converter - Merge Targets', () => {
             sh:targetClass ex:Person ;
             sh:property [
                 sh:path ex:value ;
-                sh:datatype xsd:integer ;
-                sh:minCount 1 ;
-                sh:maxCount 1 ;
+                sh:datatype xsd:string ;
+                sh:pattern "^[A-Z].*" ;
             ] .
       `;
       const ir = await getIr(content);
@@ -1043,23 +1050,31 @@ describe('IR Schema Converter - Merge Targets', () => {
       expect(schema).toStrictEqual({
         $defs: {
           Person: {
-            title: 'Person',
-            type: 'object',
+            additionalProperties: true,
             properties: {
               value: {
-                type: 'integer',
+                allOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    pattern: '^[A-Z].*',
+                    type: 'string',
+                  },
+                ],
               },
             },
-            additionalProperties: true,
             required: ['value'],
+            title: 'Person',
+            type: 'object',
           },
         },
         $id: 'http://example.org/PersonShape1',
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -1096,27 +1111,34 @@ describe('IR Schema Converter - Merge Targets', () => {
       expect(schema).toStrictEqual({
         $defs: {
           Person: {
-            title: 'Person',
-            type: 'object',
+            additionalProperties: true,
             properties: {
               email: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-                minItems: 2,
+                allOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    items: {
+                      type: 'string',
+                    },
+                    minItems: 2,
+                    type: 'array',
+                  },
+                ],
               },
             },
-            additionalProperties: true,
             required: ['email'],
+            title: 'Person',
+            type: 'object',
           },
         },
         $id: 'http://example.org/PersonShape1',
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
