@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/GeezFORCE/shacl-bridge/actions/workflows/node.js.yml/badge.svg)](https://github.com/GeezFORCE/shacl-bridge/actions)
 [![npm version](https://img.shields.io/npm/v/shacl-bridge.svg)](https://www.npmjs.com/package/shacl-bridge)
 [![npm downloads](https://img.shields.io/npm/dm/shacl-bridge.svg)](https://www.npmjs.com/package/shacl-bridge)
-[![codecov](https://codecov.io/gh/GeezFORCE/shacl-bridge/branch/main/graph/badge.svg)](https://codecov.io/gh/GeezFORCE/shacl-bridge)
+[![codecov](https://codecov.io/gh/GeezFORCE/shacl-bridge/graph/badge.svg?token=FSIANIX7XT)](https://codecov.io/gh/GeezFORCE/shacl-bridge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A CLI tool for bidirectional conversion between SHACL (Shapes Constraint Language) and JSON Schema.

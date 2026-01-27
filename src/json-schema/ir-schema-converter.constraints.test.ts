@@ -1860,7 +1860,7 @@ describe('IR Schema Converter - Constraints', () => {
     });
   });
 
-  describe.skip('Qualified Value Shapes Disjoint (sh:qualifiedValueShapesDisjoint)', () => {
+  describe('Qualified Value Shapes Disjoint (sh:qualifiedValueShapesDisjoint)', () => {
     it('should handle sh:qualifiedValueShapesDisjoint constraint', async () => {
       const content = `
         @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -1909,33 +1909,36 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
             properties: {
               address: {
-                type: 'array',
-                items: {
-                  anyOf: [{ $ref: '#/$defs/HomeAddress' }, { $ref: '#/$defs/WorkAddress' }],
-                },
-                maxItems: 1,
-                'x-shacl-qualifiedValueShapesDisjoint': true,
+                allOf: [
+                  {
+                    $ref: '#/$defs/HomeAddress',
+                    'x-shacl-qualifiedValueShapesDisjoint': true,
+                  },
+                  {
+                    $ref: '#/$defs/WorkAddress',
+                  },
+                ],
               },
             },
             additionalProperties: true,
-            $defs: {
-              HomeAddress: {
-                type: 'object',
-                title: 'HomeAddress',
-                properties: {
-                  type: {
-                    const: 'home',
-                  },
-                },
+          },
+          HomeAddress: {
+            type: 'object',
+            title: 'HomeAddress',
+            additionalProperties: true,
+            properties: {
+              type: {
+                const: 'home',
               },
-              WorkAddress: {
-                type: 'object',
-                title: 'WorkAddress',
-                properties: {
-                  type: {
-                    const: 'work',
-                  },
-                },
+            },
+          },
+          WorkAddress: {
+            type: 'object',
+            title: 'WorkAddress',
+            additionalProperties: true,
+            properties: {
+              type: {
+                const: 'work',
               },
             },
           },

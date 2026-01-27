@@ -1,4 +1,5 @@
 import { JsonSchemaObjectType, JsonSchemaType, SchemaPropertyTypes } from './json-schema-type';
+import { mergePropertySchemas } from './property-schema-merger';
 
 /**
  * Builder for constructing JsonSchemaObjectType instances.
@@ -439,10 +440,16 @@ export class JsonSchemaObjectBuilder {
   deepMerge(source: JsonSchemaObjectType): this {
     // Merge properties
     if (source.properties) {
-      this.schema.properties = {
-        ...this.schema.properties,
-        ...source.properties,
-      };
+      this.schema.properties ??= {};
+      const properties = this.schema.properties;
+
+      Object.entries(source.properties).forEach(([propKey, propValue]) => {
+        if (!(propKey in properties)) {
+          properties[propKey] = propValue;
+        } else {
+          properties[propKey] = mergePropertySchemas(properties[propKey], propValue);
+        }
+      });
     }
 
     // Merge required fields (union)
