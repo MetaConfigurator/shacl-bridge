@@ -139,24 +139,14 @@ function writeMultipleSchemas(
 }
 
 function convertInternalRefsToExternal(obj: unknown): unknown {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(convertInternalRefsToExternal);
-  }
-
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (key === '$ref' && typeof value === 'string' && value.startsWith('#/$defs/')) {
-      const refName = value.replace('#/$defs/', '');
-      result[key] = `${refName}.json`;
-    } else {
-      result[key] = convertInternalRefsToExternal(value);
-    }
-  }
-  return result;
+  return JSON.parse(
+    JSON.stringify(obj, (key, value: unknown) => {
+      if (key === '$ref' && typeof value === 'string' && value.startsWith('#/$defs/')) {
+        return `${value.replace('#/$defs/', '')}.json`;
+      }
+      return value;
+    })
+  );
 }
 
 program.parse();
