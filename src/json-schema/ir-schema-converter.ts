@@ -12,15 +12,21 @@ import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
 import { ConstraintConverter } from './converters/constraints/constraint-converter';
 import { Condition } from '../condition/condition';
 import { ShaclDocument } from '../shacl/shacl-document';
+import { ConversionOptions } from './conversion-options';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
   private shapeDefinitions: ShapeDefinition[] = [];
   private shaclDocument: ShaclDocument;
+  private options: ConversionOptions;
 
-  constructor(private readonly ir: IntermediateRepresentation) {
+  constructor(
+    private readonly ir: IntermediateRepresentation,
+    options?: ConversionOptions
+  ) {
     this.shapeDefinitions = ir.shapeDefinitions;
     this.shaclDocument = ir.shaclDocument;
+    this.options = options ?? {};
   }
 
   convert(): JsonSchemaObjectType {
@@ -42,13 +48,17 @@ export class IrSchemaConverter {
       defs[target] = schema;
     });
 
-    return builder
+    builder
       .$id(this.shapeDefinitions[0].nodeKey)
       .$schema(JSON_SCHEMA_DRAFT)
       .$defs(defs)
-      .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`)
-      .customProperty('x-shacl-prefixes', this.addPrefixes())
-      .build();
+      .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`);
+
+    if (!this.options.excludeShaclExtensions) {
+      builder.customProperty('x-shacl-prefixes', this.addPrefixes());
+    }
+
+    return builder.build();
   }
 
   private groupShapesByTarget(): Map<string, ShapeDefinition[]> {
@@ -113,7 +123,7 @@ export class IrSchemaConverter {
   private buildJsonSchema(stack: Stack, shapeDef: ShapeDefinition) {
     const top = stack.pop();
     if (top == null) return;
-    if (!top.getIsRoot()) new ShapeConverter(top, this.processed).convert();
+    if (!top.getIsRoot()) new ShapeConverter(top, this.processed, this.options).convert();
     else top.getBuilder().title(shapeDef.targets[0]).type('object');
     this.absorbDependentBuilders(top);
     this.buildRoot(top);
@@ -123,8 +133,10 @@ export class IrSchemaConverter {
   private buildRoot(top: StackElementBuilder) {
     if (!top.getIsRoot()) return;
     top.getBuilder().type('object').additionalProperties(!top.getShape().coreConstraints?.closed);
-    new ShapeMetadataConverter(top.getShape()).applyToBuilder(top.getBuilder());
-    top.getBuilder().mergeFrom(new ConstraintConverter(top, this.processed).convert());
+    new ShapeMetadataConverter(top.getShape(), this.options).applyToBuilder(top.getBuilder());
+    top
+      .getBuilder()
+      .mergeFrom(new ConstraintConverter(top, this.processed, this.options).convert());
   }
 
   private absorbDependentBuilders(top: StackElementBuilder) {

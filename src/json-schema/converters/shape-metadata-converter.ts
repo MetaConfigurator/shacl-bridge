@@ -7,20 +7,27 @@ import {
   ShapeDefinition,
 } from '../../ir/meta-model/shape-definition';
 import { extractStrippedName } from '../../util/helpers';
+import { ConversionOptions } from '../conversion-options';
 
 const PREFIX = 'x-shacl';
 
 export class ShapeMetadataConverter {
   private readonly shape: Shape | undefined;
   private readonly additionalProperties: AdditionalProperty[] | undefined;
+  private readonly options: ConversionOptions;
 
-  constructor(shapeDefinition: ShapeDefinition) {
+  constructor(
+    shapeDefinition: ShapeDefinition,
+    options: ConversionOptions = { excludeShaclExtensions: false }
+  ) {
     this.shape = shapeDefinition.shape;
     this.additionalProperties = shapeDefinition.additionalProperties;
+    this.options = options;
   }
 
   applyToBuilder(builder: JsonSchemaObjectBuilder): void {
     if (!this.shape) return;
+    if (this.options.excludeShaclExtensions) return;
 
     Object.keys(this.shape).forEach((key) => {
       match(key)

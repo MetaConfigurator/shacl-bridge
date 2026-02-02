@@ -6,24 +6,27 @@ import { ShapeMetadataConverter } from './shape-metadata-converter';
 import { StackElement } from '../../stack/stack-element';
 import { StackElementBuilder } from '../../stack/stack-element-builder';
 import { JsonSchemaObjectBuilder } from '../meta/json-schema-object-builder';
+import { ConversionOptions } from '../conversion-options';
 
 export class ShapeConverter {
   private readonly shape: ShapeDefinition;
   private readonly builder: JsonSchemaObjectBuilder;
+  private readonly options: ConversionOptions;
 
   constructor(
     private readonly sb: StackElementBuilder,
-    private readonly processed: Map<ShapeDefinition, StackElement>
+    private readonly processed: Map<ShapeDefinition, StackElement>,
+    options: ConversionOptions = { excludeShaclExtensions: false }
   ) {
     this.builder = sb.getBuilder();
     this.shape = sb.getShape();
+    this.options = options;
   }
 
   convert() {
-    const schema = new ConstraintConverter(this.sb, this.processed).convert();
-    // Apply shape metadata (message, severity, deactivated, etc.) to the schema
+    const schema = new ConstraintConverter(this.sb, this.processed, this.options).convert();
     const propertyBuilder = JsonSchemaObjectBuilder.from(schema);
-    new ShapeMetadataConverter(this.shape).applyToBuilder(propertyBuilder);
+    new ShapeMetadataConverter(this.shape, this.options).applyToBuilder(propertyBuilder);
     const schemaWithMetadata = propertyBuilder.build();
     const possibleTargets = this.shape.targets;
     if (possibleTargets.length > 0) {

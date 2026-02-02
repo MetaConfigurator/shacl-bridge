@@ -25,19 +25,25 @@ import {
 } from './constraint-conditions';
 import { NodeKind } from '../../../ir/meta-model/node-kind';
 import { Condition } from '../../../condition/condition';
+import { ConversionOptions } from '../../conversion-options';
 
 const PREFIX = 'x-shacl';
 
 export class ConstraintConverter {
   private readonly context: ConversionContext;
   private readonly constraints: CoreConstraints;
+  private readonly options: ConversionOptions;
+  private readonly extensionsEnabled: () => boolean;
 
   constructor(
     private readonly sb: StackElementBuilder,
-    private readonly processed: Map<ShapeDefinition, StackElement>
+    private readonly processed: Map<ShapeDefinition, StackElement>,
+    options: ConversionOptions = { excludeShaclExtensions: false }
   ) {
     this.context = sb.getContext();
     this.constraints = sb.getShape().coreConstraints ?? {};
+    this.options = options;
+    this.extensionsEnabled = () => !this.options.excludeShaclExtensions;
   }
 
   convert(): JsonSchemaObjectType {
@@ -440,6 +446,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThan`,
@@ -456,6 +463,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-equals`,
@@ -490,6 +498,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThanOrEquals`,
@@ -506,6 +515,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .allOf(nonEmptyArray)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const disjointPaths =
@@ -524,6 +534,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .allOf(nonEmptyArray)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const ignoredProperties = candidate.constraints.ignoredProperties ?? [];
@@ -551,6 +562,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const sparqlConstraints = candidate.constraints.sparqlConstraints;
               if (sparqlConstraints && sparqlConstraints.length > 0) {
@@ -568,6 +580,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
+            .must(this.extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const value = candidate.constraints[key as keyof CoreConstraints];
               if (value == null) return;
