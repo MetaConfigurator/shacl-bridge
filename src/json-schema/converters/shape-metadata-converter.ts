@@ -1,7 +1,11 @@
 import { Shape } from '../../ir/meta-model/shape';
 import { JsonSchemaObjectBuilder } from '../meta/json-schema-object-builder';
 import { match } from 'ts-pattern';
-import { AdditionalProperty, RdfValue, ShapeDefinition, } from '../../ir/meta-model/shape-definition';
+import {
+  AdditionalProperty,
+  RdfValue,
+  ShapeDefinition,
+} from '../../ir/meta-model/shape-definition';
 import { extractStrippedName } from '../../util/helpers';
 import { ConversionOptions } from '../conversion-options';
 
