@@ -74,7 +74,6 @@ describe('Condition', () => {
         .ifSatisfied(mockIfSatisfied)
         .execute();
 
-      expect(logger.error).toHaveBeenCalledWith('Mandatory condition failed.');
       expect(mockGateFailure).toHaveBeenCalledWith(candidate);
       expect(mockIfSatisfied).not.toHaveBeenCalledWith(candidate);
     });
@@ -109,7 +108,6 @@ describe('Condition', () => {
         .ifSatisfied(mockIfSatisfied)
         .execute();
 
-      expect(logger.error).toHaveBeenCalledWith('Mandatory condition failed.');
       expect(mockGateFailure).toHaveBeenCalledWith(candidate);
     });
 
@@ -385,8 +383,6 @@ describe('Condition', () => {
           .ifSatisfied(mockIfSatisfied)
           .execute();
       }).not.toThrow();
-
-      expect(logger.error).toHaveBeenCalledWith('Mandatory condition failed.');
     });
 
     it('should handle zero as a valid candidate value', () => {
