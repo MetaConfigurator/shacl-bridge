@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.2.0...v1.3.0) (2026-02-02)
+
+
+### Features
+
+* **cli:** add --mode option ([#70](https://github.com/GeezFORCE/shacl-bridge/issues/70)) ([5ceb28c](https://github.com/GeezFORCE/shacl-bridge/commit/5ceb28cfaa8d4a2a23f78da7c7435ac8e589b15b))
+
 # [1.2.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.1.0...v1.2.0) (2026-01-27)
 
 
