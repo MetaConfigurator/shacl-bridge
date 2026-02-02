@@ -179,6 +179,90 @@ try {
     }
 
     Write-Host ""
+    Write-Host "Test 8: --mode single (explicit)"
+    $singleModeOutput = shacl-bridge -i samples/shacl/simple-shacl.ttl --mode single
+    if ($LASTEXITCODE -ne 0) { throw "Single mode conversion failed" }
+
+    try {
+        $singleModeJson = $singleModeOutput | ConvertFrom-Json
+        if (-not $singleModeJson.'$defs') {
+            Write-Host "Single mode output missing `$defs" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "Single mode works correctly" -ForegroundColor Green
+    } catch {
+        Write-Host "Single mode output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 9: --mode multi creates individual files"
+    $multiOutputDir = Join-Path $TempDir "multi-output"
+    New-Item -ItemType Directory -Path $multiOutputDir -Force | Out-Null
+    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi -o $multiOutputDir
+    if ($LASTEXITCODE -ne 0) { throw "Multi mode conversion failed" }
+
+    $jsonFiles = Get-ChildItem -Path $multiOutputDir -Filter "*.json"
+    if ($jsonFiles.Count -lt 1) {
+        Write-Host "No JSON files created in multi mode" -ForegroundColor Red
+        exit 1
+    }
+
+    $personFile = Join-Path $multiOutputDir "Person.json"
+    if (-not (Test-Path $personFile)) {
+        Write-Host "Person.json not created in multi mode" -ForegroundColor Red
+        exit 1
+    }
+
+    try {
+        $personContent = Get-Content $personFile -Raw | ConvertFrom-Json
+        if ($personContent.'$schema' -ne "https://json-schema.org/draft/2020-12/schema") {
+            Write-Host "Invalid schema version in Person.json" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "Multi mode creates individual files correctly" -ForegroundColor Green
+        Write-Host "  Files created: $($jsonFiles.Count)"
+    } catch {
+        Write-Host "Person.json is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 10: --mode multi converts `$ref to external file references"
+    $multiRefDir = Join-Path $TempDir "multi-ref-output"
+    New-Item -ItemType Directory -Path $multiRefDir -Force | Out-Null
+    shacl-bridge -i samples/shacl/complex-shacl.ttl --mode multi -o $multiRefDir
+    if ($LASTEXITCODE -ne 0) { throw "Multi mode ref conversion failed" }
+
+    $refFiles = Get-ChildItem -Path $multiRefDir -Filter "*.json"
+    foreach ($file in $refFiles) {
+        $content = Get-Content $file.FullName -Raw
+        if ($content -match '#/\$defs/') {
+            Write-Host "File $($file.Name) still contains internal `$defs reference" -ForegroundColor Red
+            exit 1
+        }
+    }
+    Write-Host "Multi mode correctly converts `$ref to external file references" -ForegroundColor Green
+
+    Write-Host ""
+    Write-Host "Test 11: --mode multi without -o should fail"
+    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Should have failed when using multi mode without -o" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Correctly requires -o flag for multi mode" -ForegroundColor Green
+
+    Write-Host ""
+    Write-Host "Test 12: --mode with invalid value should fail"
+    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode invalid 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Should have failed with invalid mode value" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Correctly rejects invalid mode values" -ForegroundColor Green
+
+    Write-Host ""
     Write-Host "All tests passed!" -ForegroundColor Green
 
 } finally {

@@ -157,4 +157,81 @@ fi
 echo -e "${GREEN}Successfully output JSON-LD conversion to stdout${NC}"
 
 echo ""
+echo "Test 8: --mode single (explicit)"
+SINGLE_MODE_OUTPUT=$(shacl-bridge -i samples/shacl/simple-shacl.ttl --mode single)
+if ! echo "$SINGLE_MODE_OUTPUT" | jq empty 2>/dev/null; then
+    echo -e "${RED}Single mode output is not valid JSON${NC}"
+    exit 1
+fi
+if ! echo "$SINGLE_MODE_OUTPUT" | jq -e '."$defs"' > /dev/null 2>&1; then
+    echo -e "${RED}Single mode output missing \$defs${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Single mode works correctly${NC}"
+
+echo ""
+echo "Test 9: --mode multi creates individual files"
+MULTI_OUTPUT_DIR="$TEMP_DIR/multi-output"
+mkdir -p "$MULTI_OUTPUT_DIR"
+shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi -o "$MULTI_OUTPUT_DIR"
+
+FILE_COUNT=$(ls -1 "$MULTI_OUTPUT_DIR"/*.json 2>/dev/null | wc -l)
+if [ "$FILE_COUNT" -lt 1 ]; then
+    echo -e "${RED}No JSON files created in multi mode${NC}"
+    exit 1
+fi
+
+# Check that Person.json exists and is valid
+PERSON_FILE="$MULTI_OUTPUT_DIR/Person.json"
+if [ ! -f "$PERSON_FILE" ]; then
+    echo -e "${RED}Person.json not created in multi mode${NC}"
+    exit 1
+fi
+
+if ! jq empty "$PERSON_FILE" 2>/dev/null; then
+    echo -e "${RED}Person.json is not valid JSON${NC}"
+    exit 1
+fi
+
+PERSON_SCHEMA_VERSION=$(jq -r '."$schema"' "$PERSON_FILE")
+if [ "$PERSON_SCHEMA_VERSION" != "https://json-schema.org/draft/2020-12/schema" ]; then
+    echo -e "${RED}Invalid schema version in Person.json${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Multi mode creates individual files correctly${NC}"
+echo "  Files created: $FILE_COUNT"
+
+echo ""
+echo "Test 10: --mode multi converts \$ref to external file references"
+MULTI_REF_DIR="$TEMP_DIR/multi-ref-output"
+mkdir -p "$MULTI_REF_DIR"
+shacl-bridge -i samples/shacl/complex-shacl.ttl --mode multi -o "$MULTI_REF_DIR"
+
+# Check that no file contains internal $defs references
+for file in "$MULTI_REF_DIR"/*.json; do
+    if grep -q '#/\$defs/' "$file" 2>/dev/null; then
+        echo -e "${RED}File $file still contains internal \$defs reference${NC}"
+        exit 1
+    fi
+done
+echo -e "${GREEN}Multi mode correctly converts \$ref to external file references${NC}"
+
+echo ""
+echo "Test 11: --mode multi without -o should fail"
+if shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi 2>/dev/null; then
+    echo -e "${RED}Should have failed when using multi mode without -o${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Correctly requires -o flag for multi mode${NC}"
+
+echo ""
+echo "Test 12: --mode with invalid value should fail"
+if shacl-bridge -i samples/shacl/simple-shacl.ttl --mode invalid 2>/dev/null; then
+    echo -e "${RED}Should have failed with invalid mode value${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Correctly rejects invalid mode values${NC}"
+
+echo ""
 echo -e "${GREEN}All tests passed!${NC}"
