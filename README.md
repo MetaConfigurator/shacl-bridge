@@ -30,7 +30,18 @@ shacl-bridge --from-clipboard
 
 # Parse JSON-LD format
 shacl-bridge -i input.jsonld --json-ld
+
+# Output each schema definition to separate files
+shacl-bridge -i input.ttl --mode multi -o ./schemas/
 ```
+
+### Output Modes
+
+The `--mode` (`-m`) option controls how the JSON Schema output is structured:
+
+- **single** (default): Outputs a single JSON Schema file with all definitions in `$defs`
+- **multi**: Outputs each schema definition to a separate file in the specified directory. References between schemas
+  are converted to external file references (e.g., `Person.json` instead of `#/$defs/Person`)
 
 ## Features
 

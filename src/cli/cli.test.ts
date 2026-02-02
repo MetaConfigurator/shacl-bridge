@@ -122,4 +122,80 @@ describe('CLI', () => {
       expect(turtleDefsCount).toBe(jsonLdDefsCount);
     });
   });
+
+  describe('--mode option', () => {
+    it('should show --mode option in help', () => {
+      const output = runCli('--help');
+      expect(output).toContain('--mode');
+      expect(output).toContain('-m');
+    });
+
+    it('should default to single mode when --mode is not specified', () => {
+      const output = runCli(`-i ${simpleShaclPath}`);
+      const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+      expect(schema.$defs).toBeDefined();
+    });
+
+    it('should output single schema when --mode single is specified', () => {
+      const output = runCli(`-i ${simpleShaclPath} --mode single`);
+      const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+      expect(schema.$defs).toBeDefined();
+    });
+
+    it('should output individual files when --mode multi with --output directory', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-multi-test-'));
+
+      try {
+        runCli(`-i ${simpleShaclPath} --mode multi --output ${tempDir}`);
+
+        const files = fs.readdirSync(tempDir);
+        expect(files.length).toBeGreaterThan(0);
+        expect(files.some((f) => f.endsWith('.json'))).toBe(true);
+
+        const personFile = path.join(tempDir, 'Person.json');
+        expect(fs.existsSync(personFile)).toBe(true);
+
+        const personSchema = JSON.parse(
+          fs.readFileSync(personFile, 'utf-8')
+        ) as JsonSchemaObjectType;
+        expect(personSchema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+        expect(personSchema.title).toBe('Person');
+      } finally {
+        fs.rmSync(tempDir, { recursive: true });
+      }
+    });
+
+    it('should convert $ref to external file references in multi mode', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-multi-ref-test-'));
+      const shaclWithRefs = path.join(samplesDir, 'complex-shacl.ttl');
+
+      try {
+        runCli(`-i ${shaclWithRefs} --mode multi --output ${tempDir}`);
+
+        const files = fs.readdirSync(tempDir);
+        for (const file of files) {
+          const content = fs.readFileSync(path.join(tempDir, file), 'utf-8');
+          expect(content).not.toContain('#/$defs/');
+        }
+      } finally {
+        fs.rmSync(tempDir, { recursive: true });
+      }
+    });
+
+    it('should error when --mode multi is specified without --output', () => {
+      expect(() => {
+        runCli(`-i ${simpleShaclPath} --mode multi`);
+      }).toThrow();
+    });
+
+    it('should error when --mode has invalid value', () => {
+      expect(() => {
+        runCli(`-i ${simpleShaclPath} --mode invalid`);
+      }).toThrow();
+    });
+  });
 });
