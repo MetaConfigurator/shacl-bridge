@@ -76,7 +76,7 @@ describe('Condition', () => {
 
       expect(logger.error).toHaveBeenCalledWith('Mandatory condition failed.');
       expect(mockGateFailure).toHaveBeenCalledWith(candidate);
-      expect(mockIfSatisfied).toHaveBeenCalledWith(candidate);
+      expect(mockIfSatisfied).not.toHaveBeenCalledWith(candidate);
     });
 
     it('should execute normal flow when gate conditions pass', () => {
@@ -129,7 +129,7 @@ describe('Condition', () => {
         .execute();
 
       expect(mockGateFailure).toHaveBeenCalledWith(candidate);
-      expect(mockIfSatisfied).toHaveBeenCalledWith(candidate);
+      expect(mockIfSatisfied).not.toHaveBeenCalledWith(candidate);
       expect(mockOtherwise).not.toHaveBeenCalled();
     });
   });

@@ -33,6 +33,9 @@ shacl-bridge -i input.jsonld --json-ld
 
 # Output each schema definition to separate files
 shacl-bridge -i input.ttl --mode multi -o ./schemas/
+
+# Exclude x-shacl-* extension properties from output
+shacl-bridge -i input.ttl --exclude-shacl-extensions
 ```
 
 ### Output Modes

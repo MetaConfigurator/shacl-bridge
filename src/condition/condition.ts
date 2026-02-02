@@ -59,8 +59,10 @@ export class Condition<T> {
     const gateEvaluationResult =
       this.gateConditions.length == 0 ? true : this.gateConditions.every((fn) => fn(candidate));
     if (!gateEvaluationResult) {
-      logger.error('Mandatory condition failed.');
-      if (this.onGateFailureAction) this.onGateFailureAction(candidate);
+      if (this.onGateFailureAction) {
+        this.onGateFailureAction(candidate);
+        return false;
+      }
     }
     const andConditionResult =
       this.normalAndConditions.length == 0
@@ -71,11 +73,13 @@ export class Condition<T> {
         ? true
         : this.normalOrConditions.some((fn) => fn(candidate));
     const functionToExecute =
-      andConditionResult && orConditionResult ? this.ifSatisfiedAction : this.otherwiseAction;
+      gateEvaluationResult && andConditionResult && orConditionResult
+        ? this.ifSatisfiedAction
+        : this.otherwiseAction;
 
     if (functionToExecute) {
       functionToExecute(candidate);
     }
-    return andConditionResult && orConditionResult;
+    return gateEvaluationResult && andConditionResult && orConditionResult;
   }
 }

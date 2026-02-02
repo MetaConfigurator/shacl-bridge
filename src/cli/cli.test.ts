@@ -123,6 +123,68 @@ describe('CLI', () => {
     });
   });
 
+  describe('--exclude-shacl-extensions flag', () => {
+    it('should include x-shacl-prefixes by default', () => {
+      const output = runCli(`-i ${simpleShaclPath}`);
+      const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+      expect(schema['x-shacl-prefixes']).toBeDefined();
+    });
+
+    it('should exclude x-shacl-prefixes when --exclude-shacl-extensions is specified', () => {
+      const output = runCli(`-i ${simpleShaclPath} --exclude-shacl-extensions`);
+      const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+      expect(schema['x-shacl-prefixes']).toBeUndefined();
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+      expect(schema.$defs).toBeDefined();
+    });
+
+    it('should work with --output option', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-exclude-ext-test-'));
+      const outputPath = path.join(tempDir, 'schema.json');
+
+      try {
+        runCli(`--input ${simpleShaclPath} --exclude-shacl-extensions --output ${outputPath}`);
+        expect(fs.existsSync(outputPath)).toBe(true);
+        const content = fs.readFileSync(outputPath, 'utf-8');
+        const schema = JSON.parse(content) as JsonSchemaObjectType;
+        expect(schema['x-shacl-prefixes']).toBeUndefined();
+      } finally {
+        fs.rmSync(tempDir, { recursive: true });
+      }
+    });
+
+    it('should work with --json-ld flag', () => {
+      const output = runCli(`-i ${simpleJsonLdPath} --json-ld --exclude-shacl-extensions`);
+      const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+      expect(schema['x-shacl-prefixes']).toBeUndefined();
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
+    });
+
+    it('should work with --mode multi', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-multi-exclude-test-'));
+
+      try {
+        runCli(`-i ${simpleShaclPath} --mode multi --output ${tempDir} --exclude-shacl-extensions`);
+
+        const files = fs.readdirSync(tempDir);
+        expect(files.length).toBeGreaterThan(0);
+
+        const personFile = path.join(tempDir, 'Person.json');
+        expect(fs.existsSync(personFile)).toBe(true);
+
+        const personSchema = JSON.parse(
+          fs.readFileSync(personFile, 'utf-8')
+        ) as JsonSchemaObjectType;
+        expect(personSchema['x-shacl-prefixes']).toBeUndefined();
+      } finally {
+        fs.rmSync(tempDir, { recursive: true });
+      }
+    });
+  });
+
   describe('--mode option', () => {
     it('should show --mode option in help', () => {
       const output = runCli('--help');

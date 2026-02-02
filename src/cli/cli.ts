@@ -17,6 +17,7 @@ interface CliOptions {
   jsonLd: boolean;
   output?: string;
   mode: OutputMode;
+  excludeShaclExtensions: boolean;
 }
 
 const packageJson = JSON.parse(
@@ -32,6 +33,7 @@ program
   .option('-i --input <file>', 'SHACL file to convert (Turtle format)')
   .option('--from-clipboard', 'Read from clipboard', false)
   .option('--json-ld', 'Parse as JSON-LD', false)
+  .option('--exclude-shacl-extensions', 'Exclude x-shacl-* properties from output', false)
   .option('-o, --output <path>', 'Output file path (single mode) or directory (multi mode)')
   .addOption(
     new CommanderOption('-m, --mode <mode>', 'Output mode: single (default) or multi')
@@ -87,7 +89,9 @@ async function run(options: CliOptions): Promise<void> {
   try {
     const shaclDocument = await loadShaclDocument(options);
     const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
-    const result = new IrSchemaConverter(ir).convert();
+    const result = new IrSchemaConverter(ir, {
+      excludeShaclExtensions: options.excludeShaclExtensions,
+    }).convert();
 
     if (options.mode === 'multi' && options.output) {
       writeMultipleSchemas(result, options.output);
@@ -129,7 +133,7 @@ function writeMultipleSchemas(
     const individualSchema = {
       $schema: result.$schema,
       ...schema,
-      'x-shacl-prefixes': prefixes,
+      ...(prefixes && { 'x-shacl-prefixes': prefixes }),
     };
 
     const convertedSchema = convertInternalRefsToExternal(individualSchema);

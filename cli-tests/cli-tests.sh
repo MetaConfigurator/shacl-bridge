@@ -234,4 +234,44 @@ fi
 echo -e "${GREEN}Correctly rejects invalid mode values${NC}"
 
 echo ""
+echo "Test 13: --exclude-shacl-extensions excludes x-shacl-prefixes"
+EXCLUDE_EXT_OUTPUT=$(shacl-bridge -i samples/shacl/simple-shacl.ttl --exclude-shacl-extensions)
+if echo "$EXCLUDE_EXT_OUTPUT" | jq -e '."x-shacl-prefixes"' > /dev/null 2>&1; then
+    echo -e "${RED}x-shacl-prefixes should not be present with --exclude-shacl-extensions${NC}"
+    exit 1
+fi
+if ! echo "$EXCLUDE_EXT_OUTPUT" | jq -e '."$schema"' > /dev/null 2>&1; then
+    echo -e "${RED}Output should still have \$schema${NC}"
+    exit 1
+fi
+echo -e "${GREEN}--exclude-shacl-extensions correctly excludes x-shacl-prefixes${NC}"
+
+echo ""
+echo "Test 14: Without --exclude-shacl-extensions, x-shacl-prefixes is present"
+DEFAULT_OUTPUT=$(shacl-bridge -i samples/shacl/simple-shacl.ttl)
+if ! echo "$DEFAULT_OUTPUT" | jq -e '."x-shacl-prefixes"' > /dev/null 2>&1; then
+    echo -e "${RED}x-shacl-prefixes should be present by default${NC}"
+    exit 1
+fi
+echo -e "${GREEN}x-shacl-prefixes is present by default${NC}"
+
+echo ""
+echo "Test 15: --exclude-shacl-extensions works with --mode multi"
+MULTI_EXCLUDE_DIR="$TEMP_DIR/multi-exclude-output"
+mkdir -p "$MULTI_EXCLUDE_DIR"
+shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi -o "$MULTI_EXCLUDE_DIR" --exclude-shacl-extensions
+
+PERSON_EXCLUDE_FILE="$MULTI_EXCLUDE_DIR/Person.json"
+if [ ! -f "$PERSON_EXCLUDE_FILE" ]; then
+    echo -e "${RED}Person.json not created in multi mode with --exclude-shacl-extensions${NC}"
+    exit 1
+fi
+
+if jq -e '."x-shacl-prefixes"' "$PERSON_EXCLUDE_FILE" > /dev/null 2>&1; then
+    echo -e "${RED}x-shacl-prefixes should not be present in multi mode with --exclude-shacl-extensions${NC}"
+    exit 1
+fi
+echo -e "${GREEN}--exclude-shacl-extensions works correctly with --mode multi${NC}"
+
+echo ""
 echo -e "${GREEN}All tests passed!${NC}"
