@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.3.0...v1.4.0) (2026-02-02)
+
+
+### Features
+
+* **cli:** add --exclude-shacl-extensions option ([#71](https://github.com/GeezFORCE/shacl-bridge/issues/71)) ([d02dd7a](https://github.com/GeezFORCE/shacl-bridge/commit/d02dd7a588e5dfc7d4f495e29eaf53bc62444743))
+
 # [1.3.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.2.0...v1.3.0) (2026-02-02)
 
 
