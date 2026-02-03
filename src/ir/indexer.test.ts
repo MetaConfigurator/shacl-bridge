@@ -15,7 +15,7 @@ import {
   SHACL_TARGET_CLASS,
   XSD_STRING,
 } from '../util/rdf-terms';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { DataFactory, Quad_Subject } from 'n3';
 
 function getKey(shapes: Quad_Subject[], search: string) {

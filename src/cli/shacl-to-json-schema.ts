@@ -1,7 +1,7 @@
 import { ToJsonSchemaOptions } from './cli-constants';
 import fs from 'fs';
 import { ShaclDocument } from '../shacl/shacl-document';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { match } from 'ts-pattern';
 import { IntermediateRepresentationBuilder } from '../ir/intermediate-representation-builder';
 import { IrSchemaConverter } from '../json-schema/ir-schema-converter';

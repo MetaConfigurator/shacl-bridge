@@ -1,6 +1,6 @@
 import { DataFactory, Store, Term } from 'n3';
 import { ShaclWriter } from './shacl-writer';
-import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import {
   RDF_FIRST,
   RDF_TYPE,
@@ -37,7 +37,7 @@ import {
   XSD_DECIMAL,
   XSD_INTEGER,
   XSD_STRING,
-} from '../util/rdf-terms';
+} from '../../util/rdf-terms';
 
 const EX = 'http://example.org/';
 

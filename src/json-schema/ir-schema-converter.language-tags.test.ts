@@ -2,7 +2,7 @@ import {
   IntermediateRepresentation,
   IntermediateRepresentationBuilder,
 } from '../ir/intermediate-representation-builder';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { IrSchemaConverter } from './ir-schema-converter';
 
 async function getIr(content: string): Promise<IntermediateRepresentation> {

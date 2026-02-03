@@ -1,8 +1,8 @@
 import { DataFactory, Store, Term } from 'n3';
 import { NodeProcessor } from './node-processor';
-import { WriterContext } from './writer-context';
-import { GraphBuilder } from '../graph/graph-builder';
-import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+import { WriterContext } from '../writer/writer-context';
+import { GraphBuilder } from '../../graph/graph-builder';
+import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import {
   RDF_FIRST,
   SHACL_AND,
@@ -17,7 +17,7 @@ import {
   SHACL_XONE,
   XSD_INTEGER,
   XSD_STRING,
-} from '../util/rdf-terms';
+} from '../../util/rdf-terms';
 
 const EX = 'http://example.org/';
 

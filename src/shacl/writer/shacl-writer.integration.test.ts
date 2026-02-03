@@ -1,5 +1,5 @@
 import { ShaclWriter } from './shacl-writer';
-import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 
 const DEFAULT_PREFIXES: Record<string, string> = {
   sh: 'http://www.w3.org/ns/shacl#',

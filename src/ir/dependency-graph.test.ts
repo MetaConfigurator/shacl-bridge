@@ -14,7 +14,7 @@ import {
   SHACL_PROPERTY,
   SHACL_TARGET_CLASS,
 } from '../util/rdf-terms';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { DataFactory, Term } from 'n3';
 
 async function getGraph(content: string) {

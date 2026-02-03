@@ -1,7 +1,7 @@
 import { DataFactory, Store } from 'n3';
 import { ConstraintMapper } from './constraint-mapper';
-import { WriterContext } from './writer-context';
-import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+import { WriterContext } from '../writer/writer-context';
+import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import {
   RDF_FIRST,
   SHACL_BLANK_NODE_OR_IRI,
@@ -25,7 +25,7 @@ import {
   XSD_DECIMAL,
   XSD_INTEGER,
   XSD_STRING,
-} from '../util/rdf-terms';
+} from '../../util/rdf-terms';
 
 const EX = 'http://example.org/';
 

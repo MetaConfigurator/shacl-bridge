@@ -1,4 +1,4 @@
-import { ShaclDocument } from './shacl-document';
+import { ShaclDocument } from '../shacl-document';
 import * as fs from 'node:fs';
 import { Parser, Prefixes, Quad, Store, Term } from 'n3';
 import jsonld, { JsonLdDocument } from 'jsonld';

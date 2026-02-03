@@ -1,5 +1,5 @@
-import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
-import { StoreBuilder } from '../util/store-builder';
+import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
+import { StoreBuilder } from '../../util/store-builder';
 
 const DEFAULT_BASE = 'http://example.org/';
 

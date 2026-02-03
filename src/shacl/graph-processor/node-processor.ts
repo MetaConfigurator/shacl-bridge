@@ -1,6 +1,6 @@
 import { match } from 'ts-pattern';
-import { Edge, Graph, Node } from '../graph/types';
-import { JsonSchemaObjectType, JsonSchemaType } from '../json-schema/meta/json-schema-type';
+import { Edge, Graph, Node } from '../../graph/types';
+import { JsonSchemaObjectType, JsonSchemaType } from '../../json-schema/meta/json-schema-type';
 import {
   SHACL_AND,
   SHACL_MAX_COUNT,
@@ -16,9 +16,9 @@ import {
   SHACL_QUALIFIED_VALUE_SHAPE,
   SHACL_TARGET_CLASS,
   SHACL_XONE,
-} from '../util/rdf-terms';
+} from '../../util/rdf-terms';
 import { ConstraintMapper } from './constraint-mapper';
-import { WriterContext } from './writer-context';
+import { WriterContext } from '../writer/writer-context';
 
 export class NodeProcessor {
   private readonly constraintMapper: ConstraintMapper;

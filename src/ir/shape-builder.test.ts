@@ -41,7 +41,7 @@ import {
   SHACL_UNIQUE_LANG,
   XSD_STRING,
 } from '../util/rdf-terms';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 
 async function getShapeDefinitionList(content: string) {
   const shaclDocument = await new ShaclParser().withContent(content).parse();

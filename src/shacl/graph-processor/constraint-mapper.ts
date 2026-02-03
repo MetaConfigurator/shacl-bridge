@@ -1,4 +1,4 @@
-import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import {
   SHACL_BLANK_NODE_OR_IRI,
   SHACL_CLOSED,
@@ -25,8 +25,8 @@ import {
   XSD_INTEGER,
   XSD_STRING,
   XSD_TIME,
-} from '../util/rdf-terms';
-import { WriterContext } from './writer-context';
+} from '../../util/rdf-terms';
+import { WriterContext } from '../writer/writer-context';
 
 type TypeMapping = Record<string, { predicate: string; value: string }>;
 
