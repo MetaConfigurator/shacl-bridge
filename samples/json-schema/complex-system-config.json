@@ -1,0 +1,204 @@
+{
+  "$id": "https://example.org/schema/complex-system.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Complex System Configuration",
+  "description": "A complex JSON Schema demonstrating advanced JSON Schema 2020-12 features.",
+  "type": "object",
+
+  "required": ["system", "users", "metadata"],
+
+  "properties": {
+    "system": {
+      "$ref": "#/$defs/System"
+    },
+    "users": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/User"
+      },
+      "contains": {
+        "type": "object",
+        "required": ["role"],
+        "properties": {
+          "role": { "const": "admin" }
+        }
+      },
+      "minContains": 1
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    }
+  },
+
+  "unevaluatedProperties": false,
+
+  "$defs": {
+    "System": {
+      "type": "object",
+      "required": ["name", "environment", "features"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9-_]+$"
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["dev", "staging", "prod"]
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Feature"
+          },
+          "uniqueItems": true
+        }
+      },
+
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "environment": { "const": "prod" }
+            }
+          },
+          "then": {
+            "properties": {
+              "features": {
+                "contains": {
+                  "properties": {
+                    "critical": { "const": true }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+
+      "unevaluatedProperties": false
+    },
+
+    "Feature": {
+      "type": "object",
+      "required": ["id", "enabled"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^FEATURE_[A-Z0-9_]+$"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "critical": {
+          "type": "boolean",
+          "default": false
+        },
+        "config": {
+          "oneOf": [{ "$ref": "#/$defs/SimpleConfig" }, { "$ref": "#/$defs/AdvancedConfig" }]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+
+    "SimpleConfig": {
+      "type": "object",
+      "required": ["level"],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "AdvancedConfig": {
+      "type": "object",
+      "required": ["threshold", "strategy"],
+      "properties": {
+        "threshold": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "strategy": {
+          "type": "string",
+          "enum": ["aggressive", "balanced", "conservative"]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "User": {
+      "type": "object",
+      "required": ["id", "email", "role"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "maintainer", "viewer"]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "write", "delete", "deploy"]
+          }
+        }
+      },
+
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": { "const": "admin" }
+            }
+          },
+          "then": {
+            "required": ["permissions"],
+            "properties": {
+              "permissions": {
+                "contains": { "const": "deploy" }
+              }
+            }
+          }
+        }
+      ],
+
+      "unevaluatedProperties": false
+    },
+
+    "Metadata": {
+      "type": "object",
+      "required": ["createdAt", "version"],
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
