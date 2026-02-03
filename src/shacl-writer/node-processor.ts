@@ -1,6 +1,5 @@
 import { match } from 'ts-pattern';
-import { Graph } from '../graph/graph-builder';
-import { Edge, Node } from '../graph/types';
+import { Edge, Graph, Node } from '../graph/types';
 import { JsonSchemaObjectType, JsonSchemaType } from '../json-schema/meta/json-schema-type';
 import {
   SHACL_AND,
