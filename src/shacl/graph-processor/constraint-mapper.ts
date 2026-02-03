@@ -27,6 +27,7 @@ import {
   XSD_TIME,
 } from '../../util/rdf-terms';
 import { WriterContext } from '../writer/writer-context';
+import { match, P } from 'ts-pattern';
 
 type TypeMapping = Record<string, { predicate: string; value: string }>;
 
@@ -84,10 +85,10 @@ export class ConstraintMapper {
 
   private mapType(schema: JsonSchemaObjectType, subject: string, isBlank: boolean): void {
     if (typeof schema.type !== 'string') return;
-    if (schema.format && FORMAT_MAPPINGS[schema.format]) return;
+    if (schema.format != null && schema.format in FORMAT_MAPPINGS) return;
 
     const mapping = TYPE_MAPPINGS[schema.type];
-    if (mapping) {
+    if (schema.type in TYPE_MAPPINGS) {
       if (isBlank) {
         this.context.store.blank(subject, mapping.predicate, mapping.value);
       } else {
@@ -102,29 +103,25 @@ export class ConstraintMapper {
     isBlank: boolean
   ): void {
     if (!schema.format) return;
-
+    if (!(schema.format in FORMAT_MAPPINGS)) return;
     const mapping = FORMAT_MAPPINGS[schema.format];
-    if (!mapping) return;
-    // TODO : ts-pattern
-    switch (mapping.type) {
-      case 'datatype':
-        if (isBlank) {
-          this.context.store.blank(subject, SHACL_DATATYPE, mapping.value);
-        } else {
-          this.context.store.triple(subject, SHACL_DATATYPE, mapping.value, false);
-        }
-        break;
-      case 'nodeKind':
-        if (isBlank) {
-          this.context.store.blank(subject, SHACL_NODE_KIND, mapping.value);
-        } else {
-          this.context.store.triple(subject, SHACL_NODE_KIND, mapping.value, false);
-        }
-        break;
-      case 'pattern':
+    match([mapping, isBlank])
+      .with([{ type: 'datatype' }, true], () => {
+        this.context.store.blank(subject, SHACL_DATATYPE, mapping.value);
+      })
+      .with([{ type: 'datatype' }, false], () => {
+        this.context.store.triple(subject, SHACL_DATATYPE, mapping.value, false);
+      })
+      .with([{ type: 'nodeKind' }, true], () => {
+        this.context.store.blank(subject, SHACL_NODE_KIND, mapping.value);
+      })
+      .with([{ type: 'nodeKind' }, false], () => {
+        this.context.store.triple(subject, SHACL_NODE_KIND, mapping.value, false);
+      })
+      .with([{ type: 'pattern' }, P._], () => {
         this.context.store.literalString(subject, SHACL_PATTERN, mapping.value, isBlank);
-        break;
-    }
+      })
+      .exhaustive();
   }
 
   private mapStringConstraints(
@@ -181,7 +178,7 @@ export class ConstraintMapper {
     isBlank: boolean
   ): void {
     if (schema.const !== undefined && schema.const !== null) {
-      this.context.store.literalString(subject, SHACL_HAS_VALUE, String(schema.const), isBlank);
+      this.context.store.literalString(subject, SHACL_HAS_VALUE, schema.const as string, isBlank);
     }
     if (Array.isArray(schema.enum)) {
       this.context.store.list(subject, SHACL_IN, schema.enum.map(String), isBlank);

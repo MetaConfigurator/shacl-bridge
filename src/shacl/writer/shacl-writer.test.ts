@@ -61,18 +61,15 @@ function getListItems(store: Store, listHead: Term): string[] {
   const items: string[] = [];
   let current = listHead;
 
-  while (current && current.value !== 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil') {
+  while (current.value !== 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil') {
     const first = store.getObjects(current, DataFactory.namedNode(RDF_FIRST), null)[0];
-    if (first) items.push(first.value);
-
-    const rest = store.getObjects(
+    items.push(first.value);
+    current = store.getObjects(
       current,
       DataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'),
       null
     )[0];
-    current = rest;
   }
-
   return items;
 }
 
