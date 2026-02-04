@@ -58,3 +58,5 @@ export const DEFAULT_PREFIXES: Record<string, string> = {
   xsd: 'http://www.w3.org/2001/XMLSchema#',
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 };
+
+export const DEFAULT_BASE = 'http://example.org/';

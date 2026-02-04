@@ -46,7 +46,7 @@ describe('JsonSchemaToShacl', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const converter = new JsonSchemaToShacl(defaultOptions);
-      await converter.execute();
+      await converter.convert();
 
       expect(consoleSpy).toHaveBeenCalled();
       const output = consoleSpy.mock.calls[0][0] as string;
@@ -66,7 +66,7 @@ describe('JsonSchemaToShacl', () => {
           ...defaultOptions,
           output: outputPath,
         });
-        await converter.execute();
+        await converter.convert();
 
         expect(fs.existsSync(outputPath)).toBe(true);
         const content = fs.readFileSync(outputPath, 'utf-8');
@@ -87,7 +87,7 @@ describe('JsonSchemaToShacl', () => {
         ...defaultOptions,
         jsonLd: true,
       });
-      await converter.execute();
+      await converter.convert();
 
       expect(consoleSpy).toHaveBeenCalled();
       const output = consoleSpy.mock.calls[0][0] as string;
@@ -109,7 +109,7 @@ describe('JsonSchemaToShacl', () => {
           jsonLd: true,
           output: outputPath,
         });
-        await converter.execute();
+        await converter.convert();
 
         expect(fs.existsSync(outputPath)).toBe(true);
         const content = fs.readFileSync(outputPath, 'utf-8');
@@ -130,7 +130,7 @@ describe('JsonSchemaToShacl', () => {
         ...defaultOptions,
         baseUri: 'https://example.com/shapes/',
       });
-      await converter.execute();
+      await converter.convert();
 
       const output = consoleSpy.mock.calls[0][0] as string;
       expect(output).toContain('https://example.com/shapes/');
@@ -145,7 +145,7 @@ describe('JsonSchemaToShacl', () => {
         ...defaultOptions,
         baseUri: 'https://custom.org/',
       });
-      await converter.execute();
+      await converter.convert();
 
       const output = consoleSpy.mock.calls[0][0] as string;
       expect(output).toContain('https://custom.org/');
@@ -174,7 +174,7 @@ describe('JsonSchemaToShacl', () => {
           ...defaultOptions,
           input: inputPath,
         });
-        await converter.execute();
+        await converter.convert();
 
         const output = consoleSpy.mock.calls[0][0] as string;
         expect(output).toContain('https://example.org/schema#');
@@ -204,7 +204,7 @@ describe('JsonSchemaToShacl', () => {
           ...defaultOptions,
           input: inputPath,
         });
-        await converter.execute();
+        await converter.convert();
 
         const output = consoleSpy.mock.calls[0][0] as string;
         expect(output).toContain('https://example.org/schemas/');
@@ -233,7 +233,7 @@ describe('JsonSchemaToShacl', () => {
           ...defaultOptions,
           input: inputPath,
         });
-        await converter.execute();
+        await converter.convert();
 
         const output = consoleSpy.mock.calls[0][0] as string;
         expect(output).toContain('http://example.org/');
@@ -253,7 +253,7 @@ describe('JsonSchemaToShacl', () => {
         fromClipboard: false,
       });
 
-      await expect(converter.execute()).rejects.toThrow('Input file is required');
+      await expect(converter.convert()).rejects.toThrow('Input file is required');
     });
   });
 });

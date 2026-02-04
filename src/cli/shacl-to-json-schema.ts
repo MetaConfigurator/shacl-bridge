@@ -15,7 +15,7 @@ export class ShaclToJsonSchema {
     }
   }
 
-  async execute() {
+  async convert() {
     const shaclDocument = await this.loadShaclDocument();
     const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
     const result = new IrSchemaConverter(ir, {

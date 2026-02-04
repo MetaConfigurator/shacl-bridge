@@ -21,9 +21,11 @@ export class GraphBuilder {
   }
 
   private processSchema(schema: JsonSchemaObjectType, key: string): Node {
+    // Add the current node
     const node: Node = { key, value: schema };
     this.store.addNode(node);
 
+    // For the properties of the schema, walk through it and add them to the graph
     for (const [prop, value] of Object.entries(schema)) {
       if (value === undefined) continue;
 

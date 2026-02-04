@@ -1,7 +1,6 @@
 import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import { StoreBuilder } from '../../util/store-builder';
-
-const DEFAULT_BASE = 'http://example.org/';
+import { DEFAULT_BASE } from '../../util/rdf-terms';
 
 export class WriterContext {
   readonly baseUri: string;
@@ -34,11 +33,9 @@ export class WriterContext {
 
   private extractBaseUri(id: string | undefined): string {
     if (!id) return DEFAULT_BASE;
-
     const lastSlash = id.lastIndexOf('/');
     const lastHash = id.lastIndexOf('#');
     const cutoff = Math.max(lastSlash, lastHash);
-
     return cutoff > 0 ? id.substring(0, cutoff + 1) : DEFAULT_BASE;
   }
 }

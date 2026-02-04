@@ -13,7 +13,7 @@ export class JsonSchemaToShacl {
     }
   }
 
-  async execute() {
+  async convert() {
     const schema = await this.loadJsonSchema();
     const output = await this.convertToShacl(schema);
     this.writeOutput(output);
@@ -40,18 +40,22 @@ export class JsonSchemaToShacl {
     return schema;
   }
 
-  private async convertToShacl(schema: JsonSchemaObjectType): Promise<string> {
-    const writer = new ShaclWriter(schema);
+  private convertToShacl(schema: JsonSchemaObjectType): Promise<string> {
     const prefixes = {
       ...DEFAULT_PREFIXES,
       ex: this.extractBaseUri(schema.$id),
-    };
-
-    const storeBuilder = writer.getStoreBuilder().withPrefixes(prefixes);
+    } as Record<string, string>;
 
     return match(this.options)
-      .with({ jsonLd: true }, () => storeBuilder.writeJsonLd())
-      .with({ jsonLd: false }, () => storeBuilder.write())
+      .with(
+        { jsonLd: true },
+        async () =>
+          await new ShaclWriter(schema).getStoreBuilder().withPrefixes(prefixes).writeJsonLd()
+      )
+      .with(
+        { jsonLd: false },
+        async () => await new ShaclWriter(schema).getStoreBuilder().withPrefixes(prefixes).write()
+      )
       .exhaustive();
   }
 

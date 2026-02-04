@@ -24,6 +24,7 @@ export class ShaclWriter {
 
   private process(): void {
     const graph = new GraphBuilder(this.schema).build();
+    // console.log(printGraph(graph));
     const processor = new NodeProcessor(this.context, graph);
 
     const rootNode = graph.nodes.find((n) => n.key === 'root');

@@ -43,7 +43,7 @@ const toJsonSchemaCommand = new Command(TO_JSON_SCHEMA.command)
   )
   .action(async (options: ToJsonSchemaOptions) => {
     try {
-      await new ShaclToJsonSchema(options).execute();
+      await new ShaclToJsonSchema(options).convert();
     } catch (error) {
       console.error('Error:', error instanceof Error ? error.message : error);
       process.exit(1);
@@ -64,7 +64,7 @@ const toShaclCommand = new Command(TO_SHACL.command)
   .option(TO_SHACL.baseUri.flag, TO_SHACL.baseUri.description)
   .action(async (options: ToShaclOptions) => {
     try {
-      await new JsonSchemaToShacl(options).execute();
+      await new JsonSchemaToShacl(options).convert();
     } catch (error) {
       console.error('Error:', error instanceof Error ? error.message : error);
       process.exit(1);

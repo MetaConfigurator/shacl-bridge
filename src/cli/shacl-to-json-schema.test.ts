@@ -52,7 +52,7 @@ describe('ShaclToJsonSchema', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const converter = new ShaclToJsonSchema(defaultOptions);
-      await converter.execute();
+      await converter.convert();
 
       expect(consoleSpy).toHaveBeenCalled();
       const output = consoleSpy.mock.calls[0][0] as string;
@@ -73,7 +73,7 @@ describe('ShaclToJsonSchema', () => {
           ...defaultOptions,
           output: outputPath,
         });
-        await converter.execute();
+        await converter.convert();
 
         expect(fs.existsSync(outputPath)).toBe(true);
         const content = fs.readFileSync(outputPath, 'utf-8');
@@ -90,7 +90,7 @@ describe('ShaclToJsonSchema', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const converter = new ShaclToJsonSchema(defaultOptions);
-      await converter.execute();
+      await converter.convert();
 
       const output = consoleSpy.mock.calls[0][0] as string;
       const schema = JSON.parse(output) as JsonSchemaObjectType;
@@ -107,7 +107,7 @@ describe('ShaclToJsonSchema', () => {
         ...defaultOptions,
         excludeShaclExtensions: true,
       });
-      await converter.execute();
+      await converter.convert();
 
       const output = consoleSpy.mock.calls[0][0] as string;
       const schema = JSON.parse(output) as JsonSchemaObjectType;
@@ -128,7 +128,7 @@ describe('ShaclToJsonSchema', () => {
           mode: 'multi',
           output: tempDir,
         });
-        await converter.execute();
+        await converter.convert();
 
         const files = fs.readdirSync(tempDir);
         expect(files.length).toBeGreaterThan(0);
@@ -148,7 +148,7 @@ describe('ShaclToJsonSchema', () => {
           mode: 'multi',
           output: outputDir,
         });
-        await converter.execute();
+        await converter.convert();
 
         expect(fs.existsSync(outputDir)).toBe(true);
         const files = fs.readdirSync(outputDir);
@@ -168,7 +168,7 @@ describe('ShaclToJsonSchema', () => {
           mode: 'multi',
           output: tempDir,
         });
-        await converter.execute();
+        await converter.convert();
 
         const files = fs.readdirSync(tempDir);
         for (const file of files) {
@@ -190,7 +190,7 @@ describe('ShaclToJsonSchema', () => {
         input: simpleJsonLdPath,
         jsonLd: true,
       });
-      await converter.execute();
+      await converter.convert();
 
       expect(consoleSpy).toHaveBeenCalled();
       const output = consoleSpy.mock.calls[0][0] as string;
@@ -205,7 +205,7 @@ describe('ShaclToJsonSchema', () => {
     it('should produce equivalent output for Turtle and JSON-LD formats', async () => {
       const turtleSpy = jest.spyOn(console, 'log').mockImplementation();
       const turtleConverter = new ShaclToJsonSchema(defaultOptions);
-      await turtleConverter.execute();
+      await turtleConverter.convert();
       const turtleOutput = turtleSpy.mock.calls[0][0] as string;
       turtleSpy.mockRestore();
 
@@ -215,7 +215,7 @@ describe('ShaclToJsonSchema', () => {
         input: simpleJsonLdPath,
         jsonLd: true,
       });
-      await jsonLdConverter.execute();
+      await jsonLdConverter.convert();
       const jsonLdOutput = jsonLdSpy.mock.calls[0][0] as string;
       jsonLdSpy.mockRestore();
 
@@ -236,7 +236,7 @@ describe('ShaclToJsonSchema', () => {
         input: '/nonexistent/file.ttl',
       });
 
-      await expect(converter.execute()).rejects.toThrow('File not found');
+      await expect(converter.convert()).rejects.toThrow('File not found');
     });
 
     it('should throw error when input is not provided and not from clipboard', async () => {
@@ -245,7 +245,7 @@ describe('ShaclToJsonSchema', () => {
         input: undefined,
       });
 
-      await expect(converter.execute()).rejects.toThrow('File not found');
+      await expect(converter.convert()).rejects.toThrow('File not found');
     });
   });
 });
