@@ -1,6 +1,6 @@
 import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
-import { StoreBuilder } from '../../util/store-builder';
-import { DEFAULT_BASE } from '../../util/rdf-terms';
+import { StoreBuilder } from '../../store/store-builder';
+import { DEFAULT_BASE } from '../shacl-terms';
 
 export class WriterContext {
   readonly baseUri: string;

@@ -3,7 +3,7 @@ import fs from 'fs';
 import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
 import path from 'path';
 import { ShaclWriter } from '../shacl/writer/shacl-writer';
-import { DEFAULT_PREFIXES } from '../util/rdf-terms';
+import { DEFAULT_PREFIXES } from '../shacl/shacl-terms';
 import { match } from 'ts-pattern';
 
 export class JsonSchemaToShacl {

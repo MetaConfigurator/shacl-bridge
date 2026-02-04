@@ -5,7 +5,7 @@ import { Stack } from '../stack/stack';
 import { ShapeConverter } from './converters/shape-converter';
 import { JsonSchemaObjectBuilder } from './meta/json-schema-object-builder';
 import { ConversionContext } from './converters/constraints/conversion-context';
-import { JSON_SCHEMA_DRAFT } from '../util/json-schema-terms';
+import { JSON_SCHEMA_DRAFT } from './json-schema-terms';
 import { StackElement } from '../stack/stack-element';
 import { StackElementBuilder } from '../stack/stack-element-builder';
 import { ShapeMetadataConverter } from './converters/shape-metadata-converter';

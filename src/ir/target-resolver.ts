@@ -5,7 +5,7 @@ import {
   SHACL_TARGET_NODE,
   SHACL_TARGET_OBJECTS_OF,
   SHACL_TARGET_SUBJECTS_OF,
-} from '../util/rdf-terms';
+} from '../shacl/shacl-terms';
 import { extractStrippedName } from '../util/helpers';
 import { ShaclDocument } from '../shacl/shacl-document';
 import isBlankNode = Util.isBlankNode;

@@ -25,7 +25,7 @@ import {
   XSD_INTEGER,
   XSD_STRING,
   XSD_TIME,
-} from '../../util/rdf-terms';
+} from '../shacl-terms';
 import { WriterContext } from '../writer/writer-context';
 import { match, P } from 'ts-pattern';
 

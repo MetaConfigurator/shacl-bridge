@@ -25,7 +25,7 @@ import {
   XSD_DECIMAL,
   XSD_INTEGER,
   XSD_STRING,
-} from '../../util/rdf-terms';
+} from '../shacl-terms';
 
 const EX = 'http://example.org/';
 

@@ -1,6 +1,6 @@
 import { DependencyGraphBuilder } from './dependency-graph';
 import { Indexer } from './indexer';
-import { StoreBuilder } from '../util/store-builder';
+import { StoreBuilder } from '../store/store-builder';
 import {
   FOAF_PERSON,
   RDF_FIRST,
@@ -13,7 +13,7 @@ import {
   SHACL_PATH,
   SHACL_PROPERTY,
   SHACL_TARGET_CLASS,
-} from '../util/rdf-terms';
+} from '../shacl/shacl-terms';
 import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { DataFactory, Term } from 'n3';
 

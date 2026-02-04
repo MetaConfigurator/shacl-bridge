@@ -16,7 +16,7 @@ import {
   SHACL_QUALIFIED_VALUE_SHAPE,
   SHACL_TARGET_CLASS,
   SHACL_XONE,
-} from '../../util/rdf-terms';
+} from '../shacl-terms';
 import { ConstraintMapper } from './constraint-mapper';
 import { WriterContext } from '../writer/writer-context';
 
