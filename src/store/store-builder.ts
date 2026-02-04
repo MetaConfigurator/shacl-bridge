@@ -1,13 +1,6 @@
 import jsonld from 'jsonld';
 import { BlankNode, DataFactory, Literal, NamedNode, Quad, Store, Writer } from 'n3';
-import {
-  RDF_FIRST,
-  RDF_NIL,
-  RDF_REST,
-  RDF_TYPE,
-  XSD_BOOLEAN,
-  XSD_INTEGER,
-} from '../shacl/shacl-terms';
+import { RDF_FIRST, RDF_NIL, RDF_REST, RDF_TYPE, XSD_BOOLEAN, XSD_INTEGER, } from '../shacl/shacl-terms';
 
 type ItemFactory = (item: string) => NamedNode | BlankNode | Literal;
 
@@ -160,7 +153,10 @@ export class StoreBuilder {
       return this;
     }
 
-    const listNodes = items.map((_, i) => DataFactory.blankNode(`list_${subject}_${String(i)}`));
+    const safeSubject = subject.replace(/[^a-zA-Z0-9_]/g, '_');
+    const listNodes = items.map((_, i) =>
+      DataFactory.blankNode(`list_${safeSubject}_${String(i)}`)
+    );
     this.store.addQuad(subjectNode, DataFactory.namedNode(predicate), listNodes[0]);
 
     items.forEach((item, i) => {
