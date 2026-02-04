@@ -62,7 +62,7 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 #### `to-json-schema`
 
 | Option                       | Description                                         |
-|------------------------------|-----------------------------------------------------|
+| ---------------------------- | --------------------------------------------------- |
 | `-i, --input <file>`         | SHACL file to convert (Turtle or JSON-LD)           |
 | `-o, --output <file>`        | Output file (single mode) or directory (multi mode) |
 | `--from-clipboard`           | Read SHACL content from clipboard                   |
@@ -73,7 +73,7 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 #### `to-shacl`
 
 | Option                | Description                             |
-|-----------------------|-----------------------------------------|
+| --------------------- | --------------------------------------- |
 | `-i, --input <file>`  | JSON Schema file to convert             |
 | `-o, --output <file>` | Output file for SHACL                   |
 | `--from-clipboard`    | Read JSON Schema content from clipboard |
