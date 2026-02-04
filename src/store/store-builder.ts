@@ -1,6 +1,13 @@
 import jsonld from 'jsonld';
 import { BlankNode, DataFactory, Literal, NamedNode, Quad, Store, Writer } from 'n3';
-import { RDF_FIRST, RDF_NIL, RDF_REST, RDF_TYPE, XSD_BOOLEAN, XSD_INTEGER, } from '../shacl/shacl-terms';
+import {
+  RDF_FIRST,
+  RDF_NIL,
+  RDF_REST,
+  RDF_TYPE,
+  XSD_BOOLEAN,
+  XSD_INTEGER,
+} from '../shacl/shacl-terms';
 
 type ItemFactory = (item: string) => NamedNode | BlankNode | Literal;
 
