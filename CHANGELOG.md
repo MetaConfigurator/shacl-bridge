@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.1...v1.4.2) (2026-02-06)
+
+
+### Bug Fixes
+
+* **exports:** add declaration to tsconfig ([#73](https://github.com/GeezFORCE/shacl-bridge/issues/73)) ([4d8650b](https://github.com/GeezFORCE/shacl-bridge/commit/4d8650b1c9863587e9a532e4354fe7401bdfd21a))
+
 ## [1.4.1](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.0...v1.4.1) (2026-02-06)
 
 
