@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.0...v1.4.1) (2026-02-06)
+
+
+### Bug Fixes
+
+* **exports:** add exports for SHACL to JSON Conversion classes ([#72](https://github.com/GeezFORCE/shacl-bridge/issues/72)) ([91811f2](https://github.com/GeezFORCE/shacl-bridge/commit/91811f2bc819eff5c35ebed0f4f92297b736b82b))
+
 # [1.4.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.3.0...v1.4.0) (2026-02-02)
 
 
