@@ -502,7 +502,7 @@ describe('ConstraintConverter', () => {
 
         expect(result.anyOf).toBeDefined();
         expect(result.anyOf).toHaveLength(1);
-        expect(result.anyOf?.[0]).toEqual({ type: 'string' });
+        expect(result.anyOf?.[0]).toEqual({ $ref: '#/$defs/Referenced' });
       });
 
       it('should not apply anyOf when null', () => {
@@ -533,7 +533,7 @@ describe('ConstraintConverter', () => {
 
         expect(result.allOf).toBeDefined();
         expect(result.allOf).toHaveLength(1);
-        expect(result.allOf?.[0]).toEqual({ type: 'string' });
+        expect(result.allOf?.[0]).toEqual({ $ref: '#/$defs/Referenced' });
       });
 
       it('should not apply allOf when null', () => {
@@ -555,7 +555,7 @@ describe('ConstraintConverter', () => {
 
         expect(result.oneOf).toBeDefined();
         expect(result.oneOf).toHaveLength(1);
-        expect(result.oneOf?.[0]).toEqual({ type: 'string' });
+        expect(result.oneOf?.[0]).toEqual({ $ref: '#/$defs/Referenced' });
       });
 
       it('should not apply oneOf when null', () => {
@@ -576,7 +576,7 @@ describe('ConstraintConverter', () => {
         const result = converter.convert();
 
         expect(result.not).toBeDefined();
-        expect(result.not).toEqual({ type: 'string' });
+        expect(result.not).toEqual({ $ref: '#/$defs/Referenced' });
       });
 
       it('should not apply not when null', () => {

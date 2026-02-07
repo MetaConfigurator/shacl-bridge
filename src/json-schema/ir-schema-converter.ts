@@ -13,6 +13,7 @@ import { ConstraintConverter } from './converters/constraints/constraint-convert
 import { Condition } from '../condition/condition';
 import { ShaclDocument } from '../shacl/shacl-document';
 import { ConversionOptions } from './conversion-options';
+import mergeAllOf from 'json-schema-merge-allof';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
@@ -49,7 +50,7 @@ export class IrSchemaConverter {
     });
 
     builder
-      .$id(this.shapeDefinitions[0].nodeKey)
+      .$id(this.shapeDefinitions[0].nodeKey) // TODO: Nee better root resolution
       .$schema(JSON_SCHEMA_DRAFT)
       .$defs(defs)
       .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`);
@@ -58,7 +59,12 @@ export class IrSchemaConverter {
       builder.customProperty('x-shacl-prefixes', this.addPrefixes());
     }
 
-    return builder.build();
+    return mergeAllOf(
+      builder.build() as Parameters<typeof mergeAllOf>[0],
+      {
+        deep: true,
+      } as Parameters<typeof mergeAllOf>[1]
+    ) as JsonSchemaObjectType;
   }
 
   private groupShapesByTarget(): Map<string, ShapeDefinition[]> {

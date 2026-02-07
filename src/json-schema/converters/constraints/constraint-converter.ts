@@ -364,8 +364,14 @@ export class ConstraintConverter {
                   .map((shape) => {
                     if (shape) return this.processed.get(shape);
                   })
-                  .map((ele) => ele?.builder.build())
-                  .filter((schema) => schema != null) ?? [];
+                  .filter((ele) => ele != null)
+                  .map((ele) =>
+                    ele.shape.nodeKey.includes('n3')
+                      ? ele.builder.build()
+                      : new JsonSchemaObjectBuilder()
+                          .$ref(`#/$defs/${extractStrippedName(ele.shape.nodeKey)}`)
+                          .build()
+                  ) ?? [];
               if (orSchemas.length > 0) builder.anyOf(orSchemas);
             })
             .execute();
@@ -387,8 +393,14 @@ export class ConstraintConverter {
                   .map((shape) => {
                     if (shape) return this.processed.get(shape);
                   })
-                  .map((ele) => ele?.builder.build())
-                  .filter((schema) => schema != null) ?? [];
+                  .filter((ele) => ele != null)
+                  .map((ele) =>
+                    ele.shape.nodeKey.includes('n3')
+                      ? ele.builder.build()
+                      : new JsonSchemaObjectBuilder()
+                          .$ref(`#/$defs/${extractStrippedName(ele.shape.nodeKey)}`)
+                          .build()
+                  ) ?? [];
               if (andSchemas.length > 0) builder.allOf(andSchemas);
             })
             .execute();
@@ -410,8 +422,14 @@ export class ConstraintConverter {
                   .map((shape) => {
                     if (shape) return this.processed.get(shape);
                   })
-                  .map((ele) => ele?.builder.build())
-                  .filter((schema) => schema != null) ?? [];
+                  .filter((ele) => ele != null)
+                  .map((ele) =>
+                    ele.shape.nodeKey.includes('n3')
+                      ? ele.builder.build()
+                      : new JsonSchemaObjectBuilder()
+                          .$ref(`#/$defs/${extractStrippedName(ele.shape.nodeKey)}`)
+                          .build()
+                  ) ?? [];
               if (xoneSchemas.length > 0) builder.oneOf(xoneSchemas);
             })
             .execute();
@@ -430,8 +448,14 @@ export class ConstraintConverter {
                 .map((shape) => {
                   if (shape) return this.processed.get(shape);
                 })
-                .map((ele) => ele?.builder.build())
-                .filter((schema) => schema != null)
+                .filter((ele) => ele != null)
+                .map((ele) =>
+                  ele.shape.nodeKey.includes('n3')
+                    ? ele.builder.build()
+                    : new JsonSchemaObjectBuilder()
+                        .$ref(`#/$defs/${extractStrippedName(ele.shape.nodeKey)}`)
+                        .build()
+                )
                 .pop();
               if (notSchema == null) return;
               builder.not(notSchema);

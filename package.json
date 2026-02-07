@@ -63,8 +63,10 @@
     "typescript-eslint": "^8.53.0"
   },
   "dependencies": {
+    "@types/json-schema-merge-allof": "^0.6.5",
     "clipboardy": "^5.0.2",
     "commander": "^14.0.2",
+    "json-schema-merge-allof": "^0.8.1",
     "jsonld": "^9.0.0",
     "n3": "^2.0.1",
     "pino": "^10.2.0",
