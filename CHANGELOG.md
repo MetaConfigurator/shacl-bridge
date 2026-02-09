@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.2...v1.4.3) (2026-02-09)
+
+
+### Bug Fixes
+
+* **json-schema:** add support for merging allOf blocks ([#76](https://github.com/GeezFORCE/shacl-bridge/issues/76)) ([b3c270c](https://github.com/GeezFORCE/shacl-bridge/commit/b3c270cea9eeddc87c3c24eb00d657dd7148bf7c))
+
 ## [1.4.2](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.1...v1.4.2) (2026-02-06)
 
 
