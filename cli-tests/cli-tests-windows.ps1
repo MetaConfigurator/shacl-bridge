@@ -377,11 +377,12 @@ try {
     $shaclStdoutOutput = shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json
     if ($LASTEXITCODE -ne 0) { throw "SHACL stdout conversion failed" }
 
-    if ([string]::IsNullOrWhiteSpace($shaclStdoutOutput)) {
+    $shaclStdoutString = $shaclStdoutOutput -join "`n"
+    if ([string]::IsNullOrWhiteSpace($shaclStdoutString)) {
         Write-Host "SHACL stdout output is empty" -ForegroundColor Red
         exit 1
     }
-    if ($shaclStdoutOutput -notlike "*shacl*") {
+    if ($shaclStdoutString -notlike "*shacl*") {
         Write-Host "Stdout output does not appear to be SHACL" -ForegroundColor Red
         exit 1
     }
@@ -454,7 +455,8 @@ try {
     $baseUriOutput = shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json --base-uri "http://custom.example.org/shapes/"
     if ($LASTEXITCODE -ne 0) { throw "Base URI conversion failed" }
 
-    if ($baseUriOutput -notlike "*custom.example.org*") {
+    $baseUriString = $baseUriOutput -join "`n"
+    if ($baseUriString -notlike "*custom.example.org*") {
         Write-Host "--base-uri flag did not affect output" -ForegroundColor Red
         exit 1
     }
