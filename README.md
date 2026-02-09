@@ -109,7 +109,7 @@ npm install shacl-bridge
 #### SHACL to JSON Schema
 
 ```typescript
-import {ShaclParser, IntermediateRepresentationBuilder, IrSchemaConverter} from 'shacl-bridge';
+import { ShaclParser, IntermediateRepresentationBuilder, IrSchemaConverter } from 'shacl-bridge';
 
 // Parse SHACL document (Turtle)
 const shaclDocument = await new ShaclParser().withPath('input.ttl').parse();
@@ -135,29 +135,29 @@ const jsonSchema = new IrSchemaConverter(ir, {
 #### JSON Schema to SHACL
 
 ```typescript
-import {ShaclWriter, DEFAULT_PREFIXES} from 'shacl-bridge';
+import { ShaclWriter, DEFAULT_PREFIXES } from 'shacl-bridge';
 
 const jsonSchema = {
   $id: 'http://example.org/PersonShape',
   type: 'object',
   properties: {
-    name: {type: 'string', minLength: 1},
-    age: {type: 'integer', minimum: 0},
+    name: { type: 'string', minLength: 1 },
+    age: { type: 'integer', minimum: 0 },
   },
   required: ['name'],
 };
 
 // Convert to Turtle
 const turtle = await new ShaclWriter(jsonSchema)
-        .getStoreBuilder()
-        .withPrefixes({...DEFAULT_PREFIXES, ex: 'http://example.org/'})
-        .write();
+  .getStoreBuilder()
+  .withPrefixes({ ...DEFAULT_PREFIXES, ex: 'http://example.org/' })
+  .write();
 
 // Convert to JSON-LD
 const jsonLd = await new ShaclWriter(jsonSchema)
-        .getStoreBuilder()
-        .withPrefixes({...DEFAULT_PREFIXES, ex: 'http://example.org/'})
-        .writeJsonLd();
+  .getStoreBuilder()
+  .withPrefixes({ ...DEFAULT_PREFIXES, ex: 'http://example.org/' })
+  .writeJsonLd();
 ```
 
 ## Development
