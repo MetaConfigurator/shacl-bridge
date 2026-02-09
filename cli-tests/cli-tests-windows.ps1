@@ -63,9 +63,32 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 3: Convert cardinality-constraints.ttl with -i and -o flags"
+    Write-Host "Test 3: to-json-schema --help flag"
+    $toJsonSchemaHelp = shacl-bridge to-json-schema --help
+    if ($toJsonSchemaHelp -like "*to-json-schema*" -and $toJsonSchemaHelp -like "*--input*") {
+        Write-Host "to-json-schema help output is valid" -ForegroundColor Green
+    } else {
+        Write-Host "to-json-schema help output is invalid" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 4: to-shacl --help flag"
+    $toShaclHelp = shacl-bridge to-shacl --help
+    if ($toShaclHelp -like "*to-shacl*" -and $toShaclHelp -like "*--input*") {
+        Write-Host "to-shacl help output is valid" -ForegroundColor Green
+    } else {
+        Write-Host "to-shacl help output is invalid" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "=== SHACL to JSON Schema Tests ==="
+
+    Write-Host ""
+    Write-Host "Test 5: Convert cardinality-constraints.ttl with -i and -o flags"
     $outputFile = Join-Path $TempDir "test-output.json"
-    shacl-bridge -i samples/shacl/cardinality-constraints.ttl -o $outputFile
+    shacl-bridge to-json-schema -i samples/shacl/cardinality-constraints.ttl -o $outputFile
     if ($LASTEXITCODE -ne 0) { throw "Conversion failed" }
 
     if (-not (Test-Path $outputFile)) {
@@ -98,8 +121,8 @@ try {
     Write-Host "  Number of definitions: $defsCount"
 
     Write-Host ""
-    Write-Host "Test 4: Convert to stdout (no -o flag)"
-    $stdoutOutput = shacl-bridge -i samples/shacl/simple-shacl.ttl
+    Write-Host "Test 6: Convert to stdout (no -o flag)"
+    $stdoutOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl
     if ($LASTEXITCODE -ne 0) { throw "Stdout conversion failed" }
 
     try {
@@ -111,10 +134,10 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 5: Error handling - nonexistent file"
+    Write-Host "Test 7: Error handling - nonexistent file"
     $errorOccurred = $false
     try {
-        shacl-bridge -i nonexistent-file.ttl 2>$null
+        shacl-bridge to-json-schema -i nonexistent-file.ttl 2>$null
         if ($LASTEXITCODE -eq 0) {
             $errorOccurred = $false
         } else {
@@ -131,9 +154,9 @@ try {
     Write-Host "Correctly handles nonexistent files" -ForegroundColor Green
 
     Write-Host ""
-    Write-Host "Test 6: Convert JSON-LD file with --json-ld flag"
+    Write-Host "Test 8: Convert JSON-LD file with --json-ld flag"
     $jsonLdOutputFile = Join-Path $TempDir "test-jsonld-output.json"
-    shacl-bridge -i samples/shacl/simple-shacl.jsonld --json-ld -o $jsonLdOutputFile
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.jsonld --json-ld -o $jsonLdOutputFile
     if ($LASTEXITCODE -ne 0) { throw "JSON-LD conversion failed" }
 
     if (-not (Test-Path $jsonLdOutputFile)) {
@@ -166,8 +189,8 @@ try {
     Write-Host "  Number of definitions: $jsonLdDefsCount"
 
     Write-Host ""
-    Write-Host "Test 7: Convert JSON-LD to stdout with --json-ld flag"
-    $jsonLdStdoutOutput = shacl-bridge -i samples/shacl/simple-shacl.jsonld --json-ld
+    Write-Host "Test 9: Convert JSON-LD to stdout with --json-ld flag"
+    $jsonLdStdoutOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.jsonld --json-ld
     if ($LASTEXITCODE -ne 0) { throw "JSON-LD stdout conversion failed" }
 
     try {
@@ -179,8 +202,8 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 8: --mode single (explicit)"
-    $singleModeOutput = shacl-bridge -i samples/shacl/simple-shacl.ttl --mode single
+    Write-Host "Test 10: --mode single (explicit)"
+    $singleModeOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode single
     if ($LASTEXITCODE -ne 0) { throw "Single mode conversion failed" }
 
     try {
@@ -196,10 +219,10 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 9: --mode multi creates individual files"
+    Write-Host "Test 11: --mode multi creates individual files"
     $multiOutputDir = Join-Path $TempDir "multi-output"
     New-Item -ItemType Directory -Path $multiOutputDir -Force | Out-Null
-    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi -o $multiOutputDir
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode multi -o $multiOutputDir
     if ($LASTEXITCODE -ne 0) { throw "Multi mode conversion failed" }
 
     $jsonFiles = Get-ChildItem -Path $multiOutputDir -Filter "*.json"
@@ -228,10 +251,10 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 10: --mode multi converts `$ref to external file references"
+    Write-Host "Test 12: --mode multi converts `$ref to external file references"
     $multiRefDir = Join-Path $TempDir "multi-ref-output"
     New-Item -ItemType Directory -Path $multiRefDir -Force | Out-Null
-    shacl-bridge -i samples/shacl/complex-shacl.ttl --mode multi -o $multiRefDir
+    shacl-bridge to-json-schema -i samples/shacl/complex-shacl.ttl --mode multi -o $multiRefDir
     if ($LASTEXITCODE -ne 0) { throw "Multi mode ref conversion failed" }
 
     $refFiles = Get-ChildItem -Path $multiRefDir -Filter "*.json"
@@ -245,8 +268,8 @@ try {
     Write-Host "Multi mode correctly converts `$ref to external file references" -ForegroundColor Green
 
     Write-Host ""
-    Write-Host "Test 11: --mode multi without -o should fail"
-    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi 2>$null
+    Write-Host "Test 13: --mode multi without -o should fail"
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode multi 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Should have failed when using multi mode without -o" -ForegroundColor Red
         exit 1
@@ -254,8 +277,8 @@ try {
     Write-Host "Correctly requires -o flag for multi mode" -ForegroundColor Green
 
     Write-Host ""
-    Write-Host "Test 12: --mode with invalid value should fail"
-    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode invalid 2>$null
+    Write-Host "Test 14: --mode with invalid value should fail"
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode invalid 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Should have failed with invalid mode value" -ForegroundColor Red
         exit 1
@@ -263,8 +286,8 @@ try {
     Write-Host "Correctly rejects invalid mode values" -ForegroundColor Green
 
     Write-Host ""
-    Write-Host "Test 13: --exclude-shacl-extensions excludes x-shacl-prefixes"
-    $excludeExtOutput = shacl-bridge -i samples/shacl/simple-shacl.ttl --exclude-shacl-extensions
+    Write-Host "Test 15: --exclude-shacl-extensions excludes x-shacl-prefixes"
+    $excludeExtOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --exclude-shacl-extensions
     if ($LASTEXITCODE -ne 0) { throw "Exclude extensions conversion failed" }
 
     try {
@@ -284,8 +307,8 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 14: Without --exclude-shacl-extensions, x-shacl-prefixes is present"
-    $defaultOutput = shacl-bridge -i samples/shacl/simple-shacl.ttl
+    Write-Host "Test 16: Without --exclude-shacl-extensions, x-shacl-prefixes is present"
+    $defaultOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl
     if ($LASTEXITCODE -ne 0) { throw "Default conversion failed" }
 
     try {
@@ -301,10 +324,10 @@ try {
     }
 
     Write-Host ""
-    Write-Host "Test 15: --exclude-shacl-extensions works with --mode multi"
+    Write-Host "Test 17: --exclude-shacl-extensions works with --mode multi"
     $multiExcludeDir = Join-Path $TempDir "multi-exclude-output"
     New-Item -ItemType Directory -Path $multiExcludeDir -Force | Out-Null
-    shacl-bridge -i samples/shacl/simple-shacl.ttl --mode multi -o $multiExcludeDir --exclude-shacl-extensions
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode multi -o $multiExcludeDir --exclude-shacl-extensions
     if ($LASTEXITCODE -ne 0) { throw "Multi mode with exclude extensions failed" }
 
     $personExcludeFile = Join-Path $multiExcludeDir "Person.json"
@@ -324,6 +347,156 @@ try {
         Write-Host "Person.json is not valid JSON" -ForegroundColor Red
         exit 1
     }
+
+    Write-Host ""
+    Write-Host "=== JSON Schema to SHACL Tests ==="
+
+    Write-Host ""
+    Write-Host "Test 18: Convert JSON Schema to SHACL Turtle with -i and -o flags"
+    $shaclOutputFile = Join-Path $TempDir "test-shacl-output.ttl"
+    shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json -o $shaclOutputFile
+    if ($LASTEXITCODE -ne 0) { throw "JSON Schema to SHACL conversion failed" }
+
+    if (-not (Test-Path $shaclOutputFile)) {
+        Write-Host "SHACL output file was not created" -ForegroundColor Red
+        exit 1
+    }
+
+    $shaclContent = Get-Content $shaclOutputFile -Raw
+    if ($shaclContent -notlike "*shacl*") {
+        Write-Host "Output does not appear to be SHACL" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "Successfully converted JSON Schema to SHACL Turtle" -ForegroundColor Green
+    $shaclFileSize = (Get-Item $shaclOutputFile).Length
+    Write-Host "  Output file size: $shaclFileSize bytes"
+
+    Write-Host ""
+    Write-Host "Test 19: Convert JSON Schema to SHACL stdout (no -o flag)"
+    $shaclStdoutOutput = shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json
+    if ($LASTEXITCODE -ne 0) { throw "SHACL stdout conversion failed" }
+
+    $shaclStdoutString = $shaclStdoutOutput -join "`n"
+    if ([string]::IsNullOrWhiteSpace($shaclStdoutString)) {
+        Write-Host "SHACL stdout output is empty" -ForegroundColor Red
+        exit 1
+    }
+    if ($shaclStdoutString -notlike "*shacl*") {
+        Write-Host "Stdout output does not appear to be SHACL" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Successfully output SHACL to stdout" -ForegroundColor Green
+
+    Write-Host ""
+    Write-Host "Test 20: to-shacl error handling - nonexistent file"
+    $shaclErrorOccurred = $false
+    try {
+        shacl-bridge to-shacl -i nonexistent-file.json 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $shaclErrorOccurred = $false
+        } else {
+            $shaclErrorOccurred = $true
+        }
+    } catch {
+        $shaclErrorOccurred = $true
+    }
+
+    if (-not $shaclErrorOccurred) {
+        Write-Host "Should have failed with nonexistent file" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "to-shacl correctly handles nonexistent files" -ForegroundColor Green
+
+    Write-Host ""
+    Write-Host "Test 21: Convert JSON Schema to SHACL JSON-LD with --json-ld flag"
+    $shaclJsonLdOutputFile = Join-Path $TempDir "test-shacl-output.jsonld"
+    shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json --json-ld -o $shaclJsonLdOutputFile
+    if ($LASTEXITCODE -ne 0) { throw "SHACL JSON-LD conversion failed" }
+
+    if (-not (Test-Path $shaclJsonLdOutputFile)) {
+        Write-Host "SHACL JSON-LD output file was not created" -ForegroundColor Red
+        exit 1
+    }
+
+    try {
+        $shaclJsonLdContent = Get-Content $shaclJsonLdOutputFile -Raw | ConvertFrom-Json
+        if (-not $shaclJsonLdContent.'@context') {
+            Write-Host "SHACL JSON-LD output missing @context" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "Successfully converted JSON Schema to SHACL JSON-LD" -ForegroundColor Green
+        $shaclJsonLdFileSize = (Get-Item $shaclJsonLdOutputFile).Length
+        Write-Host "  Output file size: $shaclJsonLdFileSize bytes"
+    } catch {
+        Write-Host "SHACL JSON-LD output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 22: Convert JSON Schema to SHACL JSON-LD stdout"
+    $shaclJsonLdStdout = shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json --json-ld
+    if ($LASTEXITCODE -ne 0) { throw "SHACL JSON-LD stdout conversion failed" }
+
+    try {
+        $shaclJsonLdStdoutJson = $shaclJsonLdStdout | ConvertFrom-Json
+        if (-not $shaclJsonLdStdoutJson.'@context') {
+            Write-Host "SHACL JSON-LD stdout output missing @context" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "Successfully output SHACL JSON-LD to stdout" -ForegroundColor Green
+    } catch {
+        Write-Host "SHACL JSON-LD stdout output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 23: to-shacl with --base-uri flag"
+    $baseUriOutput = shacl-bridge to-shacl -i samples/json-schema/complex-system-config.json --base-uri "http://custom.example.org/shapes/"
+    if ($LASTEXITCODE -ne 0) { throw "Base URI conversion failed" }
+
+    $baseUriString = $baseUriOutput -join "`n"
+    if ($baseUriString -notlike "*custom.example.org*") {
+        Write-Host "--base-uri flag did not affect output" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "--base-uri flag works correctly" -ForegroundColor Green
+
+    Write-Host ""
+    Write-Host "=== Round-trip Tests ==="
+
+    Write-Host ""
+    Write-Host "Test 24: SHACL -> JSON Schema -> SHACL round-trip"
+    $roundTripDir = Join-Path $TempDir "round-trip"
+    New-Item -ItemType Directory -Path $roundTripDir -Force | Out-Null
+
+    # Step 1: Convert SHACL to JSON Schema
+    $intermediateFile = Join-Path $roundTripDir "intermediate.json"
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl -o $intermediateFile
+    if ($LASTEXITCODE -ne 0) { throw "Round-trip step 1 failed" }
+
+    if (-not (Test-Path $intermediateFile)) {
+        Write-Host "Intermediate JSON Schema was not created" -ForegroundColor Red
+        exit 1
+    }
+
+    # Step 2: Convert JSON Schema back to SHACL
+    $roundTripFile = Join-Path $roundTripDir "roundtrip.ttl"
+    shacl-bridge to-shacl -i $intermediateFile -o $roundTripFile
+    if ($LASTEXITCODE -ne 0) { throw "Round-trip step 2 failed" }
+
+    if (-not (Test-Path $roundTripFile)) {
+        Write-Host "Round-trip SHACL was not created" -ForegroundColor Red
+        exit 1
+    }
+
+    $roundTripContent = Get-Content $roundTripFile -Raw
+    if ($roundTripContent -notlike "*shacl*") {
+        Write-Host "Round-trip output does not contain SHACL vocabulary" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "Round-trip conversion completed successfully" -ForegroundColor Green
 
     Write-Host ""
     Write-Host "All tests passed!" -ForegroundColor Green

@@ -1,0 +1,107 @@
+import { ToJsonSchemaOptions } from './cli-constants';
+import fs from 'fs';
+import { ShaclDocument } from '../shacl/shacl-document';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
+import { match } from 'ts-pattern';
+import { IntermediateRepresentationBuilder } from '../ir/intermediate-representation-builder';
+import { IrSchemaConverter } from '../json-schema/ir-schema-converter';
+import path from 'path';
+import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+
+export class ShaclToJsonSchema {
+  constructor(private readonly options: ToJsonSchemaOptions) {
+    if (options.mode === 'multi' && !options.output) {
+      throw new Error('Output directory is required when using multi mode.');
+    }
+  }
+
+  async convert() {
+    const shaclDocument = await this.loadShaclDocument();
+    const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
+    const result = new IrSchemaConverter(ir, {
+      excludeShaclExtensions: this.options.excludeShaclExtensions,
+    }).convert();
+    match(this.options.mode)
+      .with('single', () => {
+        this.writeSingleSchema(result);
+      })
+      .with('multi', () => {
+        this.writeMultipleSchemas(result);
+      })
+      .exhaustive();
+  }
+
+  private async loadShaclDocument(): Promise<ShaclDocument> {
+    const parser = new ShaclParser();
+    return match(this.options)
+      .with({ fromClipboard: true, jsonLd: true }, async () => {
+        const { default: clipboardy } = await import('clipboardy');
+        const content = await clipboardy.read();
+        return parser.withJsonLdContent(content).parse();
+      })
+      .with({ fromClipboard: true, jsonLd: false }, async () => {
+        const { default: clipboardy } = await import('clipboardy');
+        const content = await clipboardy.read();
+        return parser.withContent(content).parse();
+      })
+      .with({ fromClipboard: false, jsonLd: true }, ({ input }) => {
+        if (!input || !fs.existsSync(input)) {
+          throw new Error(`File not found: ${input ?? ''}`);
+        }
+        return parser.withJsonLdPath(input).parse();
+      })
+      .with({ fromClipboard: false, jsonLd: false }, ({ input }) => {
+        if (!input || !fs.existsSync(input)) {
+          throw new Error(`File not found: ${input ?? ''}`);
+        }
+        return parser.withPath(input).parse();
+      })
+      .exhaustive();
+  }
+
+  private writeSingleSchema(result: JsonSchemaObjectType): void {
+    const jsonOutput = JSON.stringify(result, null, 2);
+    const outputPath = this.options.output;
+    if (outputPath) fs.writeFileSync(outputPath, jsonOutput);
+    else console.log(jsonOutput);
+  }
+
+  private writeMultipleSchemas(result: JsonSchemaObjectType): void {
+    const outputDir = this.options.output;
+    if (outputDir == null) {
+      throw new Error('Output directory is required when using multi mode');
+    }
+
+    if (outputDir && !fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const defs = result.$defs ?? {};
+    const prefixes = result['x-shacl-prefixes'] as Record<string, string> | undefined;
+
+    for (const [name, schema] of Object.entries(defs)) {
+      if (typeof schema === 'boolean') continue;
+
+      const individualSchema = {
+        $schema: result.$schema,
+        ...schema,
+        ...(prefixes && { 'x-shacl-prefixes': prefixes }),
+      };
+
+      const convertedSchema = this.convertInternalRefsToExternal(individualSchema);
+      const filePath = path.join(outputDir, `${name}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(convertedSchema, null, 2));
+    }
+  }
+
+  private convertInternalRefsToExternal(obj: unknown): unknown {
+    return JSON.parse(
+      JSON.stringify(obj, (key, value: unknown) => {
+        if (key === '$ref' && typeof value === 'string' && value.startsWith('#/$defs/')) {
+          return `${value.replace('#/$defs/', '')}.json`;
+        }
+        return value;
+      })
+    );
+  }
+}

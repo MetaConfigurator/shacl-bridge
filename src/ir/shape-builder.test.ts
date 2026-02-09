@@ -2,7 +2,7 @@ import { ShapeBuilder } from './shape-builder';
 import { Indexer } from './indexer';
 import { DependencyGraphBuilder } from './dependency-graph';
 import { SHAPE_TYPE } from './meta-model/shape';
-import { StoreBuilder } from '../util/store-builder';
+import { StoreBuilder } from '../store/store-builder';
 import {
   FOAF_PERSON,
   RDF_FIRST,
@@ -40,8 +40,8 @@ import {
   SHACL_TARGET_NODE,
   SHACL_UNIQUE_LANG,
   XSD_STRING,
-} from '../util/rdf-terms';
-import { ShaclParser } from '../shacl/shacl-parser';
+} from '../shacl/shacl-terms';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 
 async function getShapeDefinitionList(content: string) {
   const shaclDocument = await new ShaclParser().withContent(content).parse();

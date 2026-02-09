@@ -1,0 +1,97 @@
+import fs from 'fs';
+import path from 'path';
+
+type OutputMode = 'single' | 'multi';
+
+export interface ToJsonSchemaOptions {
+  input?: string;
+  fromClipboard: boolean;
+  jsonLd: boolean;
+  output?: string;
+  mode: OutputMode;
+  excludeShaclExtensions: boolean;
+}
+
+export interface ToShaclOptions {
+  input?: string;
+  output?: string;
+  fromClipboard: boolean;
+  jsonLd: boolean;
+  baseUri?: string;
+}
+
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf-8')
+) as { version: string };
+
+// String Constants
+
+// Base
+export const CLI_BASE = {
+  name: 'shacl-bridge',
+  description: 'Bi-Directional converter for SHACL and JSON Schema',
+  version: packageJson.version,
+};
+
+// --to-json-schema
+export const TO_JSON_SCHEMA = {
+  command: 'to-json-schema',
+  description: 'Convert SHACL to JSON Schema',
+  input: {
+    flag: '-i, --input <file>',
+    description: 'SHACL file to convert (ttl or json-ld if --json-ld is specified)',
+  },
+  output: {
+    flag: '-o, --output <file>',
+    description:
+      'File to which output must be written (single) or directory to which output files should be written (multi)',
+  },
+  fromClipboard: {
+    flag: '--from-clipboard',
+    description: 'Read SHACL content from clipboard',
+    default: false,
+  },
+  jsonLd: {
+    flag: '--json-ld',
+    description: 'Input content as JSON LD',
+    default: false,
+  },
+  excludeShaclExtensions: {
+    flag: '--exclude-shacl-extensions',
+    description: 'Exclude x-shacl-* properties from output',
+    default: false,
+  },
+  mode: {
+    flag: '-m, --mode <mode>',
+    description: 'Output mode: single (default) or multi',
+    choices: ['single', 'multi'],
+    default: 'single',
+  },
+};
+
+export const TO_SHACL = {
+  command: 'to-shacl',
+  description: 'Convert JSON Schema to SHACL',
+  input: {
+    flag: '-i, --input <file>',
+    description: 'JSON Schema file to convert',
+  },
+  output: {
+    flag: '-o, --output <file>',
+    description: 'File to which output must be written to',
+  },
+  fromClipboard: {
+    flag: '--from-clipboard',
+    description: 'Read JSON Schema content from clipboard',
+    default: false,
+  },
+  jsonLd: {
+    flag: '--json-ld',
+    description: 'Output content as JSON LD',
+    default: false,
+  },
+  baseUri: {
+    flag: '--base-uri <uri>',
+    description: 'Base URI for generated shapes',
+  },
+};

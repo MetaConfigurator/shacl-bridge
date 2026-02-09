@@ -1,4 +1,4 @@
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { IntermediateRepresentationBuilder } from './intermediate-representation-builder';
 import { ShaclDocument } from '../shacl/shacl-document';
 import { SEVERITY, SHAPE_TYPE } from './meta-model/shape';

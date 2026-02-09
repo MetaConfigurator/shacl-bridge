@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { IntermediateRepresentationBuilder } from '../ir/intermediate-representation-builder';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { IrSchemaConverter } from './ir-schema-converter';
 
 describe('IrSchemaConverter - Same Path Properties', () => {

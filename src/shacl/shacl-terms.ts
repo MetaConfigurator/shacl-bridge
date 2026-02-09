@@ -42,7 +42,21 @@ export const SHACL_UNIQUE_LANG = 'http://www.w3.org/ns/shacl#uniqueLang';
 export const SHACL_HAS_VALUE = 'http://www.w3.org/ns/shacl#hasValue';
 export const SHACL_LANGUAGE_IN = 'http://www.w3.org/ns/shacl#languageIn';
 export const SHACL_IN = 'http://www.w3.org/ns/shacl#in';
+export const SHACL_DESCRIPTION = 'http://www.w3.org/ns/shacl#description';
+export const SHACL_BLANK_NODE_OR_IRI = 'http://www.w3.org/ns/shacl#BlankNodeOrIRI';
 export const XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string';
 export const XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean';
 export const XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer';
+export const XSD_DECIMAL = 'http://www.w3.org/2001/XMLSchema#decimal';
+export const XSD_DATE_TIME = 'http://www.w3.org/2001/XMLSchema#dateTime';
+export const XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date';
+export const XSD_TIME = 'http://www.w3.org/2001/XMLSchema#time';
 export const FOAF_PERSON = 'http://xmlns.com/foaf/0.1/Person';
+
+export const DEFAULT_PREFIXES: Record<string, string> = {
+  sh: 'http://www.w3.org/ns/shacl#',
+  xsd: 'http://www.w3.org/2001/XMLSchema#',
+  rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+};
+
+export const DEFAULT_BASE = 'http://example.org/';

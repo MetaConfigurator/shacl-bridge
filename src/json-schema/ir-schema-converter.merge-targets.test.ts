@@ -3,7 +3,7 @@ import {
   IntermediateRepresentation,
   IntermediateRepresentationBuilder,
 } from '../ir/intermediate-representation-builder';
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 
 async function getIr(content: string): Promise<IntermediateRepresentation> {
   const shaclDocument = await new ShaclParser().withContent(content).parse();

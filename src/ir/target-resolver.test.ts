@@ -1,4 +1,4 @@
-import { ShaclParser } from '../shacl/shacl-parser';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { TargetResolver } from './target-resolver';
 import { getQuads, getShapes } from './util';
 

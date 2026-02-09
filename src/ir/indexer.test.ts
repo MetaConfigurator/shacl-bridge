@@ -1,5 +1,5 @@
 import { Indexer } from './indexer';
-import { StoreBuilder } from '../util/store-builder';
+import { StoreBuilder } from '../store/store-builder';
 import {
   FOAF_PERSON,
   RDF_FIRST,
@@ -14,8 +14,8 @@ import {
   SHACL_PROPERTY_SHAPE,
   SHACL_TARGET_CLASS,
   XSD_STRING,
-} from '../util/rdf-terms';
-import { ShaclParser } from '../shacl/shacl-parser';
+} from '../shacl/shacl-terms';
+import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { DataFactory, Quad_Subject } from 'n3';
 
 function getKey(shapes: Quad_Subject[], search: string) {
