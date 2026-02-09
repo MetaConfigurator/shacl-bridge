@@ -1,3 +1,24 @@
+## [1.4.3](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.2...v1.4.3) (2026-02-09)
+
+
+### Bug Fixes
+
+* **json-schema:** add support for merging allOf blocks ([#76](https://github.com/GeezFORCE/shacl-bridge/issues/76)) ([b3c270c](https://github.com/GeezFORCE/shacl-bridge/commit/b3c270cea9eeddc87c3c24eb00d657dd7148bf7c))
+
+## [1.4.2](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.1...v1.4.2) (2026-02-06)
+
+
+### Bug Fixes
+
+* **exports:** add declaration to tsconfig ([#73](https://github.com/GeezFORCE/shacl-bridge/issues/73)) ([4d8650b](https://github.com/GeezFORCE/shacl-bridge/commit/4d8650b1c9863587e9a532e4354fe7401bdfd21a))
+
+## [1.4.1](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.0...v1.4.1) (2026-02-06)
+
+
+### Bug Fixes
+
+* **exports:** add exports for SHACL to JSON Conversion classes ([#72](https://github.com/GeezFORCE/shacl-bridge/issues/72)) ([91811f2](https://github.com/GeezFORCE/shacl-bridge/commit/91811f2bc819eff5c35ebed0f4f92297b736b82b))
+
 # [1.4.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.3.0...v1.4.0) (2026-02-02)
 
 
