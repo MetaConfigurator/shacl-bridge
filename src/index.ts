@@ -1,4 +1,4 @@
-export { ShaclParser } from './shacl/shacl-parser';
+export { ShaclParser } from './shacl/parser/shacl-parser';
 export { ShaclDocument } from './shacl/shacl-document';
 export {
   IntermediateRepresentationBuilder,

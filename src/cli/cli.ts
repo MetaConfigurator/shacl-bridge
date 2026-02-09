@@ -14,11 +14,16 @@ import { JsonSchemaToShacl } from './json-schema-to-shacl';
 const program = new Command();
 
 // Base Command
-program.name(CLI_BASE.name).description(CLI_BASE.description).version(CLI_BASE.version);
+program
+  .name(CLI_BASE.name)
+  .description(CLI_BASE.description)
+  .version(CLI_BASE.version)
+  .showHelpAfterError(true);
 
 // --to-json-schema subcommand
 const toJsonSchemaCommand = new Command(TO_JSON_SCHEMA.command)
   .description(TO_JSON_SCHEMA.description)
+  .showHelpAfterError(true)
   .option(TO_JSON_SCHEMA.input.flag, TO_JSON_SCHEMA.input.description)
   .option(TO_JSON_SCHEMA.output.flag, TO_JSON_SCHEMA.output.description)
   .option(
@@ -41,18 +46,18 @@ const toJsonSchemaCommand = new Command(TO_JSON_SCHEMA.command)
       .choices(TO_JSON_SCHEMA.mode.choices)
       .default(TO_JSON_SCHEMA.mode.default)
   )
-  .action(async (options: ToJsonSchemaOptions) => {
+  .action(async function (this: Command, options: ToJsonSchemaOptions) {
     try {
       await new ShaclToJsonSchema(options).convert();
     } catch (error) {
-      console.error('Error:', error instanceof Error ? error.message : error);
-      process.exit(1);
+      this.error(error instanceof Error ? error.message : String(error));
     }
   });
 
 // --to-shacl subcommand
 const toShaclCommand = new Command(TO_SHACL.command)
   .description(TO_SHACL.description)
+  .showHelpAfterError(true)
   .option(TO_SHACL.input.flag, TO_SHACL.input.description)
   .option(TO_SHACL.output.flag, TO_SHACL.output.description)
   .option(
@@ -62,12 +67,11 @@ const toShaclCommand = new Command(TO_SHACL.command)
   )
   .option(TO_SHACL.jsonLd.flag, TO_SHACL.jsonLd.description, TO_SHACL.jsonLd.default)
   .option(TO_SHACL.baseUri.flag, TO_SHACL.baseUri.description)
-  .action(async (options: ToShaclOptions) => {
+  .action(async function (this: Command, options: ToShaclOptions) {
     try {
       await new JsonSchemaToShacl(options).convert();
     } catch (error) {
-      console.error('Error:', error instanceof Error ? error.message : error);
-      process.exit(1);
+      this.error(error instanceof Error ? error.message : String(error));
     }
   });
 
