@@ -16,7 +16,9 @@ npm install -g shacl-bridge
 
 ## Usage
 
-### SHACL to JSON Schema
+### CLI
+
+#### SHACL to JSON Schema
 
 ```bash
 # Convert SHACL file to JSON Schema (outputs to stdout)
@@ -38,7 +40,7 @@ shacl-bridge to-json-schema -i input.ttl --mode multi -o ./schemas/
 shacl-bridge to-json-schema -i input.ttl --exclude-shacl-extensions
 ```
 
-### JSON Schema to SHACL
+#### JSON Schema to SHACL
 
 ```bash
 # Convert JSON Schema to SHACL Turtle (outputs to stdout)
@@ -57,9 +59,9 @@ shacl-bridge to-shacl -i input.json --json-ld
 shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 ```
 
-### Command Options
+#### Command Options
 
-#### `to-json-schema`
+##### `to-json-schema`
 
 | Option                       | Description                                         |
 | ---------------------------- | --------------------------------------------------- |
@@ -70,7 +72,7 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 | `-m, --mode <mode>`          | Output mode: `single` (default) or `multi`          |
 | `--exclude-shacl-extensions` | Exclude `x-shacl-*` properties from output          |
 
-#### `to-shacl`
+##### `to-shacl`
 
 | Option                | Description                             |
 | --------------------- | --------------------------------------- |
@@ -80,7 +82,7 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 | `--json-ld`           | Output as JSON-LD instead of Turtle     |
 | `--base-uri <uri>`    | Base URI for generated shapes           |
 
-### Output Modes (to-json-schema)
+#### Output Modes (to-json-schema)
 
 The `--mode` (`-m`) option controls how the JSON Schema output is structured:
 
@@ -88,13 +90,75 @@ The `--mode` (`-m`) option controls how the JSON Schema output is structured:
 - **multi**: Outputs each schema definition to a separate file in the specified directory. References between schemas
   are converted to external file references (e.g., `Person.json` instead of `#/$defs/Person`)
 
-## Features
+### Features
 
 - Bidirectional conversion between SHACL and JSON Schema
 - Support for Turtle and JSON-LD formats
 - Comprehensive SHACL constraint support
 - Automatic blank node resolution
 - Multi-file output mode for modular schemas
+
+### Programmatic API
+
+Install as a dependency:
+
+```bash
+npm install shacl-bridge
+```
+
+#### SHACL to JSON Schema
+
+```typescript
+import {ShaclParser, IntermediateRepresentationBuilder, IrSchemaConverter} from 'shacl-bridge';
+
+// Parse SHACL document (Turtle)
+const shaclDocument = await new ShaclParser().withPath('input.ttl').parse();
+
+// Or parse from string content
+const shaclDocument = await new ShaclParser().withContent(turtleString).parse();
+
+// Or parse JSON-LD
+const shaclDocument = await new ShaclParser().withJsonLdPath('input.jsonld').parse();
+
+// Build intermediate representation
+const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
+
+// Convert to JSON Schema
+const jsonSchema = new IrSchemaConverter(ir).convert();
+
+// With options (exclude x-shacl-* extensions)
+const jsonSchema = new IrSchemaConverter(ir, {
+  excludeShaclExtensions: true,
+}).convert();
+```
+
+#### JSON Schema to SHACL
+
+```typescript
+import {ShaclWriter, DEFAULT_PREFIXES} from 'shacl-bridge';
+
+const jsonSchema = {
+  $id: 'http://example.org/PersonShape',
+  type: 'object',
+  properties: {
+    name: {type: 'string', minLength: 1},
+    age: {type: 'integer', minimum: 0},
+  },
+  required: ['name'],
+};
+
+// Convert to Turtle
+const turtle = await new ShaclWriter(jsonSchema)
+        .getStoreBuilder()
+        .withPrefixes({...DEFAULT_PREFIXES, ex: 'http://example.org/'})
+        .write();
+
+// Convert to JSON-LD
+const jsonLd = await new ShaclWriter(jsonSchema)
+        .getStoreBuilder()
+        .withPrefixes({...DEFAULT_PREFIXES, ex: 'http://example.org/'})
+        .writeJsonLd();
+```
 
 ## Development
 
