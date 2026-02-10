@@ -336,6 +336,54 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
       });
     });
+
+    it('should handle exact count (minCount = maxCount)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:TeamShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Team ;
+            sh:property [
+                sh:path ex:members ;
+                sh:datatype xsd:string ;
+                sh:minCount 5 ;
+                sh:maxCount 5 ;
+            ] .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $defs: {
+          Team: {
+            title: 'Team',
+            type: 'object',
+            properties: {
+              members: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minItems: 5,
+                maxItems: 5,
+              },
+            },
+            required: ['members'],
+            additionalProperties: true,
+          },
+        },
+        $id: 'http://example.org/TeamShape',
+        $ref: '#/$defs/Team',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
+    });
   });
 
   describe('Multiple Datatypes in Union', () => {
@@ -725,60 +773,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $id: 'http://example.org/ParticipantShape',
         $ref: '#/$defs/Participant',
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
-      });
-    });
-
-    it('should handle file upload with type and size constraints', async () => {
-      const content = `
-        @prefix sh: <http://www.w3.org/ns/shacl#> .
-        @prefix ex: <http://example.org/> .
-        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-        ex:FileUploadShape
-            a sh:NodeShape ;
-            sh:targetClass ex:FileUpload ;
-            sh:property [
-                sh:path ex:mimeType ;
-                sh:not [
-                    sh:or (
-                        [ sh:pattern "^application/x-.*" ]
-                        [ sh:pattern "^application/.*executable.*" ]
-                    )
-                ] ;
-            ] .
-      `;
-      const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
-      expect(schema).toStrictEqual({
-        $defs: {
-          FileUpload: {
-            additionalProperties: true,
-            properties: {
-              mimeType: {
-                not: {
-                  anyOf: [
-                    {
-                      pattern: '^application/x-.*',
-                    },
-                    {
-                      pattern: '^application/.*executable.*',
-                    },
-                  ],
-                },
-              },
-            },
-            title: 'FileUpload',
-            type: 'object',
-          },
-        },
-        $id: 'http://example.org/FileUploadShape',
-        $ref: '#/$defs/FileUpload',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1413,95 +1407,6 @@ describe('IR Schema Converter - Edge Cases', () => {
     });
   });
 
-  describe('Cardinality Edge Cases', () => {
-    it('should handle exact count (minCount = maxCount)', async () => {
-      const content = `
-        @prefix sh: <http://www.w3.org/ns/shacl#> .
-        @prefix ex: <http://example.org/> .
-        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-        ex:TeamShape
-            a sh:NodeShape ;
-            sh:targetClass ex:Team ;
-            sh:property [
-                sh:path ex:members ;
-                sh:datatype xsd:string ;
-                sh:minCount 5 ;
-                sh:maxCount 5 ;
-            ] .
-      `;
-      const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
-      expect(schema).toStrictEqual({
-        $defs: {
-          Team: {
-            title: 'Team',
-            type: 'object',
-            properties: {
-              members: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-                minItems: 5,
-                maxItems: 5,
-              },
-            },
-            required: ['members'],
-            additionalProperties: true,
-          },
-        },
-        $id: 'http://example.org/TeamShape',
-        $ref: '#/$defs/Team',
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
-      });
-    });
-
-    it('should handle maxCount 0 (property must not exist)', async () => {
-      const content = `
-        @prefix sh: <http://www.w3.org/ns/shacl#> .
-        @prefix ex: <http://example.org/> .
-        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-        ex:RestrictedShape
-            a sh:NodeShape ;
-            sh:targetClass ex:Restricted ;
-            sh:property [
-                sh:path ex:forbiddenField ;
-                sh:datatype xsd:string ;
-                sh:maxCount 0 ;
-            ] .
-      `;
-      const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
-      expect(schema).toStrictEqual({
-        $defs: {
-          Restricted: {
-            title: 'Restricted',
-            type: 'object',
-            properties: {
-              forbiddenField: false,
-            },
-            additionalProperties: true,
-          },
-        },
-        $id: 'http://example.org/RestrictedShape',
-        $ref: '#/$defs/Restricted',
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
-      });
-    });
-  });
-
   describe('Empty and Null Value Edge Cases', () => {
     it('should handle property with no constraints', async () => {
       const content = `
@@ -1804,72 +1709,6 @@ describe('IR Schema Converter - Edge Cases', () => {
   });
 
   describe('Boundary Cases', () => {
-    it('should handle shape with no properties', async () => {
-      const content = `
-        @prefix sh: <http://www.w3.org/ns/shacl#> .
-        @prefix ex: <http://example.org/> .
-
-        ex:EmptyShape
-            a sh:NodeShape ;
-            sh:targetClass ex:Empty .
-      `;
-      const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
-      expect(schema).toStrictEqual({
-        $defs: {
-          Empty: {
-            title: 'Empty',
-            type: 'object',
-            additionalProperties: true,
-          },
-        },
-        $id: 'http://example.org/EmptyShape',
-        $ref: '#/$defs/Empty',
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-        },
-      });
-    });
-
-    it('should handle property with no constraints', async () => {
-      const content = `
-        @prefix sh: <http://www.w3.org/ns/shacl#> .
-        @prefix ex: <http://example.org/> .
-
-        ex:MinimalShape
-            a sh:NodeShape ;
-            sh:targetClass ex:Minimal ;
-            sh:property [
-                sh:path ex:anything ;
-            ] .
-      `;
-      const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
-      expect(schema).toStrictEqual({
-        $defs: {
-          Minimal: {
-            title: 'Minimal',
-            type: 'object',
-            properties: {
-              anything: {
-                type: 'array',
-              },
-            },
-            additionalProperties: true,
-          },
-        },
-        $id: 'http://example.org/MinimalShape',
-        $ref: '#/$defs/Minimal',
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-        },
-      });
-    });
-
     it('should handle maxCount 0 (property must not exist)', async () => {
       const content = `
         @prefix sh: <http://www.w3.org/ns/shacl#> .
