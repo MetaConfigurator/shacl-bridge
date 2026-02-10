@@ -10,7 +10,6 @@ import { StackElement } from '../stack/stack-element';
 import { StackElementBuilder } from '../stack/stack-element-builder';
 import { ShapeMetadataConverter } from './converters/shape-metadata-converter';
 import { ConstraintConverter } from './converters/constraints/constraint-converter';
-import { Condition } from '../condition/condition';
 import { ShaclDocument } from '../shacl/shacl-document';
 import { ConversionOptions } from './conversion-options';
 import mergeAllOf from 'json-schema-merge-allof';
@@ -87,17 +86,6 @@ export class IrSchemaConverter {
     return baseBuilder.build();
   }
 
-  private isLogicalConstraintFragment(parentShape: ShapeDefinition, childNodeKey: string): boolean {
-    return new Condition()
-      .on(parentShape.coreConstraints)
-      .must((constraints) => constraints != null)
-      .anyOf((constraints) => constraints?.or?.some((ref) => ref.includes(childNodeKey)) ?? false)
-      .anyOf((constraints) => constraints?.and?.some((ref) => ref.includes(childNodeKey)) ?? false)
-      .anyOf((constraints) => constraints?.xone?.some((ref) => ref.includes(childNodeKey)) ?? false)
-      .anyOf((constraints) => constraints?.not?.includes(childNodeKey) ?? false)
-      .execute();
-  }
-
   private processBottomUp(shapeDef: ShapeDefinition): JsonSchemaObjectType {
     const stack = new Stack();
     stack.push(new StackElementBuilder().shape(shapeDef).isRoot(true));
@@ -113,15 +101,10 @@ export class IrSchemaConverter {
   private addDependentShapes(stack: Stack, sb: StackElementBuilder) {
     stack.toggle(sb);
     sb.getShape().dependentShapes?.forEach((dependentShape) => {
-      const isLogicalFragment = this.isLogicalConstraintFragment(
-        sb.getShape(),
-        dependentShape.nodeKey
-      );
       stack.push(
         new StackElementBuilder()
           .shape(dependentShape)
-          .context(new ConversionContext(dependentShape, isLogicalFragment))
-          .isLogicalFragment(isLogicalFragment)
+          .context(new ConversionContext(sb.getShape(), dependentShape))
       );
     });
   }
@@ -150,7 +133,7 @@ export class IrSchemaConverter {
     top.getShape().dependentShapes?.forEach((dependentShape) => {
       const dependent = this.processed.get(dependentShape);
       if (dependent != null) {
-        if (dependent.isLogicalFragment) return;
+        if (dependent.context.isFragment) return;
         top.getBuilder().deepMerge(dependent.builder.build());
         if (dependent.context.required) {
           top.getBuilder().requiredElement(dependent.shape.targets[0]);

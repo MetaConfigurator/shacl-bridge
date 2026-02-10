@@ -28,6 +28,13 @@ export class ShapeConverter {
     const propertyBuilder = JsonSchemaObjectBuilder.from(schema);
     new ShapeMetadataConverter(this.shape, this.options).applyToBuilder(propertyBuilder);
     const schemaWithMetadata = propertyBuilder.build();
+
+    // For fragments (logical or ref), don't create property structure - just merge schema
+    if (this.sb.isFragment()) {
+      this.builder.mergeFrom(schemaWithMetadata);
+      return;
+    }
+
     const possibleTargets = this.shape.targets;
     if (possibleTargets.length > 0) {
       const target = possibleTargets[0];

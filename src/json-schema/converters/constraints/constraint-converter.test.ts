@@ -487,7 +487,6 @@ describe('ConstraintConverter', () => {
         context: mockContext,
         dependentsProcessed: false,
         isRoot: false,
-        isLogicalFragment: false,
       };
 
       processedMap.set(referencedShape, referencedElement);

@@ -18,8 +18,7 @@ describe('StackElementBuilder', () => {
         .shape(shape)
         .dependentsProcessed(true)
         .builder(jsonSchemaBuilder)
-        .isRoot(true)
-        .isLogicalFragment(false);
+        .isRoot(true);
 
       expect(result).toBe(builder);
     });
@@ -33,14 +32,12 @@ describe('StackElementBuilder', () => {
         .dependentsProcessed(true)
         .builder(jsonSchemaBuilder)
         .isRoot(true)
-        .isLogicalFragment(false)
         .build();
 
       expect(element.shape).toBe(shape);
       expect(element.dependentsProcessed).toBe(true);
       expect(element.builder).toBe(jsonSchemaBuilder);
       expect(element.isRoot).toBe(true);
-      expect(element.isLogicalFragment).toBe(false);
     });
   });
 
@@ -85,13 +82,6 @@ describe('StackElementBuilder', () => {
       const element = builder.build();
 
       expect(element.dependentsProcessed).toBe(false);
-    });
-
-    it('should use default false for isLogicalFragment when called without argument', () => {
-      builder.isLogicalFragment();
-      const element = builder.build();
-
-      expect(element.isLogicalFragment).toBe(false);
     });
 
     it('should use default false for isRoot when called without argument', () => {

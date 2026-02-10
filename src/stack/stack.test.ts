@@ -18,7 +18,6 @@ describe('Stack', () => {
       expect(defaultElement.builder).toBeDefined();
       expect(defaultElement.context).toBeDefined();
       expect(defaultElement.isRoot).toBe(false);
-      expect(defaultElement.isLogicalFragment).toBe(false);
     });
   });
 

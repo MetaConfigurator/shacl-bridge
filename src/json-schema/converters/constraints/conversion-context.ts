@@ -12,15 +12,17 @@ export class ConversionContext {
   constraints: CoreConstraints;
   isPrimitive: boolean;
   isInvalid = false;
+  isFragment: boolean;
 
   constructor(
-    private readonly shapeDefinition: ShapeDefinition,
-    private readonly isLogicalFragment = false
+    private readonly parentShape: ShapeDefinition,
+    private readonly dependentShape: ShapeDefinition
   ) {
-    this.constraints = shapeDefinition.coreConstraints ?? {};
+    this.constraints = dependentShape.coreConstraints ?? {};
     this.isPrimitive = this.hasPrimitiveElements();
     this.isInvalid = this.checkForInvalidNumericConstraint();
-    if (!this.isLogicalFragment) {
+    this.isFragment = this.checkIsFragment();
+    if (!this.isFragment) {
       this.needToBeArray();
     }
   }
@@ -36,6 +38,19 @@ export class ConversionContext {
       .anyOf(
         (c) => c.minInclusive != null && c.maxInclusive != null && c.maxInclusive < c.minInclusive
       )
+      .execute();
+  }
+
+  checkIsFragment(): boolean {
+    const childNodeKey = this.dependentShape.nodeKey;
+    return new Condition()
+      .on(this.parentShape.coreConstraints)
+      .must((constraints) => constraints != null)
+      .anyOf((constraints) => constraints?.or?.some((ref) => ref.includes(childNodeKey)) ?? false)
+      .anyOf((constraints) => constraints?.and?.some((ref) => ref.includes(childNodeKey)) ?? false)
+      .anyOf((constraints) => constraints?.xone?.some((ref) => ref.includes(childNodeKey)) ?? false)
+      .anyOf((constraints) => constraints?.qualifiedValueShape?.includes(childNodeKey) ?? false)
+      .anyOf((constraints) => constraints?.not?.includes(childNodeKey) ?? false)
       .execute();
   }
 

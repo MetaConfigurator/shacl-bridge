@@ -8,5 +8,4 @@ export interface StackElement {
   builder: JsonSchemaObjectBuilder;
   context: ConversionContext;
   isRoot: boolean;
-  isLogicalFragment: boolean;
 }
