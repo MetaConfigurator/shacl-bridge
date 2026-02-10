@@ -27,13 +27,8 @@ export class StackElementBuilder {
     return this;
   }
 
-  context(_context = new ConversionContext(this.stackElement.shape)) {
+  context(_context = new ConversionContext(this.stackElement.shape, { nodeKey: '', targets: [] })) {
     this.stackElement.context = _context;
-    return this;
-  }
-
-  isLogicalFragment(_isLogicalFragment = false) {
-    this.stackElement.isLogicalFragment = _isLogicalFragment;
     return this;
   }
 
@@ -54,8 +49,8 @@ export class StackElementBuilder {
     return this.stackElement.dependentsProcessed;
   }
 
-  getLogicalFragment() {
-    return this.stackElement.isLogicalFragment;
+  isFragment() {
+    return this.stackElement.context.isFragment;
   }
 
   getBuilder() {

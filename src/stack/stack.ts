@@ -12,9 +12,11 @@ export class Stack {
       shape: new ShapeDefinitionBuilder('').build(),
       dependentsProcessed: false,
       builder: new JsonSchemaObjectBuilder(),
-      context: new ConversionContext(new ShapeDefinitionBuilder('').build()),
+      context: new ConversionContext(
+        new ShapeDefinitionBuilder('').build(),
+        new ShapeDefinitionBuilder('').build()
+      ),
       isRoot: false,
-      isLogicalFragment: false,
     };
   }
 

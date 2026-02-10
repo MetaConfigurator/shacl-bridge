@@ -1,5 +1,6 @@
-import { Quad, Quad_Subject, Term, Util } from 'n3';
+import { Quad, Quad_Subject, Term } from 'n3';
 import {
+  SHACL_CLASS,
   SHACL_PATH,
   SHACL_TARGET_CLASS,
   SHACL_TARGET_NODE,
@@ -8,7 +9,6 @@ import {
 } from '../shacl/shacl-terms';
 import { extractStrippedName } from '../util/helpers';
 import { ShaclDocument } from '../shacl/shacl-document';
-import isBlankNode = Util.isBlankNode;
 
 const TARGET_DEFINITIONS = [
   SHACL_TARGET_CLASS,
@@ -16,6 +16,7 @@ const TARGET_DEFINITIONS = [
   SHACL_TARGET_SUBJECTS_OF,
   SHACL_TARGET_OBJECTS_OF,
   SHACL_PATH,
+  SHACL_CLASS,
 ];
 
 export function getTarget(targets: Map<Term, string[]>, search: string) {
@@ -55,13 +56,6 @@ export class TargetResolver {
     targetDeclarations: { predicate: string; object: string }[],
     subject: Quad_Subject
   ): string[] {
-    if (isBlankNode(subject)) {
-      return targetDeclarations
-        .filter((target) => target.predicate === SHACL_PATH)
-        .map((target) => target.object)
-        .map(extractStrippedName);
-    }
-
     const targetClasses = targetDeclarations
       .filter((target) => target.predicate === SHACL_TARGET_CLASS)
       .map((target) => target.object)
@@ -92,12 +86,36 @@ export class TargetResolver {
       .map((quad) => quad.object.value)
       .map(extractStrippedName);
 
-    const noTargets = [targetSubjects, targetObjects, targetClasses, targetNodes].every(
-      (arr) => arr.length === 0
-    );
+    const targetPaths = targetDeclarations
+      .filter((target) => target.predicate === SHACL_PATH)
+      .map((target) => target.object)
+      .map(extractStrippedName);
+
+    const classes = targetDeclarations
+      .filter((target) => target.predicate === SHACL_CLASS)
+      .map((target) => target.object)
+      .map(extractStrippedName);
+
+    const noTargets = [
+      targetSubjects,
+      targetObjects,
+      targetClasses,
+      targetNodes,
+      classes,
+      targetPaths,
+    ].every((arr) => arr.length === 0);
 
     return noTargets
       ? [extractStrippedName(subject.value)]
-      : [...new Set([...targetClasses, ...targetNodes, ...targetSubjects, ...targetObjects])];
+      : [
+          ...new Set([
+            ...targetClasses,
+            ...targetNodes,
+            ...targetSubjects,
+            ...targetObjects,
+            ...targetPaths,
+            ...classes,
+          ]),
+        ];
   }
 }

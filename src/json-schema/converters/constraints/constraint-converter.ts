@@ -242,21 +242,29 @@ export class ConstraintConverter {
             .must(isNotNull)
             .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
+              const nodeKey = candidate.constraints.qualifiedValueShape ?? '';
+              const shape = [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(nodeKey));
+              const element = shape ? this.processed.get(shape) : undefined;
               const existingItems = builder.getKey('items') as JsonSchemaObjectType;
-              const ref = new JsonSchemaObjectBuilder()
-                .$ref(
-                  `#/$defs/${extractStrippedName(candidate.constraints.qualifiedValueShape ?? '')}`
-                )
-                .build();
+              const itemSchema = element?.shape.nodeKey.includes('n3')
+                ? element.builder.build()
+                : new JsonSchemaObjectBuilder()
+                    .$ref(`#/$defs/${extractStrippedName(nodeKey)}`)
+                    .build();
               builder.items({
                 ...existingItems,
-                ...ref,
+                ...itemSchema,
               });
             })
             .otherwise((candidate: ConstraintCandidate) => {
-              builder.$ref(
-                `#/$defs/${extractStrippedName(candidate.constraints.qualifiedValueShape ?? '')}`
-              );
+              const nodeKey = candidate.constraints.qualifiedValueShape ?? '';
+              const shape = [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(nodeKey));
+              const element = shape ? this.processed.get(shape) : undefined;
+              if (element?.shape.nodeKey.includes('n3')) {
+                builder.mergeFrom(element.builder.build());
+              } else {
+                builder.$ref(`#/$defs/${extractStrippedName(nodeKey)}`);
+              }
             })
             .execute();
         })
