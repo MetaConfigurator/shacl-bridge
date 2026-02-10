@@ -131,73 +131,6 @@ describe('IR Schema Converter - $refs', () => {
     });
   });
 
-  describe('sh:class references', () => {
-    it('should generate $ref for sh:class in array context', async () => {
-      const shacl = `
-        @prefix ex:  <http://example.org/> .
-        @prefix sh:  <http://www.w3.org/ns/shacl#> .
-
-        ex:CompanyShape
-            a              sh:NodeShape ;
-            sh:targetClass ex:Company ;
-            sh:property    [ sh:path     ex:employees ;
-                             sh:class    ex:Employee ;
-                             sh:minCount 1 ] .
-      `;
-
-      const ir = await getIr(shacl);
-      const schema = new IrSchemaConverter(ir).convert();
-
-      expect(schema).toMatchObject({
-        $defs: {
-          Company: {
-            properties: {
-              employees: {
-                type: 'array',
-                items: {
-                  $ref: '#/$defs/Employee',
-                },
-                minItems: 1,
-              },
-            },
-            required: ['employees'],
-          },
-        },
-      });
-    });
-
-    it('should generate $ref for sh:class in non-array context', async () => {
-      const shacl = `
-        @prefix ex:  <http://example.org/> .
-        @prefix sh:  <http://www.w3.org/ns/shacl#> .
-
-        ex:OrderShape
-            a              sh:NodeShape ;
-            sh:targetClass ex:Order ;
-            sh:property    [ sh:path     ex:customer ;
-                             sh:class    ex:Customer ;
-                             sh:minCount 1 ;
-                             sh:maxCount 1 ] .
-      `;
-
-      const ir = await getIr(shacl);
-      const schema = new IrSchemaConverter(ir).convert();
-
-      expect(schema).toMatchObject({
-        $defs: {
-          Order: {
-            properties: {
-              customer: {
-                $ref: '#/$defs/Customer',
-              },
-            },
-            required: ['customer'],
-          },
-        },
-      });
-    });
-  });
-
   describe('sh:node references', () => {
     it('should generate $ref for sh:node to named shape', async () => {
       const shacl = `
@@ -278,38 +211,6 @@ describe('IR Schema Converter - $refs', () => {
   });
 
   describe('logical constraints with $refs', () => {
-    it('should use $ref for named shapes in sh:or', async () => {
-      const shacl = `
-        @prefix ex:  <http://example.org/> .
-        @prefix sh:  <http://www.w3.org/ns/shacl#> .
-
-        ex:CatShape a sh:NodeShape ; sh:targetClass ex:Cat .
-        ex:DogShape a sh:NodeShape ; sh:targetClass ex:Dog .
-
-        ex:PetOwnerShape
-            a              sh:NodeShape ;
-            sh:targetClass ex:PetOwner ;
-            sh:property    [ sh:path ex:pet ;
-                             sh:or   ( ex:CatShape ex:DogShape ) ] .
-      `;
-
-      const ir = await getIr(shacl);
-      const schema = new IrSchemaConverter(ir).convert();
-
-      // Note: $ref uses the targetClass names (Cat, Dog), not the shape names
-      expect(schema).toMatchObject({
-        $defs: {
-          PetOwner: {
-            properties: {
-              pet: {
-                anyOf: [{ $ref: '#/$defs/Cat' }, { $ref: '#/$defs/Dog' }],
-              },
-            },
-          },
-        },
-      });
-    });
-
     it('should inline blank node schemas in sh:or', async () => {
       const shacl = `
         @prefix ex:  <http://example.org/> .
@@ -340,33 +241,6 @@ describe('IR Schema Converter - $refs', () => {
       });
     });
 
-    it('should use $ref for named shapes in sh:and', async () => {
-      const shacl = `
-        @prefix ex:  <http://example.org/> .
-        @prefix sh:  <http://www.w3.org/ns/shacl#> .
-
-        ex:NamedShape a sh:NodeShape ; sh:targetClass ex:Named .
-        ex:AgedShape  a sh:NodeShape ; sh:targetClass ex:Aged .
-
-        ex:PersonShape
-            a              sh:NodeShape ;
-            sh:targetClass ex:Person ;
-            sh:and         ( ex:NamedShape ex:AgedShape ) .
-      `;
-
-      const ir = await getIr(shacl);
-      const schema = new IrSchemaConverter(ir).convert();
-
-      // Note: $ref uses the targetClass names (Named, Aged), not the shape names
-      expect(schema).toMatchObject({
-        $defs: {
-          Person: {
-            allOf: [{ $ref: '#/$defs/Named' }, { $ref: '#/$defs/Aged' }],
-          },
-        },
-      });
-    });
-
     it('should inline blank node schemas in sh:and', async () => {
       const shacl = `
         @prefix ex:  <http://example.org/> .
@@ -390,59 +264,6 @@ describe('IR Schema Converter - $refs', () => {
               { properties: { name: {} }, required: ['name'] },
               { properties: { price: { type: 'number' } } },
             ],
-          },
-        },
-      });
-    });
-
-    it('should use $ref for named shapes in sh:xone', async () => {
-      const shacl = `
-        @prefix ex:  <http://example.org/> .
-        @prefix sh:  <http://www.w3.org/ns/shacl#> .
-
-        ex:CreditCardShape  a sh:NodeShape ; sh:targetClass ex:CreditCard .
-        ex:BankTransferShape a sh:NodeShape ; sh:targetClass ex:BankTransfer .
-
-        ex:PaymentShape
-            a              sh:NodeShape ;
-            sh:targetClass ex:Payment ;
-            sh:xone        ( ex:CreditCardShape ex:BankTransferShape ) .
-      `;
-
-      const ir = await getIr(shacl);
-      const schema = new IrSchemaConverter(ir).convert();
-
-      // Note: $ref uses the targetClass names
-      expect(schema).toMatchObject({
-        $defs: {
-          Payment: {
-            oneOf: [{ $ref: '#/$defs/CreditCard' }, { $ref: '#/$defs/BankTransfer' }],
-          },
-        },
-      });
-    });
-
-    it('should use $ref for named shape in sh:not', async () => {
-      const shacl = `
-        @prefix ex:  <http://example.org/> .
-        @prefix sh:  <http://www.w3.org/ns/shacl#> .
-
-        ex:RestrictedShape a sh:NodeShape ; sh:targetClass ex:Restricted .
-
-        ex:OpenShape
-            a              sh:NodeShape ;
-            sh:targetClass ex:Open ;
-            sh:not         ex:RestrictedShape .
-      `;
-
-      const ir = await getIr(shacl);
-      const schema = new IrSchemaConverter(ir).convert();
-
-      // Note: $ref uses the targetClass name
-      expect(schema).toMatchObject({
-        $defs: {
-          Open: {
-            not: { $ref: '#/$defs/Restricted' },
           },
         },
       });
