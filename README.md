@@ -109,7 +109,7 @@ npm install shacl-bridge
 #### SHACL to JSON Schema
 
 ```typescript
-import {ShaclReader} from 'shacl-bridge';
+import { ShaclReader } from 'shacl-bridge';
 
 // Convert from Turtle file
 const jsonSchema = await new ShaclReader().fromPath('input.ttl').convert();
@@ -125,9 +125,9 @@ const jsonSchema = await new ShaclReader().fromJsonLdContent(jsonLdString).conve
 
 // With options (exclude x-shacl-* extensions)
 const jsonSchema = await new ShaclReader()
-        .fromPath('input.ttl')
-        .withOptions({excludeShaclExtensions: true})
-        .convert();
+  .fromPath('input.ttl')
+  .withOptions({ excludeShaclExtensions: true })
+  .convert();
 ```
 
 #### JSON Schema to SHACL
