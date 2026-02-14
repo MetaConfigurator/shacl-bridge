@@ -109,27 +109,25 @@ npm install shacl-bridge
 #### SHACL to JSON Schema
 
 ```typescript
-import { ShaclParser, IntermediateRepresentationBuilder, IrSchemaConverter } from 'shacl-bridge';
+import { ShaclReader } from 'shacl-bridge';
 
-// Parse SHACL document (Turtle)
-const shaclDocument = await new ShaclParser().withPath('input.ttl').parse();
+// Convert from Turtle file
+const jsonSchema = await new ShaclReader().fromPath('input.ttl').convert();
 
-// Or parse from string content
-const shaclDocument = await new ShaclParser().withContent(turtleString).parse();
+// Convert from string content
+const jsonSchema = await new ShaclReader().fromContent(turtleString).convert();
 
-// Or parse JSON-LD
-const shaclDocument = await new ShaclParser().withJsonLdPath('input.jsonld').parse();
+// Convert from JSON-LD file
+const jsonSchema = await new ShaclReader().fromJsonLdPath('input.jsonld').convert();
 
-// Build intermediate representation
-const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
-
-// Convert to JSON Schema
-const jsonSchema = new IrSchemaConverter(ir).convert();
+// Convert from JSON-LD string content
+const jsonSchema = await new ShaclReader().fromJsonLdContent(jsonLdString).convert();
 
 // With options (exclude x-shacl-* extensions)
-const jsonSchema = new IrSchemaConverter(ir, {
-  excludeShaclExtensions: true,
-}).convert();
+const jsonSchema = await new ShaclReader()
+  .fromPath('input.ttl')
+  .withOptions({ excludeShaclExtensions: true })
+  .convert();
 ```
 
 #### JSON Schema to SHACL

@@ -1,12 +1,9 @@
 import { ToJsonSchemaOptions } from './cli-constants';
 import fs from 'fs';
-import { ShaclDocument } from '../shacl/shacl-document';
-import { ShaclParser } from '../shacl/parser/shacl-parser';
 import { match } from 'ts-pattern';
-import { IntermediateRepresentationBuilder } from '../ir/intermediate-representation-builder';
-import { IrSchemaConverter } from '../json-schema/ir-schema-converter';
 import path from 'path';
 import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
+import { ShaclReader } from '../shacl/reader/shacl-reader';
 
 export class ShaclToJsonSchema {
   constructor(private readonly options: ToJsonSchemaOptions) {
@@ -16,11 +13,10 @@ export class ShaclToJsonSchema {
   }
 
   async convert() {
-    const shaclDocument = await this.loadShaclDocument();
-    const ir = new IntermediateRepresentationBuilder(shaclDocument).build();
-    const result = new IrSchemaConverter(ir, {
-      excludeShaclExtensions: this.options.excludeShaclExtensions,
-    }).convert();
+    const reader = await this.configureReader();
+    const result = await reader
+      .withOptions({ excludeShaclExtensions: this.options.excludeShaclExtensions })
+      .convert();
     match(this.options.mode)
       .with('single', () => {
         this.writeSingleSchema(result);
@@ -31,30 +27,28 @@ export class ShaclToJsonSchema {
       .exhaustive();
   }
 
-  private async loadShaclDocument(): Promise<ShaclDocument> {
-    const parser = new ShaclParser();
+  private async configureReader(): Promise<ShaclReader> {
+    const reader = new ShaclReader();
     return match(this.options)
       .with({ fromClipboard: true, jsonLd: true }, async () => {
         const { default: clipboardy } = await import('clipboardy');
-        const content = await clipboardy.read();
-        return parser.withJsonLdContent(content).parse();
+        return reader.fromJsonLdContent(await clipboardy.read());
       })
       .with({ fromClipboard: true, jsonLd: false }, async () => {
         const { default: clipboardy } = await import('clipboardy');
-        const content = await clipboardy.read();
-        return parser.withContent(content).parse();
+        return reader.fromContent(await clipboardy.read());
       })
       .with({ fromClipboard: false, jsonLd: true }, ({ input }) => {
         if (!input || !fs.existsSync(input)) {
           throw new Error(`File not found: ${input ?? ''}`);
         }
-        return parser.withJsonLdPath(input).parse();
+        return reader.fromJsonLdPath(input);
       })
       .with({ fromClipboard: false, jsonLd: false }, ({ input }) => {
         if (!input || !fs.existsSync(input)) {
           throw new Error(`File not found: ${input ?? ''}`);
         }
-        return parser.withPath(input).parse();
+        return reader.fromPath(input);
       })
       .exhaustive();
   }
