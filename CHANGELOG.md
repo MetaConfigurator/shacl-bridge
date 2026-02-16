@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.3...v1.5.0) (2026-02-16)
+
+
+### Bug Fixes
+
+* **conversion:** fix blank node reference ([#84](https://github.com/GeezFORCE/shacl-bridge/issues/84)) ([182ab14](https://github.com/GeezFORCE/shacl-bridge/commit/182ab14b7afde795c74a72320070cc4bb37fd7f5))
+* **converter:** add facade for SHACL to JSON Schema conversion ([#86](https://github.com/GeezFORCE/shacl-bridge/issues/86)) ([f6c94c2](https://github.com/GeezFORCE/shacl-bridge/commit/f6c94c26c49c49b981e005bb65013066d741ae16))
+
+
+### Features
+
+* **conversion:** add basic conversion from JSON Schema to SHACL ([#78](https://github.com/GeezFORCE/shacl-bridge/issues/78)) ([698aa28](https://github.com/GeezFORCE/shacl-bridge/commit/698aa288d3dfcb2422e45258a2e49a33418c7960))
+
 ## [1.4.3](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.2...v1.4.3) (2026-02-09)
 
 
