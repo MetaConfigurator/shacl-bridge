@@ -58,8 +58,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -117,8 +115,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -178,8 +174,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Product',
           },
         },
-        $id: 'http://example.org/ProductShape',
-        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -247,8 +241,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape1',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -317,8 +309,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape1',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -384,8 +374,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -453,8 +441,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -512,8 +498,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             title: 'Person',
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -664,8 +648,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/ns#PersonShapeBasic',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',

@@ -31,8 +31,8 @@ export class JsonSchemaObjectBuilder {
    * Sets the $id keyword, which provides a base URI for resolving relative references.
    * For sub-schemas, this represents the path within the schema.
    */
-  $id(id: string): this {
-    this.schema.$id = id;
+  $id(id?: string): this {
+    if (id) this.schema.$id = id;
     return this;
   }
 

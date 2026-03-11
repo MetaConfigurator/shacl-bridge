@@ -61,8 +61,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/FlexibleShape',
-        $ref: '#/$defs/FlexibleType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -113,8 +111,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/RestrictedShape',
-        $ref: '#/$defs/RestrictedType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -165,8 +161,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/ExclusiveShape',
-        $ref: '#/$defs/ExclusiveType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -211,8 +205,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/NegativeShape',
-        $ref: '#/$defs/NegativeType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -286,8 +278,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/ComplexLogicShape',
-        $ref: '#/$defs/ComplexType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -393,8 +383,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/PaymentShape',
-        $ref: '#/$defs/Payment',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -444,8 +432,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/AccountShape',
-        $ref: '#/$defs/Account',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -489,8 +475,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/ContactShape',
-        $ref: '#/$defs/Contact',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -536,8 +520,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/WebResourceShape',
-        $ref: '#/$defs/WebResource',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -586,8 +568,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/ResourceShape',
-        $ref: '#/$defs/Resource',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -635,8 +615,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/TemperatureShape',
-        $ref: '#/$defs/Sensor',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -679,8 +657,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/PercentageShape',
-        $ref: '#/$defs/Statistics',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -723,8 +699,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ScoreShape',
-        $ref: '#/$defs/TestResult',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -769,8 +743,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/EventShape',
-        $ref: '#/$defs/Event',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -824,8 +796,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/BalanceShape',
-        $ref: '#/$defs/Account',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -877,8 +847,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -935,8 +903,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/DateRangeShape',
-        $ref: '#/$defs/DateRange',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -978,8 +944,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/DocumentShape',
-        $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1018,8 +982,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/MetadataShape',
-        $ref: '#/$defs/Metadata',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1061,8 +1023,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ArticleShape',
-        $ref: '#/$defs/Article',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1101,8 +1061,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/EntityShape',
-        $ref: '#/$defs/Entity',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1141,8 +1099,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ContentShape',
-        $ref: '#/$defs/Content',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1187,8 +1143,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/IdentifierShape',
-        $ref: '#/$defs/Thing',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1241,8 +1195,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/UserShape',
-        $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1296,8 +1248,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ConfigShape',
-        $ref: '#/$defs/Config',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1354,8 +1304,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/TaskShape',
-        $ref: '#/$defs/Task',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1406,8 +1354,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/SettingsShape',
-        $ref: '#/$defs/Settings',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1461,8 +1407,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ProductShape',
-        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1513,8 +1457,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/MultilingualShape',
-        $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1559,8 +1501,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/LocalizedContentShape',
-        $ref: '#/$defs/Content',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1615,8 +1555,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/VersionRangeShape',
-        $ref: '#/$defs/Version',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1678,8 +1616,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ProductShape',
-        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1731,8 +1667,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/OrganizationShape',
-        $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1788,8 +1722,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/TeamShape',
-        $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1848,8 +1780,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/RoleShape',
-        $ref: '#/$defs/Role',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1943,8 +1873,6 @@ describe('IR Schema Converter - Constraints', () => {
             },
           },
         },
-        $id: 'http://example.org/ContactShape',
-        $ref: '#/$defs/Contact',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2027,8 +1955,6 @@ describe('IR Schema Converter - Constraints', () => {
             ],
           },
         },
-        $id: 'http://example.org/SpecificNodeShape',
-        $ref: '#/$defs/Node1',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -2073,8 +1999,6 @@ describe('IR Schema Converter - Constraints', () => {
             'x-shacl-targetObjectsOf': 'http://example.org/hasMember',
           },
         },
-        $id: 'http://example.org/ObjectTargetShape',
-        $ref: '#/$defs/ObjectTarget',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2119,8 +2043,6 @@ describe('IR Schema Converter - Constraints', () => {
             'x-shacl-targetSubjectsOf': 'http://example.org/manages',
           },
         },
-        $id: 'http://example.org/SubjectTargetShape',
-        $ref: '#/$defs/SubjectTarget',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2179,8 +2101,6 @@ describe('IR Schema Converter - Constraints', () => {
             'x-shacl-targetSubjectsOf': 'http://example.org/knows',
           },
         },
-        $id: 'http://example.org/MultiTargetShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -2235,8 +2155,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ConfigShape',
-        $ref: '#/$defs/Config',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2286,8 +2204,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ConstantShape',
-        $ref: '#/$defs/Constant',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2340,8 +2256,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/FeatureFlagShape',
-        $ref: '#/$defs/FeatureFlag',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2393,8 +2307,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ResourceShape',
-        $ref: '#/$defs/Resource',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2440,8 +2352,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/RestrictedShape',
-        $ref: '#/$defs/Restricted',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2485,8 +2395,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2531,8 +2439,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2574,8 +2480,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/DocumentShape',
-        $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2636,8 +2540,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/FormShape',
-        $ref: '#/$defs/Form',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2712,8 +2614,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2776,8 +2676,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/CompanyShape',
-        $ref: '#/$defs/Company',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2843,8 +2741,6 @@ describe('IR Schema Converter - Constraints', () => {
             type: 'object',
           },
         },
-        $id: 'http://example.org/TeamShape',
-        $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2892,8 +2788,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/OrganizationShape',
-        $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -2951,8 +2845,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/FriendShape',
-        $ref: '#/$defs/Friend',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3009,8 +2901,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/CreatorShape',
-        $ref: '#/$defs/Creator',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3056,8 +2946,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/CaseInsensitiveShape',
-        $ref: '#/$defs/CaseInsensitive',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3100,8 +2988,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/MultilineShape',
-        $ref: '#/$defs/Multiline',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3144,8 +3030,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/MultiFlagShape',
-        $ref: '#/$defs/MultiFlag',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3203,8 +3087,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3261,8 +3143,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/DataQualityShape',
-        $ref: '#/$defs/DataRecord',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3324,8 +3204,6 @@ describe('IR Schema Converter - Constraints', () => {
             'x-shacl-severity': 'sh:Violation',
           },
         },
-        $id: 'http://example.org/ValidationShape',
-        $ref: '#/$defs/ValidationTest',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -3371,8 +3249,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/DeprecatedShape',
-        $ref: '#/$defs/LegacyUser',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3423,8 +3299,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/UserShape',
-        $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3466,8 +3340,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/ActiveShape',
-        $ref: '#/$defs/ActiveUser',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3516,8 +3388,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: false,
           },
         },
-        $id: 'http://example.org/StrictPersonShape',
-        $ref: '#/$defs/StrictPerson',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3562,8 +3432,6 @@ describe('IR Schema Converter - Constraints', () => {
             'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
           },
         },
-        $id: 'http://example.org/TypedPersonShape',
-        $ref: '#/$defs/TypedPerson',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3604,8 +3472,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/FlexiblePersonShape',
-        $ref: '#/$defs/FlexiblePerson',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3648,8 +3514,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/SingletonShape',
-        $ref: '#/$defs/Singleton',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3688,8 +3552,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/MixedEnumShape',
-        $ref: '#/$defs/MixedEnum',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3728,8 +3590,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/CategoryShape',
-        $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3773,8 +3633,6 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
           },
         },
-        $id: 'http://example.org/PriorityShape',
-        $ref: '#/$defs/Task',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3836,8 +3694,6 @@ describe('IR Schema Converter - Constraints', () => {
             ],
           },
         },
-        $id: 'http://example.org/DocumentShape',
-        $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -3885,8 +3741,6 @@ describe('IR Schema Converter - Constraints', () => {
             'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
           },
         },
-        $id: 'http://example.org/OpenShape',
-        $ref: '#/$defs/OpenEntity',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',

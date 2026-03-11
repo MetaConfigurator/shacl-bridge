@@ -48,11 +48,7 @@ export class IrSchemaConverter {
       defs[target] = schema;
     });
 
-    builder
-      .$id(this.shapeDefinitions[0].nodeKey) // TODO: Nee better root resolution
-      .$schema(JSON_SCHEMA_DRAFT)
-      .$defs(defs)
-      .$ref(`#/$defs/${this.shapeDefinitions[0].targets[0]}`);
+    builder.$id(this.options.schemaId).$schema(JSON_SCHEMA_DRAFT).$defs(defs);
 
     if (!this.options.excludeShaclExtensions) {
       builder.customProperty('x-shacl-prefixes', this.addPrefixes());

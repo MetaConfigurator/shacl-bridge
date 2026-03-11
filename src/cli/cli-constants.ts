@@ -10,6 +10,7 @@ export interface ToJsonSchemaOptions {
   output?: string;
   mode: OutputMode;
   excludeShaclExtensions: boolean;
+  schemaId?: string;
 }
 
 export interface ToShaclOptions {
@@ -66,6 +67,10 @@ export const TO_JSON_SCHEMA = {
     description: 'Output mode: single (default) or multi',
     choices: ['single', 'multi'],
     default: 'single',
+  },
+  schemaId: {
+    flag: '--schema-id <uri>',
+    description: 'URI to use as the $id of the generated JSON Schema',
   },
 };
 

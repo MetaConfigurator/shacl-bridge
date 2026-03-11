@@ -15,7 +15,10 @@ export class ShaclToJsonSchema {
   async convert() {
     const reader = await this.configureReader();
     const result = await reader
-      .withOptions({ excludeShaclExtensions: this.options.excludeShaclExtensions })
+      .withOptions({
+        excludeShaclExtensions: this.options.excludeShaclExtensions,
+        schemaId: this.options.schemaId,
+      })
       .convert();
     match(this.options.mode)
       .with('single', () => {

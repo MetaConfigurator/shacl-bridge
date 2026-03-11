@@ -123,8 +123,6 @@ ex:PersonShape
             type: 'object',
           },
         },
-        $id: 'http://example.org/NamedShape',
-        $ref: '#/$defs/Named',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -171,8 +169,6 @@ ex:PersonShape
 
       expect(schema).toStrictEqual({
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/NamedShape',
-        $ref: '#/$defs/Named',
         $defs: {
           Person: {
             type: 'object',
@@ -242,8 +238,6 @@ ex:SafeMimeTypeShape
 
       expect(schema).toStrictEqual({
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        $id: 'http://example.org/SafeMimeTypeShape',
-        $ref: '#/$defs/MimeType',
         $defs: {
           MimeType: {
             type: 'object',
