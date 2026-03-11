@@ -1,0 +1,237 @@
+@prefix ex:   <http://example.org/> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+
+# SPARQL prefix declaration for SPARQL-based constraints
+ex:ExamplePrefixDeclaration
+    sh:declare [ sh:prefix    "ex" ;
+                 sh:namespace "http://example.org/"^^xsd:anyURI ] .
+
+# Property group for StudentShape
+ex:PersonalInfoGroup
+    a          sh:PropertyGroup ;
+    rdfs:label "Personal Information" ;
+    sh:order   0 .
+
+##################################################################
+# StudentShape — sh:targetClass, closed shape, value type, cardinality,
+# value range, string, property pair, logical, qualified, paths, metadata
+##################################################################
+ex:StudentShape
+    a                    sh:NodeShape ;
+    sh:targetClass       ex:Student ;
+    sh:closed            true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property          ex:StudentShape-name, ex:StudentShape-studentId, ex:StudentShape-email,
+                         ex:StudentShape-confirmEmail, ex:StudentShape-age, ex:StudentShape-gender,
+                         ex:StudentShape-homepage, ex:StudentShape-enrolledIn, ex:StudentShape-homePhone,
+                         ex:StudentShape-hasAdvisor, ex:StudentShape-addressCity, ex:StudentShape-knows ;
+    sh:xone              ( [ sh:property [ sh:path     ex:passport ;
+                                           sh:minCount 1 ;
+                                           sh:nodeKind sh:Literal ] ] [ sh:property [ sh:path     ex:nationalId ;
+                                                                                      sh:minCount 1 ;
+                                                                                      sh:nodeKind sh:Literal ] ] ) .
+
+ex:StudentShape-name
+    a              sh:PropertyShape ;
+    sh:path        ex:name ;
+    sh:minCount    1 ;
+    sh:datatype    xsd:string ;
+    sh:name        "Full Name" ;
+    sh:description "The student's full legal name" ;
+    sh:group       ex:PersonalInfoGroup ;
+    sh:order       0 .
+
+ex:StudentShape-studentId
+    a            sh:PropertyShape ;
+    sh:path      ex:studentId ;
+    sh:maxCount  1 ;
+    sh:datatype  xsd:string ;
+    sh:minLength 6 ;
+    sh:maxLength 10 ;
+    sh:order     1 .
+
+ex:StudentShape-email
+    a          sh:PropertyShape ;
+    sh:path    ex:email ;
+    sh:pattern "^[\\w.]+@[\\w.]+\\.[a-z]{2,}$" ;
+    sh:flags   "i" ;
+    sh:order   2 .
+
+ex:StudentShape-confirmEmail
+    a         sh:PropertyShape ;
+    sh:path   ex:confirmEmail ;
+    sh:equals ex:email .
+
+ex:StudentShape-age
+    a               sh:PropertyShape ;
+    sh:path         ex:age ;
+    sh:datatype     xsd:integer ;
+    sh:minExclusive 15 ;
+    sh:maxExclusive 130 ;
+    sh:severity     sh:Warning ;
+    sh:message      "Student age must be between 16 and 129" .
+
+ex:StudentShape-gender
+    a       sh:PropertyShape ;
+    sh:path ex:gender ;
+    sh:in   ( "Male" "Female" "Non-binary" "Other" ) .
+
+ex:StudentShape-homepage
+    a           sh:PropertyShape ;
+    sh:path     ex:homepage ;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message  "Homepage should be a valid IRI" .
+
+ex:StudentShape-enrolledIn
+    a           sh:PropertyShape ;
+    sh:path     ex:enrolledIn ;
+    sh:class    ex:Course ;
+    sh:nodeKind sh:BlankNodeOrIRI .
+
+ex:StudentShape-homePhone
+    a           sh:PropertyShape ;
+    sh:path     ex:homePhone ;
+    sh:disjoint ex:workPhone .
+
+ex:StudentShape-hasAdvisor
+    a                               sh:PropertyShape ;
+    sh:path                         ex:hasAdvisor ;
+    sh:qualifiedValueShape          [ sh:class ex:Professor ] ;
+    sh:qualifiedMinCount            1 ;
+    sh:qualifiedMaxCount            2 ;
+    sh:qualifiedValueShapesDisjoint true .
+
+ex:StudentShape-addressCity
+    a           sh:PropertyShape ;
+    sh:path     ( ex:address ex:city ) ;
+    sh:datatype xsd:string .
+
+ex:StudentShape-knows
+    a           sh:PropertyShape ;
+    sh:path     [ sh:zeroOrMorePath ex:knows ] ;
+    sh:nodeKind sh:BlankNodeOrLiteral .
+
+##################################################################
+# CourseShape — sh:targetNode, language, property pair, logical,
+# shape-based, alternative/one-or-more paths, deactivated
+##################################################################
+ex:CourseShape
+    a             sh:NodeShape ;
+    sh:targetNode ex:CS101 ;
+    sh:property   ex:CourseShape-title, ex:CourseShape-credits, ex:CourseShape-startDate,
+                  ex:CourseShape-prerequisiteChain, ex:CourseShape-prerequisite, ex:CourseShape-contactPhone,
+                  ex:CourseShape-legacyCode ;
+    sh:or         ( [ sh:property [ sh:path     ex:contactEmail ;
+                                    sh:minCount 1 ;
+                                    sh:nodeKind sh:IRIOrLiteral ] ] [ sh:property [ sh:path     ex:contactPhone ;
+                                                                                    sh:minCount 1 ] ] ) .
+
+ex:CourseShape-title
+    a             sh:PropertyShape ;
+    sh:path       ex:title ;
+    sh:languageIn ( "en" "de" ) ;
+    sh:uniqueLang true .
+
+ex:CourseShape-credits
+    a               sh:PropertyShape ;
+    sh:path         ex:credits ;
+    sh:datatype     xsd:integer ;
+    sh:minInclusive 1 ;
+    sh:maxInclusive 6 .
+
+ex:CourseShape-startDate
+    a           sh:PropertyShape ;
+    sh:path     ex:startDate ;
+    sh:datatype xsd:date ;
+    sh:lessThan ex:endDate .
+
+ex:CourseShape-prerequisite
+    a       sh:PropertyShape ;
+    sh:path ex:prerequisite ;
+    sh:node ex:CourseShape .
+
+ex:CourseShape-prerequisiteChain
+    a           sh:PropertyShape ;
+    sh:path     [ sh:oneOrMorePath ex:prerequisite ] ;
+    sh:nodeKind sh:IRI .
+
+ex:CourseShape-contactPhone
+    a           sh:PropertyShape ;
+    sh:path     [ sh:alternativePath ( ex:phone ex:mobile ) ] ;
+    sh:nodeKind sh:BlankNode .
+
+ex:CourseShape-legacyCode
+    a              sh:PropertyShape ;
+    sh:path        ex:legacyCode ;
+    sh:deactivated true ;
+    sh:datatype    xsd:string .
+
+##################################################################
+# EnrollmentShape — sh:targetSubjectsOf, logical, property pair,
+# hasValue, defaultValue, zero-or-one path, SPARQL
+##################################################################
+ex:EnrollmentShape
+    a                   sh:NodeShape ;
+    sh:targetSubjectsOf ex:enrolledIn ;
+    sh:property         ex:EnrollmentShape-status, ex:EnrollmentShape-registrationDate, ex:EnrollmentShape-approvedBy ;
+    sh:and              ( [ sh:property [ sh:path     ex:student ;
+                                          sh:minCount 1 ;
+                                          sh:class    ex:Student ] ] [ sh:property [ sh:path     ex:course ;
+                                                                                     sh:minCount 1 ;
+                                                                                     sh:class    ex:Course ] ] ) ;
+    sh:not              [ sh:property [ sh:path     ex:status ;
+                                        sh:hasValue "Expelled" ] ] ;
+    sh:sparql           [ a           sh:SPARQLConstraint ;
+                          sh:message  "Registration date must not be after the course start date" ;
+                          sh:prefixes ex:ExamplePrefixDeclaration ;
+                          sh:select   """
+        SELECT $this ?value
+        WHERE {
+            $this ex:registrationDate ?regDate .
+            $this ex:course ?course .
+            ?course ex:startDate ?startDate .
+            FILTER (?regDate > ?startDate)
+        }
+    """ ] .
+
+ex:EnrollmentShape-status
+    a               sh:PropertyShape ;
+    sh:path         ex:status ;
+    sh:hasValue     "Active" ;
+    sh:defaultValue "Active" .
+
+ex:EnrollmentShape-registrationDate
+    a                   sh:PropertyShape ;
+    sh:path             ex:registrationDate ;
+    sh:datatype         xsd:date ;
+    sh:lessThanOrEquals ex:enrollmentDeadline .
+
+ex:EnrollmentShape-approvedBy
+    a           sh:PropertyShape ;
+    sh:path     [ sh:zeroOrOnePath ex:approvedBy ] ;
+    sh:nodeKind sh:BlankNodeOrIRI .
+
+##################################################################
+# InstructorShape — sh:targetObjectsOf, inverse path
+##################################################################
+ex:InstructorShape
+    a                                                                                                      sh:NodeShape ;
+    sh:targetObjectsOf                                                                                     ex:taughtBy ;
+    sh:property                                                                                            [ sh:path ex:employeeId ;
+                                                                                                             sh:minCount
+                                                                                                                     1 ;
+                                                                                                             sh:maxCount
+                                                                                                                     1 ;
+                                                                                                             sh:datatype
+                                                                                                                     xsd:string ],
+                                                                                                           [ sh:path [ sh:inversePath
+                                                                                                                               ex:taughtBy ] ;
+                                                                                                             sh:minCount
+                                                                                                                     1 ;
+                                                                                                             sh:nodeKind
+                                                                                                                     sh:IRI ] .
