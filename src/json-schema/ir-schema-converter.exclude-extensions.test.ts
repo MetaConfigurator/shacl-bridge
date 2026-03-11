@@ -263,7 +263,6 @@ describe('IR Schema Converter - Exclude SHACL Extensions', () => {
 
       expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
       expect(schema.$defs).toBeDefined();
-      expect(schema.$ref).toBe('#/$defs/Person');
       expect(schema['x-shacl-prefixes']).toBeUndefined();
 
       const personDef = schema.$defs?.Person as {

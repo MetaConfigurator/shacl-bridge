@@ -46,6 +46,7 @@ const toJsonSchemaCommand = new Command(TO_JSON_SCHEMA.command)
       .choices(TO_JSON_SCHEMA.mode.choices)
       .default(TO_JSON_SCHEMA.mode.default)
   )
+  .option(TO_JSON_SCHEMA.schemaId.flag, TO_JSON_SCHEMA.schemaId.description)
   .action(async function (this: Command, options: ToJsonSchemaOptions) {
     try {
       await new ShaclToJsonSchema(options).convert();

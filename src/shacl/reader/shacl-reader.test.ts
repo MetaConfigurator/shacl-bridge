@@ -35,8 +35,6 @@ describe('ShaclReader', () => {
           type: 'object',
         },
       },
-      $id: 'http://example.org/PersonShape',
-      $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       'x-shacl-prefixes': {
         ex: 'http://example.org/',
@@ -50,7 +48,6 @@ describe('ShaclReader', () => {
     const filePath = path.resolve(__dirname, '../../../samples/shacl/simple-shacl.ttl');
     const result = await new ShaclReader().fromPath(filePath).convert();
 
-    expect(result.$id).toBe('http://example.org/PersonShape');
     expect(result.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
     expect(result.$defs).toBeDefined();
   });
@@ -84,7 +81,6 @@ describe('ShaclReader', () => {
 
     const result = await new ShaclReader().fromJsonLdContent(jsonLdContent).convert();
 
-    expect(result.$id).toBe('http://example.org/NameShape');
     expect(result.$defs).toBeDefined();
   });
 
@@ -92,7 +88,6 @@ describe('ShaclReader', () => {
     const filePath = path.resolve(__dirname, '../../../samples/shacl/simple-shacl.jsonld');
     const result = await new ShaclReader().fromJsonLdPath(filePath).convert();
 
-    expect(result.$id).toBe('http://example.org/PersonShape');
     expect(result.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
     expect(result.$defs).toBeDefined();
   });

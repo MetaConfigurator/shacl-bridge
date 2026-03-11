@@ -89,8 +89,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -178,8 +176,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -286,8 +282,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/ProductShape',
-        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -367,8 +361,6 @@ describe('SPARQL Constraints in SHACL', () => {
             required: ['username', 'email'],
           },
         },
-        $id: 'http://example.org/UserShape',
-        $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -478,8 +470,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/TeamShape',
-        $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -594,8 +584,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -740,8 +728,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/OrderShape',
-        $ref: '#/$defs/Order',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -834,8 +820,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/ContactShape',
-        $ref: '#/$defs/Contact',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -926,8 +910,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/EventShape',
-        $ref: '#/$defs/Event',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1020,8 +1002,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/RectangleShape',
-        $ref: '#/$defs/Rectangle',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1114,8 +1094,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/PersonShape',
-        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1208,8 +1186,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/EmployeeShape',
-        $ref: '#/$defs/Employee',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1317,8 +1293,6 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $id: 'http://example.org/ManagerShape',
-        $ref: '#/$defs/Manager',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
