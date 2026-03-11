@@ -9,6 +9,5 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "lib": ["DOM"]
-  },
-  "include": ["src"]
+  }
 }

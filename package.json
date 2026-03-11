@@ -8,8 +8,8 @@
     "shacl-bridge": "./dist/cli/cli.js"
   },
   "scripts": {
-    "build": "tsc",
-    "type-check": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "type-check": "tsc -p tsconfig.build.json --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format:check": "prettier --check .",
