@@ -195,7 +195,9 @@ describe('Indexer', () => {
       const subject1 = 'http://example.org/Subject1';
       const subject2 = 'http://example.org/Subject2';
       const content = await new StoreBuilder()
+        .shape(subject1, SHACL_NODE_SHAPE)
         .triple(subject1, SHACL_NAME, 'First', false)
+        .shape(subject2, SHACL_NODE_SHAPE)
         .triple(subject2, SHACL_NAME, 'Second', false)
         .write();
       const shaclDocument = await new ShaclParser().withContent(content).parse();
@@ -242,6 +244,7 @@ describe('Indexer', () => {
     it('should handle RDF list nodes as blank nodes', async () => {
       const shape = 'http://example.org/PersonShape';
       const content = await new StoreBuilder()
+        .shape(shape, SHACL_NODE_SHAPE)
         .triple(shape, SHACL_IGNORED_PROPERTIES, 'l1', true)
         .blank('l1', RDF_FIRST, RDF_TYPE)
         .blank('l2', RDF_FIRST, 'http://example.org/customProp')

@@ -5,7 +5,7 @@ import { getQuads, getShapes } from './util';
 async function getShapesAndQuads(content: string) {
   const shaclDocument = await new ShaclParser().withContent(content).parse();
   const quads = getQuads(shaclDocument);
-  const shapes = getShapes(shaclDocument.subjects);
+  const shapes = getShapes(shaclDocument);
   return { quads, shapes, shaclDocument };
 }
 
