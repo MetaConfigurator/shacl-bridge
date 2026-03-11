@@ -3,6 +3,7 @@ src/
 *.test.ts
 *.test.js
 __tests__/
+test/
 
 # Compiled test files
 dist/**/*.test.js
