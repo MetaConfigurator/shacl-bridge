@@ -228,6 +228,29 @@ describe('CLI', () => {
       });
     });
 
+    describe('--schema-id option', () => {
+      it('should show --schema-id option in help', () => {
+        const output = runCli('to-json-schema --help');
+        expect(output).toContain(TO_JSON_SCHEMA.schemaId.flag);
+      });
+
+      it('should set $id when --schema-id is provided', () => {
+        const output = runCli(
+          `to-json-schema -i ${simpleShaclPath} --schema-id https://example.com/my-schema`
+        );
+        const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+        expect(schema.$id).toBe('https://example.com/my-schema');
+      });
+
+      it('should not include $id when --schema-id is not provided', () => {
+        const output = runCli(`to-json-schema -i ${simpleShaclPath}`);
+        const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+        expect(schema.$id).toBeUndefined();
+      });
+    });
+
     describe('--mode option', () => {
       it('should show --mode option in help', () => {
         const output = runCli('to-json-schema --help');

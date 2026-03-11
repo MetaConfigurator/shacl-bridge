@@ -463,10 +463,58 @@ try {
     Write-Host "--base-uri flag works correctly" -ForegroundColor Green
 
     Write-Host ""
+    Write-Host "Test 24: --schema-id sets `$id in output"
+    $schemaIdOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --schema-id "https://example.com/my-schema"
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "--schema-id conversion failed"
+    }
+
+    try
+    {
+        $schemaIdJson = $schemaIdOutput | ConvertFrom-Json
+        if ($schemaIdJson.'$id' -ne "https://example.com/my-schema")
+        {
+            Write-Host "Expected `$id to be 'https://example.com/my-schema', got '$( $schemaIdJson.'$id' )'" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "--schema-id correctly sets `$id in output" -ForegroundColor Green
+    }
+    catch
+    {
+        Write-Host "--schema-id output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 25: Without --schema-id, `$id is absent"
+    $noSchemaIdOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "Default conversion failed"
+    }
+
+    try
+    {
+        $noSchemaIdJson = $noSchemaIdOutput | ConvertFrom-Json
+        if ($null -ne $noSchemaIdJson.'$id')
+        {
+            Write-Host "`$id should not be present when --schema-id is not specified" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "`$id is correctly absent when --schema-id is not specified" -ForegroundColor Green
+    }
+    catch
+    {
+        Write-Host "Output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
     Write-Host "=== Round-trip Tests ==="
 
     Write-Host ""
-    Write-Host "Test 24: SHACL -> JSON Schema -> SHACL round-trip"
+    Write-Host "Test 26: SHACL -> JSON Schema -> SHACL round-trip"
     $roundTripDir = Join-Path $TempDir "round-trip"
     New-Item -ItemType Directory -Path $roundTripDir -Force | Out-Null
 

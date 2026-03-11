@@ -387,10 +387,33 @@ fi
 echo -e "${GREEN}--base-uri flag works correctly${NC}"
 
 echo ""
+echo "Test 24: --schema-id sets \$id in output"
+SCHEMA_ID_OUTPUT=$(shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --schema-id "https://example.com/my-schema")
+if ! echo "$SCHEMA_ID_OUTPUT" | jq empty 2>/dev/null; then
+    echo -e "${RED}--schema-id output is not valid JSON${NC}"
+    exit 1
+fi
+SCHEMA_ID_VALUE=$(echo "$SCHEMA_ID_OUTPUT" | jq -r '."$id"')
+if [ "$SCHEMA_ID_VALUE" != "https://example.com/my-schema" ]; then
+    echo -e "${RED}Expected \$id to be 'https://example.com/my-schema', got '$SCHEMA_ID_VALUE'${NC}"
+    exit 1
+fi
+echo -e "${GREEN}--schema-id correctly sets \$id in output${NC}"
+
+echo ""
+echo "Test 25: Without --schema-id, \$id is absent"
+NO_SCHEMA_ID_OUTPUT=$(shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl)
+if echo "$NO_SCHEMA_ID_OUTPUT" | jq -e '."$id"' > /dev/null 2>&1; then
+    echo -e "${RED}\$id should not be present when --schema-id is not specified${NC}"
+    exit 1
+fi
+echo -e "${GREEN}\$id is correctly absent when --schema-id is not specified${NC}"
+
+echo ""
 echo "=== Round-trip Tests ==="
 
 echo ""
-echo "Test 24: SHACL -> JSON Schema -> SHACL round-trip"
+echo "Test 26: SHACL -> JSON Schema -> SHACL round-trip"
 ROUND_TRIP_DIR="$TEMP_DIR/round-trip"
 mkdir -p "$ROUND_TRIP_DIR"
 
