@@ -1620,4 +1620,90 @@ ex:PersonReferenceShape
       });
     });
   });
+
+  describe('Named sh:property references', () => {
+    it('should assemble named PropertyShapes into parent NodeShape and exclude them from top-level $defs', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:NameProperty
+            a sh:PropertyShape ;
+            sh:path ex:name ;
+            sh:datatype xsd:string ;
+            sh:minCount 1 ;
+            sh:maxCount 1 .
+
+        ex:AgeProperty
+            a sh:PropertyShape ;
+            sh:path ex:age ;
+            sh:datatype xsd:integer ;
+            sh:maxCount 1 .
+
+        ex:PersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:property ex:NameProperty ;
+            sh:property ex:AgeProperty .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $defs: {
+          Person: {
+            additionalProperties: true,
+            properties: {
+              name: {
+                type: 'string',
+              },
+              age: {
+                type: 'integer',
+              },
+            },
+            required: ['name'],
+            title: 'Person',
+            type: 'object',
+          },
+        },
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        'x-shacl-prefixes': {
+          sh: 'http://www.w3.org/ns/shacl#',
+          ex: 'http://example.org/',
+          xsd: 'http://www.w3.org/2001/XMLSchema#',
+        },
+      });
+    });
+
+    it('should render named PropertyShape as a value schema (not type:object)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:EmailProperty
+            a sh:PropertyShape ;
+            sh:path ex:email ;
+            sh:datatype xsd:string ;
+            sh:pattern "^[\\\\w.-]+@[\\\\w.-]+\\\\.\\\\w+$" ;
+            sh:maxCount 1 .
+
+        ex:PersonShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Person ;
+            sh:property ex:EmailProperty .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      const personDef = (schema.$defs as Record<string, unknown>).Person as Record<string, unknown>;
+      const emailProp = (personDef.properties as Record<string, unknown>).email as Record<
+        string,
+        unknown
+      >;
+      expect(emailProp.type).toBe('string');
+      expect(emailProp.type).not.toBe('object');
+      expect(emailProp.pattern).toBe('^[\\w.-]+@[\\w.-]+\\.\\w+$');
+      expect(schema.$defs).not.toHaveProperty('EmailProperty');
+    });
+  });
 });
