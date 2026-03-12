@@ -42,8 +42,24 @@ export class ShapeBuilder {
       this.resolveDependencies(subject);
     });
 
+    const namedShapeValues = new Set(shapes.map((s) => s.value));
+    const namedPropertyShapeUris = new Set<string>();
+    shapes.forEach((shapeTerm) => {
+      const shape = this.resolved.get(shapeTerm.value);
+      shape?.coreConstraints?.property
+        ?.filter((propUri) => namedShapeValues.has(propUri))
+        .forEach((propUri) => {
+          const propShape = this.resolved.get(propUri);
+          if (!propShape) return;
+          shape.dependentShapes ??= [];
+          shape.dependentShapes.push(propShape);
+          namedPropertyShapeUris.add(propUri);
+        });
+    });
+
     return shapes
       .filter((shapeTerm) => !isBlankNode(shapeTerm))
+      .filter((shapeTerm) => !namedPropertyShapeUris.has(shapeTerm.value))
       .map((shapeTerm) => this.resolved.get(shapeTerm.value))
       .filter((shape) => shape != null);
   }
