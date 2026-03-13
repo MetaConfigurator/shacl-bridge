@@ -53,6 +53,12 @@ export const XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date';
 export const XSD_TIME = 'http://www.w3.org/2001/XMLSchema#time';
 export const FOAF_PERSON = 'http://xmlns.com/foaf/0.1/Person';
 
+export const SHACL_ZERO_OR_MORE_PATH = 'http://www.w3.org/ns/shacl#zeroOrMorePath';
+export const SHACL_ONE_OR_MORE_PATH = 'http://www.w3.org/ns/shacl#oneOrMorePath';
+export const SHACL_ZERO_OR_ONE_PATH = 'http://www.w3.org/ns/shacl#zeroOrOnePath';
+export const SHACL_INVERSE_PATH = 'http://www.w3.org/ns/shacl#inversePath';
+export const SHACL_ALTERNATIVE_PATH = 'http://www.w3.org/ns/shacl#alternativePath';
+
 export const DEFAULT_PREFIXES: Record<string, string> = {
   sh: 'http://www.w3.org/ns/shacl#',
   xsd: 'http://www.w3.org/2001/XMLSchema#',

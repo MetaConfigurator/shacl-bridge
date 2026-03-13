@@ -129,7 +129,7 @@ export class IrSchemaConverter {
     top.getShape().dependentShapes?.forEach((dependentShape) => {
       const dependent = this.processed.get(dependentShape);
       if (dependent != null) {
-        if (dependent.context.isFragment) return;
+        if (dependent.context.isFragment || dependent.context.isPathBlankNode) return;
         top.getBuilder().deepMerge(dependent.builder.build());
         if (dependent.context.required) {
           top.getBuilder().requiredElement(dependent.shape.targets[0]);
