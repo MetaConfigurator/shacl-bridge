@@ -13,6 +13,7 @@ export class ConversionContext {
   isPrimitive: boolean;
   isInvalid = false;
   isFragment: boolean;
+  isPathBlankNode: boolean;
 
   constructor(
     private readonly parentShape: ShapeDefinition,
@@ -22,7 +23,10 @@ export class ConversionContext {
     this.isPrimitive = this.hasPrimitiveElements();
     this.isInvalid = this.checkForInvalidNumericConstraint();
     this.isFragment = this.checkIsFragment();
-    if (!this.isFragment) {
+    this.isPathBlankNode =
+      parentShape.shape?.path === dependentShape.nodeKey ||
+      dependentShape.coreConstraints?.first != null;
+    if (!this.isFragment && !this.isPathBlankNode) {
       this.needToBeArray();
     }
   }

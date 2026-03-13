@@ -1,14 +1,28 @@
-import { Quad, Quad_Subject, Term } from 'n3';
+import { DataFactory, Quad, Quad_Subject, Term, Util } from 'n3';
 import {
+  RDF_FIRST,
+  SHACL_ALTERNATIVE_PATH,
   SHACL_CLASS,
+  SHACL_INVERSE_PATH,
+  SHACL_ONE_OR_MORE_PATH,
   SHACL_PATH,
   SHACL_TARGET_CLASS,
   SHACL_TARGET_NODE,
   SHACL_TARGET_OBJECTS_OF,
   SHACL_TARGET_SUBJECTS_OF,
+  SHACL_ZERO_OR_MORE_PATH,
+  SHACL_ZERO_OR_ONE_PATH,
 } from '../shacl/shacl-terms';
 import { extractStrippedName } from '../util/helpers';
 import { ShaclDocument } from '../shacl/shacl-document';
+import isBlankNode = Util.isBlankNode;
+
+const WRAPPED_PATH_PREDICATES = [
+  SHACL_ZERO_OR_MORE_PATH,
+  SHACL_ONE_OR_MORE_PATH,
+  SHACL_ZERO_OR_ONE_PATH,
+  SHACL_INVERSE_PATH,
+];
 
 const TARGET_DEFINITIONS = [
   SHACL_TARGET_CLASS,
@@ -31,7 +45,7 @@ export class TargetResolver {
 
   resolveTargets(quads: Map<Term, Quad[]>): Map<Term, string[]> {
     const targets = new Map<Term, string[]>();
-    quads.forEach((quadsForShape, shape) =>
+    quads.forEach((_quadsForShape, shape) =>
       targets.set(
         shape,
         this.findTheBestTargetDeclarations(
@@ -47,75 +61,101 @@ export class TargetResolver {
     return quads
       .get(shape)
       ?.filter((quad) => TARGET_DEFINITIONS.includes(quad.predicate.value))
-      .map((quad) => {
-        return { predicate: quad.predicate.value, object: quad.object.value };
-      });
+      .map((quad) => ({
+        predicate: quad.predicate.value,
+        object: quad.object.value,
+        objectTerm: quad.object,
+      }));
   }
 
   private findTheBestTargetDeclarations(
-    targetDeclarations: { predicate: string; object: string }[],
+    targetDeclarations: { predicate: string; object: string; objectTerm: Term }[],
     subject: Quad_Subject
   ): string[] {
+    if (isBlankNode(subject) && this.isComplexPathNode(subject)) return [];
+
     const targetClasses = targetDeclarations
-      .filter((target) => target.predicate === SHACL_TARGET_CLASS)
-      .map((target) => target.object)
-      .map(extractStrippedName);
+      .filter((t) => t.predicate === SHACL_TARGET_CLASS)
+      .map((t) => extractStrippedName(t.object));
 
     const targetNodes = targetDeclarations
-      .filter((target) => target.predicate === SHACL_TARGET_NODE)
-      .map((target) => target.object)
-      .map(extractStrippedName);
+      .filter((t) => t.predicate === SHACL_TARGET_NODE)
+      .map((t) => extractStrippedName(t.object));
 
     const targetSubjects = targetDeclarations
-      .filter((target) => target.predicate === SHACL_TARGET_SUBJECTS_OF)
-      .map((target) => target.object)
-      .map((predicate) =>
-        this.shaclDocument.store.getQuads(null, predicate, null, this.shaclDocument.graphId)
+      .filter((t) => t.predicate === SHACL_TARGET_SUBJECTS_OF)
+      .flatMap((t) =>
+        this.shaclDocument.store.getQuads(null, t.object, null, this.shaclDocument.graphId)
       )
-      .flat(1)
-      .map((quad) => quad.subject.value)
-      .map(extractStrippedName);
+      .map((quad) => extractStrippedName(quad.subject.value));
 
     const targetObjects = targetDeclarations
-      .filter((target) => target.predicate === SHACL_TARGET_OBJECTS_OF)
-      .map((target) => target.object)
-      .map((predicate) =>
-        this.shaclDocument.store.getQuads(null, predicate, null, this.shaclDocument.graphId)
+      .filter((t) => t.predicate === SHACL_TARGET_OBJECTS_OF)
+      .flatMap((t) =>
+        this.shaclDocument.store.getQuads(null, t.object, null, this.shaclDocument.graphId)
       )
-      .flat(1)
-      .map((quad) => quad.object.value)
-      .map(extractStrippedName);
+      .map((quad) => extractStrippedName(quad.object.value));
 
     const targetPaths = targetDeclarations
-      .filter((target) => target.predicate === SHACL_PATH)
-      .map((target) => target.object)
-      .map(extractStrippedName);
+      .filter((t) => t.predicate === SHACL_PATH)
+      .map((t) =>
+        isBlankNode(t.objectTerm)
+          ? this.resolveComplexPathName(t.object)
+          : extractStrippedName(t.object)
+      );
 
     const classes = targetDeclarations
-      .filter((target) => target.predicate === SHACL_CLASS)
-      .map((target) => target.object)
-      .map(extractStrippedName);
+      .filter((t) => t.predicate === SHACL_CLASS)
+      .map((t) => extractStrippedName(t.object));
 
-    const noTargets = [
-      targetSubjects,
-      targetObjects,
-      targetClasses,
-      targetNodes,
-      classes,
-      targetPaths,
-    ].every((arr) => arr.length === 0);
+    const allTargets = [
+      ...targetClasses,
+      ...targetNodes,
+      ...targetSubjects,
+      ...targetObjects,
+      ...targetPaths,
+      ...classes,
+    ];
 
-    return noTargets
-      ? [extractStrippedName(subject.value)]
-      : [
-          ...new Set([
-            ...targetClasses,
-            ...targetNodes,
-            ...targetSubjects,
-            ...targetObjects,
-            ...targetPaths,
-            ...classes,
-          ]),
-        ];
+    return allTargets.length > 0 ? [...new Set(allTargets)] : [extractStrippedName(subject.value)];
+  }
+
+  private resolveComplexPathName(blankNodeId: string): string {
+    const { store, graphId, lists } = this.shaclDocument;
+    const blankTerm = DataFactory.blankNode(blankNodeId);
+
+    // Sequence path: blank node is an RDF list head
+    if (blankNodeId in lists) {
+      const items = lists[blankNodeId];
+      if (items.length > 0) return extractStrippedName(items[items.length - 1].value);
+    }
+
+    // Wrapped path predicates (zeroOrMorePath, oneOrMorePath, etc.)
+    const pathQuads = store.getQuads(blankTerm, null, null, graphId);
+    for (const quad of pathQuads) {
+      if (WRAPPED_PATH_PREDICATES.includes(quad.predicate.value)) {
+        return extractStrippedName(quad.object.value);
+      }
+      if (quad.predicate.value === SHACL_ALTERNATIVE_PATH) {
+        const alts = lists[quad.object.value];
+        if (alts[0]) return extractStrippedName(alts[0].value);
+      }
+    }
+
+    return extractStrippedName(blankNodeId);
+  }
+
+  private isComplexPathNode(subject: Quad_Subject): boolean {
+    const { store, graphId, lists } = this.shaclDocument;
+
+    if (subject.value in lists) return true;
+
+    const pathQuads = store.getQuads(subject, null, null, graphId);
+    return pathQuads.some(
+      (q) =>
+        WRAPPED_PATH_PREDICATES.includes(q.predicate.value) ||
+        q.predicate.value === SHACL_ALTERNATIVE_PATH ||
+        q.predicate.value === RDF_FIRST
+    );
   }
 }

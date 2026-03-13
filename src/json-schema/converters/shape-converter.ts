@@ -27,6 +27,15 @@ export class ShapeConverter {
     const schema = new ConstraintConverter(this.sb, this.processed, this.options).convert();
     const propertyBuilder = JsonSchemaObjectBuilder.from(schema);
     new ShapeMetadataConverter(this.shape, this.options).applyToBuilder(propertyBuilder);
+
+    const pathBlankNode = this.shape.dependentShapes?.find(
+      (dep) => dep.nodeKey === this.shape.shape?.path
+    );
+    if (pathBlankNode) {
+      const pathElement = this.processed.get(pathBlankNode);
+      if (pathElement) propertyBuilder.mergeFrom(pathElement.builder.build());
+    }
+
     const schemaWithMetadata = propertyBuilder.build();
 
     // For fragments (logical or ref), don't create property structure - just merge schema

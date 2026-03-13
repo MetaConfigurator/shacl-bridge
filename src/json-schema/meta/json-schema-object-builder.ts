@@ -437,6 +437,8 @@ export class JsonSchemaObjectBuilder {
    * - additionalProperties: false takes precedence (closed shapes)
    * - Other properties from source are added if not present
    */
+  // use existing libraries
+  // Reuse mergeAllOf -> A, B -> new schema A and B
   deepMerge(source: JsonSchemaObjectType): this {
     // Merge properties
     if (source.properties) {
