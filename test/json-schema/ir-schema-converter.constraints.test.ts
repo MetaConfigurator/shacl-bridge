@@ -1070,6 +1070,44 @@ describe('IR Schema Converter - Constraints', () => {
       });
     });
 
+    it('should apply sh:nodeKind to items when sh:class is also set', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+
+        ex:StudentShape
+            a sh:NodeShape ;
+            sh:targetClass ex:Student ;
+            sh:property [
+                sh:path ex:enrolledIn ;
+                sh:class ex:Course ;
+                sh:nodeKind sh:BlankNodeOrIRI ;
+            ] .
+      `;
+      const schema = new IrSchemaConverter(await getIr(content), {
+        excludeShaclExtensions: true,
+      }).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $defs: {
+          Student: {
+            title: 'Student',
+            type: 'object',
+            additionalProperties: true,
+            properties: {
+              enrolledIn: {
+                type: 'array',
+                items: {
+                  $ref: '#/$defs/Course',
+                  oneOf: [{ type: 'object' }, { type: 'string', format: 'uri' }],
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
     it('should handle sh:nodeKind sh:BlankNodeOrLiteral for mixed content', async () => {
       const content = `
         @prefix sh: <http://www.w3.org/ns/shacl#> .
