@@ -169,6 +169,13 @@ export class ConstraintConverter {
             .ifSatisfied((candidate: ConstraintCandidate) => {
               mapNodeKind(candidate.constraints.nodeKind ?? NodeKind.IRI, builder);
             })
+            .otherwise((candidate: ConstraintCandidate) => {
+              if (candidate.constraints.nodeKind == null) return;
+              const itemBuilder = new JsonSchemaObjectBuilder();
+              mapNodeKind(candidate.constraints.nodeKind, itemBuilder);
+              const existingItems = builder.getKey('items') as JsonSchemaObjectType;
+              builder.items({ ...existingItems, ...itemBuilder.build() });
+            })
             .execute();
         })
         .with('in', () => {

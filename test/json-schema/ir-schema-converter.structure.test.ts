@@ -501,6 +501,8 @@ ex:PersonReferenceShape
             worksFor: {
               items: {
                 $ref: '#/$defs/Company',
+                type: 'string',
+                format: 'uri',
               },
               type: 'array',
             },
