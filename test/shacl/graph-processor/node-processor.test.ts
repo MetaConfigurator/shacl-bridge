@@ -7,6 +7,7 @@ import {
   RDF_FIRST,
   SHACL_AND,
   SHACL_DATATYPE,
+  SHACL_HAS_VALUE,
   SHACL_MIN_COUNT,
   SHACL_MIN_LENGTH,
   SHACL_NODE,
@@ -373,6 +374,148 @@ describe('NodeProcessor', () => {
       const store = processSchema(schema);
 
       expect(getObject(store, `${EX}Root`, SHACL_NODE)).toBe(`${EX}Person`);
+    });
+  });
+
+  describe('if/then/else handling', () => {
+    it('should map if/then to sh:or( [sh:not if] then )', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        if: { properties: { type: { const: 'graduate' } } },
+        then: { properties: { advisor: { type: 'string' } }, required: ['advisor'] },
+      };
+
+      const store = processSchema(schema);
+
+      const orTerms = getObjectTerms(store, `${EX}Shape`, SHACL_OR);
+      expect(orTerms.length).toBe(1);
+
+      const items = getListItems(store, orTerms[0]);
+      expect(items.length).toBe(2);
+
+      // First item: sh:not wrapping the if shape
+      const notTarget = store.getObjects(
+        DataFactory.blankNode(items[0]),
+        DataFactory.namedNode(SHACL_NOT),
+        null
+      )[0];
+      expect(notTarget).toBeDefined();
+
+      // not target has the if shape's property (type = 'graduate')
+      const notProps = store.getObjects(notTarget, DataFactory.namedNode(SHACL_PROPERTY), null);
+      expect(notProps.length).toBe(1);
+      expect(getObjectFromBlank(store, notProps[0], SHACL_PATH)).toBe(`${EX}type`);
+      expect(getObjectFromBlank(store, notProps[0], SHACL_HAS_VALUE)).toBe('graduate');
+
+      // Second item: then shape (required advisor → sh:minCount 1)
+      const thenProps = store.getObjects(
+        DataFactory.blankNode(items[1]),
+        DataFactory.namedNode(SHACL_PROPERTY),
+        null
+      );
+      expect(thenProps.length).toBe(1);
+      expect(getObjectFromBlank(store, thenProps[0], SHACL_PATH)).toBe(`${EX}advisor`);
+      expect(getObjectFromBlank(store, thenProps[0], SHACL_MIN_COUNT)).toBe('1');
+    });
+
+    it('should map if/else to sh:or( if else )', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        if: { properties: { type: { const: 'graduate' } } },
+        else: { properties: { grade: { type: 'string' } }, required: ['grade'] },
+      };
+
+      const store = processSchema(schema);
+
+      const orTerms = getObjectTerms(store, `${EX}Shape`, SHACL_OR);
+      expect(orTerms.length).toBe(1);
+
+      const items = getListItems(store, orTerms[0]);
+      expect(items.length).toBe(2);
+
+      // First item: if shape
+      const ifProps = store.getObjects(
+        DataFactory.blankNode(items[0]),
+        DataFactory.namedNode(SHACL_PROPERTY),
+        null
+      );
+      expect(ifProps.length).toBe(1);
+      expect(getObjectFromBlank(store, ifProps[0], SHACL_HAS_VALUE)).toBe('graduate');
+
+      // Second item: else shape (required grade)
+      const elseProps = store.getObjects(
+        DataFactory.blankNode(items[1]),
+        DataFactory.namedNode(SHACL_PROPERTY),
+        null
+      );
+      expect(elseProps.length).toBe(1);
+      expect(getObjectFromBlank(store, elseProps[0], SHACL_PATH)).toBe(`${EX}grade`);
+      expect(getObjectFromBlank(store, elseProps[0], SHACL_MIN_COUNT)).toBe('1');
+    });
+
+    it('should map if/then/else to sh:and( [sh:or([sh:not if] then)] [sh:or(if else)] )', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        if: { properties: { type: { const: 'graduate' } } },
+        then: { properties: { advisor: { type: 'string' } }, required: ['advisor'] },
+        else: { properties: { grade: { type: 'string' } }, required: ['grade'] },
+      };
+
+      const store = processSchema(schema);
+
+      const andTerms = getObjectTerms(store, `${EX}Shape`, SHACL_AND);
+      expect(andTerms.length).toBe(1);
+
+      const andItems = getListItems(store, andTerms[0]);
+      expect(andItems.length).toBe(2);
+
+      // First and-item: sh:or( [sh:not if] then )
+      const firstOr = store.getObjects(
+        DataFactory.blankNode(andItems[0]),
+        DataFactory.namedNode(SHACL_OR),
+        null
+      )[0];
+      expect(firstOr).toBeDefined();
+      const firstOrItems = getListItems(store, firstOr);
+      expect(firstOrItems.length).toBe(2);
+      // first item has sh:not
+      expect(
+        store.getObjects(
+          DataFactory.blankNode(firstOrItems[0]),
+          DataFactory.namedNode(SHACL_NOT),
+          null
+        )
+      ).toHaveLength(1);
+
+      // Second and-item: sh:or( if else )
+      const secondOr = store.getObjects(
+        DataFactory.blankNode(andItems[1]),
+        DataFactory.namedNode(SHACL_OR),
+        null
+      )[0];
+      expect(secondOr).toBeDefined();
+      const secondOrItems = getListItems(store, secondOr);
+      expect(secondOrItems.length).toBe(2);
+      // first item is the if shape (has property with hasValue 'graduate')
+      const ifProps = store.getObjects(
+        DataFactory.blankNode(secondOrItems[0]),
+        DataFactory.namedNode(SHACL_PROPERTY),
+        null
+      );
+      expect(ifProps.length).toBe(1);
+      expect(getObjectFromBlank(store, ifProps[0], SHACL_HAS_VALUE)).toBe('graduate');
+    });
+
+    it('should not emit anything for if without then or else', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        if: { properties: { type: { const: 'graduate' } } },
+      };
+
+      const store = processSchema(schema);
+
+      expect(getObjectTerms(store, `${EX}Shape`, SHACL_OR)).toHaveLength(0);
+      expect(getObjectTerms(store, `${EX}Shape`, SHACL_AND)).toHaveLength(0);
     });
   });
 

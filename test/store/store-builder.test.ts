@@ -250,6 +250,23 @@ describe('StoreBuilder', () => {
       expect(headA.value).not.toBe(headB.value);
     });
 
+    it('should produce distinct list nodes for the same predicate called twice on the same subject', () => {
+      const store = builder
+        .list('http://example.org/Shape', 'http://example.org/pred', ['a', 'b'], false, true)
+        .list('http://example.org/Shape', 'http://example.org/pred', ['c', 'd'], false, true)
+        .build();
+
+      const quads = store.getQuads(
+        DataFactory.namedNode('http://example.org/Shape'),
+        DataFactory.namedNode('http://example.org/pred'),
+        null,
+        null
+      );
+
+      expect(quads).toHaveLength(2);
+      expect(quads[0].object.value).not.toBe(quads[1].object.value);
+    });
+
     it('should create proper rdf:rest chain ending in rdf:nil', () => {
       const store = builder
         .list('http://example.org/Shape', 'http://example.org/items', ['a', 'b'])
