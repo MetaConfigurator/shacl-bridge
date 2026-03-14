@@ -1,9 +1,9 @@
 ---
 name: Bug Report
 about: Report a bug or unexpected behavior
-title: '[BUG] '
+title: 'bug:  '
 labels: bug
-assignees: ''
+assignees: 'GeezFORCE'
 ---
 
 ## Describe the Bug
