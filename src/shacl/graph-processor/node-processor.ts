@@ -1,4 +1,4 @@
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { Edge, Graph, Node } from '../../graph/types';
 import { JsonSchemaObjectType, JsonSchemaType } from '../../json-schema/meta/json-schema-type';
 import {
@@ -116,6 +116,15 @@ export class NodeProcessor {
         })
         .with('$ref', () => {
           this.processRefEdge(edge, subject);
+        })
+        .with('if', () => {
+          if (!processedLabels.has('if')) {
+            this.processIfThenElseEdges(edges, subject, isBlank);
+            processedLabels.add('if');
+          }
+        })
+        .with('then', 'else', () => {
+          /* Handled by processIfThenElseEdges */
         });
     }
   }
@@ -243,6 +252,51 @@ export class NodeProcessor {
     } else {
       this.context.store.triple(subject, SHACL_NOT, resolved.id, !resolved.isRef);
     }
+  }
+
+  private processIfThenElseEdges(edges: Edge[], subject: string, isBlank = false): void {
+    const ifEdge = edges.find((e) => e.label === 'if');
+    const thenEdge = edges.find((e) => e.label === 'then');
+    const elseEdge = edges.find((e) => e.label === 'else');
+
+    if (!ifEdge || (!thenEdge && !elseEdge)) return;
+
+    const ifResolved = this.resolveEdgeToShapeId(ifEdge);
+    if (!ifResolved) return;
+
+    const thenResolved = thenEdge ? this.resolveEdgeToShapeId(thenEdge) : null;
+    const elseResolved = elseEdge ? this.resolveEdgeToShapeId(elseEdge) : null;
+
+    match([thenResolved, elseResolved])
+      .with([P.not(P.nullish), P.nullish], ([then_]) => {
+        this.emitOrWithNot(ifResolved.id, then_.id, subject, isBlank);
+      })
+      .with([P.nullish, P.not(P.nullish)], ([, else_]) => {
+        this.context.store.listOfBlanks(subject, SHACL_OR, [ifResolved.id, else_.id], isBlank);
+      })
+      .with([P.not(P.nullish), P.not(P.nullish)], ([then_, else_]) => {
+        const notOrBlankId = this.context.nextBlankId();
+        this.emitOrWithNot(ifResolved.id, then_.id, notOrBlankId, true);
+
+        const ifOrBlankId = this.context.nextBlankId();
+        this.context.store.listOfBlanks(ifOrBlankId, SHACL_OR, [ifResolved.id, else_.id], true);
+
+        this.context.store.listOfBlanks(subject, SHACL_AND, [notOrBlankId, ifOrBlankId], isBlank);
+      })
+      .otherwise(() => {
+        /* empty */
+      });
+  }
+
+  private emitOrWithNot(
+    notTargetId: string,
+    thenId: string,
+    subject: string,
+    isBlank = false
+  ): void {
+    const notWrapperBlankId = this.context.nextBlankId();
+    this.context.store.bothBlank(notWrapperBlankId, SHACL_NOT, notTargetId);
+    this.context.store.listOfBlanks(subject, SHACL_OR, [notWrapperBlankId, thenId], isBlank);
   }
 
   private processItemsEdge(edge: Edge, subject: string): void {
