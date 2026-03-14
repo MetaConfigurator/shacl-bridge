@@ -227,6 +227,29 @@ describe('StoreBuilder', () => {
       expect(firstQuads[0].object.termType).toBe('NamedNode');
     });
 
+    it('should produce distinct list nodes for different predicates on the same subject', () => {
+      const store = builder
+        .list('http://example.org/Shape', 'http://example.org/predA', ['a', 'b'], false, true)
+        .list('http://example.org/Shape', 'http://example.org/predB', ['c', 'd'], false, true)
+        .build();
+
+      const headA = store.getQuads(
+        DataFactory.namedNode('http://example.org/Shape'),
+        DataFactory.namedNode('http://example.org/predA'),
+        null,
+        null
+      )[0].object;
+
+      const headB = store.getQuads(
+        DataFactory.namedNode('http://example.org/Shape'),
+        DataFactory.namedNode('http://example.org/predB'),
+        null,
+        null
+      )[0].object;
+
+      expect(headA.value).not.toBe(headB.value);
+    });
+
     it('should create proper rdf:rest chain ending in rdf:nil', () => {
       const store = builder
         .list('http://example.org/Shape', 'http://example.org/items', ['a', 'b'])
