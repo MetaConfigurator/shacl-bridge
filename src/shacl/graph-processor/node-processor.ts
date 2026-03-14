@@ -17,6 +17,7 @@ import {
   SHACL_TARGET_CLASS,
   SHACL_XONE,
 } from '../shacl-terms';
+import { JSON_SCHEMA_UNHANDLED_KEYS } from '../../json-schema/json-schema-terms';
 import { ConstraintMapper } from './constraint-mapper';
 import { WriterContext } from '../writer/writer-context';
 
@@ -48,7 +49,7 @@ export class NodeProcessor {
 
     this.processDefsEdges(edges);
     this.constraintMapper.map(schema, subject, isBlank);
-    this.processEdges(edges, subject, schema);
+    this.processEdges(edges, subject, schema, isBlank);
   }
 
   private getEdgesFrom(node: Node): Edge[] {
@@ -69,38 +70,43 @@ export class NodeProcessor {
     }
   }
 
-  private processEdges(edges: Edge[], subject: string, schema: JsonSchemaObjectType): void {
+  private processEdges(
+    edges: Edge[],
+    subject: string,
+    schema: JsonSchemaObjectType,
+    isBlank = false
+  ): void {
     const required = new Set(schema.required ?? []);
     const processedLabels = new Set<string>();
 
     for (const edge of edges) {
       match(edge.label)
         .with('properties', () => {
-          this.processPropertyEdge(edge, subject, required);
+          this.processPropertyEdge(edge, subject, required, isBlank);
         })
         .with('$defs', () => {
           /* Already processed in processDefsEdges */
         })
         .with('allOf', () => {
           if (!processedLabels.has('allOf')) {
-            this.processLogicalEdges(edges, 'allOf', SHACL_AND, subject);
+            this.processLogicalEdges(edges, 'allOf', SHACL_AND, subject, isBlank);
             processedLabels.add('allOf');
           }
         })
         .with('anyOf', () => {
           if (!processedLabels.has('anyOf')) {
-            this.processLogicalEdges(edges, 'anyOf', SHACL_OR, subject);
+            this.processLogicalEdges(edges, 'anyOf', SHACL_OR, subject, isBlank);
             processedLabels.add('anyOf');
           }
         })
         .with('oneOf', () => {
           if (!processedLabels.has('oneOf')) {
-            this.processLogicalEdges(edges, 'oneOf', SHACL_XONE, subject);
+            this.processLogicalEdges(edges, 'oneOf', SHACL_XONE, subject, isBlank);
             processedLabels.add('oneOf');
           }
         })
         .with('not', () => {
-          this.processNotEdge(edge, subject);
+          this.processNotEdge(edge, subject, isBlank);
         })
         .with('items', () => {
           this.processItemsEdge(edge, subject);
@@ -114,12 +120,21 @@ export class NodeProcessor {
     }
   }
 
-  private processPropertyEdge(edge: Edge, subject: string, required: Set<string>): void {
+  private processPropertyEdge(
+    edge: Edge,
+    subject: string,
+    required: Set<string>,
+    isBlank = false
+  ): void {
     const propName = edge.propertyKey;
     if (!propName) return;
 
     const blankId = this.context.nextBlankId();
-    this.context.store.triple(subject, SHACL_PROPERTY, blankId, true);
+    if (isBlank) {
+      this.context.store.bothBlank(subject, SHACL_PROPERTY, blankId);
+    } else {
+      this.context.store.triple(subject, SHACL_PROPERTY, blankId, true);
+    }
     this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(propName));
 
     if (required.has(propName)) {
@@ -144,8 +159,8 @@ export class NodeProcessor {
 
     if (schema.type === 'object' && schema.properties) {
       const nestedBlankId = this.context.nextBlankId();
-      this.context.store.blank(blankId, SHACL_NODE, `_:${nestedBlankId}`);
-      this.process(edge.to, `_:${nestedBlankId}`, true);
+      this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
+      this.process(edge.to, nestedBlankId, true);
       return;
     }
 
@@ -198,66 +213,35 @@ export class NodeProcessor {
     edges: Edge[],
     label: string,
     predicate: string,
-    subject: string
+    subject: string,
+    isBlank = false
   ): void {
     const logicalEdges = edges.filter((e) => e.label === label);
     if (logicalEdges.length === 0) return;
 
-    const blankIds: string[] = [];
+    const resolved = logicalEdges
+      .map((e) => this.resolveEdgeToShapeId(e))
+      .filter((r): r is { id: string; isRef: boolean } => r !== null);
 
-    for (const edge of logicalEdges) {
-      const schema = edge.to.value as JsonSchemaObjectType;
-      if (schema.$ref) {
-        blankIds.push(this.context.resolveRef(schema.$ref));
-      } else if (this.hasMappableContent(schema)) {
-        const blankId = this.context.nextBlankId();
-        this.constraintMapper.map(schema, blankId, true);
-        blankIds.push(blankId);
-      }
-    }
-
-    if (blankIds.length > 0) {
-      const hasRefs = logicalEdges.some((e) => (e.to.value as JsonSchemaObjectType).$ref);
-      const allRefs = logicalEdges.every((e) => (e.to.value as JsonSchemaObjectType).$ref);
-
-      if (allRefs) {
-        this.context.store.list(subject, predicate, blankIds, false, true);
-      } else if (hasRefs) {
-        this.context.store.listOfBlanks(subject, predicate, blankIds, false);
+    if (resolved.length > 0) {
+      const ids = resolved.map((r) => r.id);
+      if (resolved.every((r) => r.isRef)) {
+        this.context.store.list(subject, predicate, ids, isBlank, true);
       } else {
-        this.context.store.listOfBlanks(subject, predicate, blankIds, false);
+        this.context.store.listOfBlanks(subject, predicate, ids, isBlank);
       }
     }
   }
 
-  private hasMappableContent(schema: JsonSchemaObjectType): boolean {
-    const mappableKeys = [
-      'type',
-      'format',
-      'title',
-      'description',
-      'minLength',
-      'maxLength',
-      'pattern',
-      'minimum',
-      'maximum',
-      'exclusiveMinimum',
-      'exclusiveMaximum',
-      'minItems',
-      'maxItems',
-      'const',
-      'enum',
-      'additionalProperties',
-      'unevaluatedProperties',
-      '$ref',
-    ];
-    return mappableKeys.some((key) => key in schema);
-  }
+  private processNotEdge(edge: Edge, subject: string, isBlank = false): void {
+    const resolved = this.resolveEdgeToShapeId(edge);
+    if (!resolved) return;
 
-  private processNotEdge(edge: Edge, subject: string): void {
-    const schema = edge.to.value as JsonSchemaObjectType;
-    if (schema.$ref) {
-      this.context.store.triple(subject, SHACL_NOT, this.context.resolveRef(schema.$ref), false);
+    if (isBlank) {
+      if (resolved.isRef) this.context.store.blank(subject, SHACL_NOT, resolved.id);
+      else this.context.store.bothBlank(subject, SHACL_NOT, resolved.id);
+    } else {
+      this.context.store.triple(subject, SHACL_NOT, resolved.id, !resolved.isRef);
     }
   }
 
@@ -277,6 +261,23 @@ export class NodeProcessor {
     if (typeof refValue === 'string') {
       this.context.store.triple(subject, SHACL_NODE, this.context.resolveRef(refValue), false);
     }
+  }
+
+  private resolveEdgeToShapeId(edge: Edge): { id: string; isRef: boolean } | null {
+    const schema = edge.to.value as JsonSchemaObjectType;
+    if (schema.$ref) {
+      return { id: this.context.resolveRef(schema.$ref), isRef: true };
+    }
+    if (this.hasMappableContent(schema)) {
+      const blankId = this.context.nextBlankId();
+      this.process(edge.to, blankId, true);
+      return { id: blankId, isRef: false };
+    }
+    return null;
+  }
+
+  private hasMappableContent(schema: JsonSchemaObjectType): boolean {
+    return Object.keys(schema).some((k) => !JSON_SCHEMA_UNHANDLED_KEYS.has(k));
   }
 
   private processContainsEdge(

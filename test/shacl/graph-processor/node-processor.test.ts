@@ -260,6 +260,104 @@ describe('NodeProcessor', () => {
 
       expect(getObject(store, `${EX}Shape`, SHACL_NOT)).toBe(`${EX}Null`);
     });
+
+    it('should map allOf with inline properties schema to sh:and with blank node shapes', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        allOf: [
+          { properties: { name: { type: 'string' } }, required: ['name'] },
+          { properties: { age: { type: 'integer' } } },
+        ],
+      };
+
+      const store = processSchema(schema);
+
+      const andTerms = getObjectTerms(store, `${EX}Shape`, SHACL_AND);
+      expect(andTerms.length).toBe(1);
+
+      const listItems = getListItems(store, andTerms[0]);
+      expect(listItems.length).toBe(2);
+
+      const firstItemProps = store.getObjects(
+        DataFactory.blankNode(listItems[0]),
+        DataFactory.namedNode(SHACL_PROPERTY),
+        null
+      );
+      expect(firstItemProps.length).toBe(1);
+      expect(getObjectFromBlank(store, firstItemProps[0], SHACL_PATH)).toBe(`${EX}name`);
+      expect(getObjectFromBlank(store, firstItemProps[0], SHACL_MIN_COUNT)).toBe('1');
+    });
+
+    it('should map anyOf with inline properties schema to sh:or with blank node shapes', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        anyOf: [
+          { properties: { email: { type: 'string' } }, required: ['email'] },
+          { properties: { phone: { type: 'string' } }, required: ['phone'] },
+        ],
+      };
+
+      const store = processSchema(schema);
+
+      const orTerms = getObjectTerms(store, `${EX}Shape`, SHACL_OR);
+      expect(orTerms.length).toBe(1);
+
+      const listItems = getListItems(store, orTerms[0]);
+      expect(listItems.length).toBe(2);
+
+      const firstItemProps = store.getObjects(
+        DataFactory.blankNode(listItems[0]),
+        DataFactory.namedNode(SHACL_PROPERTY),
+        null
+      );
+      expect(firstItemProps.length).toBe(1);
+      expect(getObjectFromBlank(store, firstItemProps[0], SHACL_PATH)).toBe(`${EX}email`);
+    });
+
+    it('should map oneOf with inline properties schema to sh:xone with blank node shapes', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        oneOf: [
+          { properties: { type: { const: 'undergraduate' } } },
+          { properties: { type: { const: 'graduate' } } },
+        ],
+      };
+
+      const store = processSchema(schema);
+
+      const xoneTerms = getObjectTerms(store, `${EX}Shape`, SHACL_XONE);
+      expect(xoneTerms.length).toBe(1);
+
+      const listItems = getListItems(store, xoneTerms[0]);
+      expect(listItems.length).toBe(2);
+
+      for (const itemId of listItems) {
+        const itemProps = store.getObjects(
+          DataFactory.blankNode(itemId),
+          DataFactory.namedNode(SHACL_PROPERTY),
+          null
+        );
+        expect(itemProps.length).toBe(1);
+        expect(getObjectFromBlank(store, itemProps[0], SHACL_PATH)).toBe(`${EX}type`);
+      }
+    });
+
+    it('should map not with inline properties schema to sh:not blank node shape', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        not: { properties: { status: { const: 'expelled' } } },
+      };
+
+      const store = processSchema(schema);
+
+      const notTerms = getObjectTerms(store, `${EX}Shape`, SHACL_NOT);
+      expect(notTerms.length).toBe(1);
+      expect(notTerms[0].termType).toBe('BlankNode');
+
+      const propTerms = store.getObjects(notTerms[0], DataFactory.namedNode(SHACL_PROPERTY), null);
+      expect(propTerms.length).toBe(1);
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_PATH)).toBe(`${EX}status`);
+    });
   });
 
   describe('$ref handling', () => {
