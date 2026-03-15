@@ -6,6 +6,6 @@ import { Store } from 'n3';
 
 export async function canonicalizeStore(store: Store): Promise<Set<string>> {
   const quads = store.getQuads(null, null, null, null);
-  const canonical: string = await canonize(quads, { algorithm: 'URDNA2015' });
+  const canonical: string = await canonize(quads, { algorithm: 'RDFC-1.0' });
   return new Set(canonical.split('\n').filter((line) => line.trim().length > 0));
 }
