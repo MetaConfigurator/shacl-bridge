@@ -3,6 +3,8 @@
 import { Command, Option as CommanderOption } from 'commander';
 import {
   CLI_BASE,
+  COMPARE,
+  CompareOptions,
   TO_JSON_SCHEMA,
   TO_SHACL,
   ToJsonSchemaOptions,
@@ -10,6 +12,7 @@ import {
 } from './cli-constants';
 import { ShaclToJsonSchema } from './shacl-to-json-schema';
 import { JsonSchemaToShacl } from './json-schema-to-shacl';
+import { ShaclCompare } from './shacl-compare';
 
 const program = new Command();
 
@@ -76,6 +79,22 @@ const toShaclCommand = new Command(TO_SHACL.command)
     }
   });
 
+// compare subcommand
+const compareCommand = new Command(COMPARE.command)
+  .description(COMPARE.description)
+  .showHelpAfterError(true)
+  .requiredOption(COMPARE.file1.flag, COMPARE.file1.description)
+  .requiredOption(COMPARE.file2.flag, COMPARE.file2.description)
+  .option(COMPARE.shorten.flag, COMPARE.shorten.description, COMPARE.shorten.default)
+  .action(async function (this: Command, options: CompareOptions) {
+    try {
+      await new ShaclCompare(options).compare();
+    } catch (error) {
+      this.error(error instanceof Error ? error.message : String(error));
+    }
+  });
+
 program.addCommand(toJsonSchemaCommand);
 program.addCommand(toShaclCommand);
+program.addCommand(compareCommand);
 program.parse();
