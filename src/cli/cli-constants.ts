@@ -74,6 +74,30 @@ export const TO_JSON_SCHEMA = {
   },
 };
 
+export interface CompareOptions {
+  file1: string;
+  file2: string;
+  shorten: boolean;
+}
+
+export const COMPARE = {
+  command: 'compare',
+  description: 'Compare two SHACL files and output a similarity score with differences',
+  file1: {
+    flag: '--file1 <file>',
+    description: 'First SHACL file (Turtle)',
+  },
+  file2: {
+    flag: '--file2 <file>',
+    description: 'Second SHACL file (Turtle)',
+  },
+  shorten: {
+    flag: '--shorten',
+    description: 'Shorten URIs using prefixes from the input files',
+    default: false,
+  },
+};
+
 export const TO_SHACL = {
   command: 'to-shacl',
   description: 'Convert JSON Schema to SHACL',

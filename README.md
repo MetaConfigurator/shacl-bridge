@@ -38,6 +38,9 @@ shacl-bridge to-json-schema -i input.ttl --mode multi -o ./schemas/
 
 # Exclude x-shacl-* extension properties from output
 shacl-bridge to-json-schema -i input.ttl --exclude-shacl-extensions
+
+# Set a custom $id on the generated JSON Schema
+shacl-bridge to-json-schema -i input.ttl --schema-id https://example.org/my-schema
 ```
 
 #### JSON Schema to SHACL
@@ -59,6 +62,34 @@ shacl-bridge to-shacl -i input.json --json-ld
 shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 ```
 
+#### Compare SHACL Files
+
+```bash
+# Compare two SHACL files and print a similarity score with differences
+shacl-bridge compare --file1 schema-v1.ttl --file2 schema-v2.ttl
+
+# Shorten URIs in the diff output using prefixes from the input files
+shacl-bridge compare --file1 schema-v1.ttl --file2 schema-v2.ttl --shorten
+```
+
+Example output:
+
+```
+Score: 0.7143 (71.4% similar)
+
+Only in schema-v1.ttl:
+  [http://example.org/PersonShape]
+    <http://example.org/PersonShape> <http://www.w3.org/ns/shacl#property> _:c14n0 .
+    _:c14n0 <http://www.w3.org/ns/shacl#minCount> "1" .
+
+Only in schema-v2.ttl:
+  [http://example.org/PersonShape]
+    <http://example.org/PersonShape> <http://www.w3.org/ns/shacl#property> _:c14n0 .
+    _:c14n0 <http://www.w3.org/ns/shacl#minCount> "2" .
+```
+
+The similarity score is computed using [Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index) on the canonicalized RDF triples of both files (via URDNA2015). Blank nodes are assigned deterministic labels based on their structural context, so structurally identical property shapes compare as equal regardless of their original blank node identifiers.
+
 #### Command Options
 
 ##### `to-json-schema`
@@ -71,6 +102,7 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 | `--json-ld`                  | Parse input as JSON-LD format                       |
 | `-m, --mode <mode>`          | Output mode: `single` (default) or `multi`          |
 | `--exclude-shacl-extensions` | Exclude `x-shacl-*` properties from output          |
+| `--schema-id <uri>`          | Set the `$id` of the generated JSON Schema          |
 
 ##### `to-shacl`
 
@@ -81,6 +113,14 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 | `--from-clipboard`    | Read JSON Schema content from clipboard |
 | `--json-ld`           | Output as JSON-LD instead of Turtle     |
 | `--base-uri <uri>`    | Base URI for generated shapes           |
+
+##### `compare`
+
+| Option           | Description                                            |
+| ---------------- | ------------------------------------------------------ |
+| `--file1 <file>` | First SHACL file to compare (Turtle, required)         |
+| `--file2 <file>` | Second SHACL file to compare (Turtle, required)        |
+| `--shorten`      | Shorten URIs in diff output using prefixes from inputs |
 
 #### Output Modes (to-json-schema)
 
@@ -97,6 +137,7 @@ The `--mode` (`-m`) option controls how the JSON Schema output is structured:
 - Comprehensive SHACL constraint support
 - Automatic blank node resolution
 - Multi-file output mode for modular schemas
+- SHACL document comparison with Jaccard similarity scoring and triple-level diff
 
 ### Programmatic API
 

@@ -547,6 +547,98 @@ try {
     Write-Host "Round-trip conversion completed successfully" -ForegroundColor Green
 
     Write-Host ""
+    Write-Host "=== Compare Tests ==="
+
+    Write-Host ""
+    Write-Host "Test 27: compare --help flag"
+    $compareHelp = shacl-bridge compare --help
+    if ($compareHelp -like "*compare*" -and $compareHelp -like "*--file1*" -and $compareHelp -like "*--file2*")
+    {
+        Write-Host "compare help output is valid" -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "compare help output is invalid" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 28: compare two different SHACL files"
+    $compareOutput = shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/cardinality-constraints.ttl
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "compare command failed"
+    }
+    $compareString = $compareOutput -join "`n"
+    if ($compareString -like "*Score:*")
+    {
+        Write-Host "compare produces score output" -ForegroundColor Green
+        Write-Host "  Output: $( $compareOutput | Select-Object -First 1 )"
+    }
+    else
+    {
+        Write-Host "compare output missing Score" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 29: compare a file to itself should yield 100% similarity"
+    $sameFileOutput = shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/simple-shacl.ttl
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "same-file compare failed"
+    }
+    $sameFileString = $sameFileOutput -join "`n"
+    if ($sameFileString -like "*100.0%*")
+    {
+        Write-Host "Same-file comparison correctly yields 100% similarity" -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Same-file comparison did not yield 100% similarity" -ForegroundColor Red
+        Write-Host "  Output: $sameFileString"
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 30: compare with --shorten flag produces prefixed output"
+    $shortenOutput = shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/cardinality-constraints.ttl --shorten
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "compare --shorten failed"
+    }
+    $shortenString = $shortenOutput -join "`n"
+    if ($shortenString -like "*Score:*")
+    {
+        Write-Host "compare --shorten produces valid output" -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "compare --shorten output missing Score" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 31: compare without required flags should fail"
+    shacl-bridge compare 2> $null
+    if ($LASTEXITCODE -eq 0)
+    {
+        Write-Host "Should have failed without --file1 and --file2" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Correctly requires --file1 and --file2 flags" -ForegroundColor Green
+
+    Write-Host ""
+    Write-Host "Test 32: compare with nonexistent file should fail"
+    shacl-bridge compare --file1 nonexistent.ttl --file2 samples/shacl/simple-shacl.ttl 2> $null
+    if ($LASTEXITCODE -eq 0)
+    {
+        Write-Host "Should have failed with nonexistent file" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Correctly handles nonexistent files" -ForegroundColor Green
+
+    Write-Host ""
     Write-Host "All tests passed!" -ForegroundColor Green
 
 } finally {
