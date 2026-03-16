@@ -17,7 +17,11 @@ import {
   SHACL_TARGET_CLASS,
   SHACL_XONE,
 } from '../shacl-terms';
-import { JSON_SCHEMA_UNHANDLED_KEYS } from '../../json-schema/json-schema-terms';
+import {
+  JSON_SCHEMA_METADATA_KEYS,
+  JSON_SCHEMA_SHACL_EDGE_LABELS,
+  JSON_SCHEMA_UNHANDLED_KEYS,
+} from '../../json-schema/json-schema-terms';
 import { ConstraintMapper } from './constraint-mapper';
 import { WriterContext } from '../writer/writer-context';
 
@@ -40,6 +44,10 @@ export class NodeProcessor {
     const schema = node.value as JsonSchemaObjectType;
     const edges = this.getEdgesFrom(node);
 
+    this.processDefsEdges(edges);
+
+    if (!this.hasShapeContent(schema, edges)) return;
+
     if (!isBlank) {
       this.context.store.shape(subject, SHACL_NODE_SHAPE);
       if (targetClass) {
@@ -47,9 +55,17 @@ export class NodeProcessor {
       }
     }
 
-    this.processDefsEdges(edges);
     this.constraintMapper.map(schema, subject, isBlank);
     this.processEdges(edges, subject, schema, isBlank);
+  }
+
+  private hasShapeContent(schema: JsonSchemaObjectType, edges: Edge[]): boolean {
+    const hasShapeEdge = edges.some((e) => JSON_SCHEMA_SHACL_EDGE_LABELS.has(e.label));
+    const hasDefEdge = edges.some((e) => e.label === '$defs' || e.label === 'definitions');
+    const hasConstraintKey = Object.keys(schema).some(
+      (k) => !JSON_SCHEMA_METADATA_KEYS.has(k) && !JSON_SCHEMA_UNHANDLED_KEYS.has(k)
+    );
+    return !(hasDefEdge && !hasShapeEdge && !hasConstraintKey);
   }
 
   private getEdgesFrom(node: Node): Edge[] {
@@ -77,11 +93,13 @@ export class NodeProcessor {
     isBlank = false
   ): void {
     const required = new Set(schema.required ?? []);
+    const processedProperties = new Set<string>();
     const processedLabels = new Set<string>();
 
     for (const edge of edges) {
       match(edge.label)
         .with('properties', () => {
+          if (edge.propertyKey) processedProperties.add(edge.propertyKey);
           this.processPropertyEdge(edge, subject, required, isBlank);
         })
         .with('$defs', () => {
@@ -126,6 +144,19 @@ export class NodeProcessor {
         .with('then', 'else', () => {
           /* Handled by processIfThenElseEdges */
         });
+    }
+
+    for (const req of required) {
+      if (!processedProperties.has(req)) {
+        const blankId = this.context.nextBlankId();
+        if (isBlank) {
+          this.context.store.bothBlank(subject, SHACL_PROPERTY, blankId);
+        } else {
+          this.context.store.triple(subject, SHACL_PROPERTY, blankId, true);
+        }
+        this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(req));
+        this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
+      }
     }
   }
 
@@ -174,6 +205,7 @@ export class NodeProcessor {
     }
 
     if (schema.type === 'array' && schema.items) {
+      this.constraintMapper.map(schema, blankId, true);
       const itemsSchema = schema.items as JsonSchemaObjectType;
       if (itemsSchema.$ref) {
         this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(itemsSchema.$ref));

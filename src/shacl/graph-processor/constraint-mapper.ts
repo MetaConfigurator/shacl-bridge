@@ -3,10 +3,13 @@ import {
   SHACL_BLANK_NODE_OR_IRI,
   SHACL_CLOSED,
   SHACL_DATATYPE,
+  SHACL_DEACTIVATED,
+  SHACL_DEFAULT_VALUE,
   SHACL_DESCRIPTION,
   SHACL_HAS_VALUE,
   SHACL_IN,
   SHACL_IRI,
+  SHACL_LITERAL,
   SHACL_MAX_COUNT,
   SHACL_MAX_EXCLUSIVE,
   SHACL_MAX_INCLUSIVE,
@@ -17,6 +20,7 @@ import {
   SHACL_MIN_LENGTH,
   SHACL_NAME,
   SHACL_NODE_KIND,
+  SHACL_OR,
   SHACL_PATTERN,
   XSD_BOOLEAN,
   XSD_DATE,
@@ -65,6 +69,7 @@ export class ConstraintMapper {
 
   map(schema: JsonSchemaObjectType, subject: string, isBlank = false): void {
     this.mapMetadata(schema, subject, isBlank);
+    this.mapAnnotations(schema, subject, isBlank);
     this.mapType(schema, subject, isBlank);
     this.mapFormatConstraints(schema, subject, isBlank);
     this.mapStringConstraints(schema, subject, isBlank);
@@ -83,7 +88,21 @@ export class ConstraintMapper {
     }
   }
 
+  private mapAnnotations(schema: JsonSchemaObjectType, subject: string, isBlank: boolean): void {
+    if (schema.deprecated === true) {
+      this.context.store.literalBool(subject, SHACL_DEACTIVATED, true, isBlank);
+    }
+    const def = schema.default;
+    if (typeof def === 'string' || typeof def === 'number' || typeof def === 'boolean') {
+      this.context.store.literalString(subject, SHACL_DEFAULT_VALUE, String(def), isBlank);
+    }
+  }
+
   private mapType(schema: JsonSchemaObjectType, subject: string, isBlank: boolean): void {
+    if (Array.isArray(schema.type)) {
+      this.mapUnionType(schema.type as string[], subject, isBlank);
+      return;
+    }
     if (typeof schema.type !== 'string') return;
     if (schema.format != null && schema.format in FORMAT_MAPPINGS) return;
 
@@ -95,6 +114,20 @@ export class ConstraintMapper {
         this.context.store.triple(subject, mapping.predicate, mapping.value, false);
       }
     }
+  }
+
+  private mapUnionType(types: string[], subject: string, isBlank: boolean): void {
+    const blankIds = types.map((type) => {
+      const blankId = this.context.nextBlankId();
+      if (type === 'null') {
+        this.context.store.blank(blankId, SHACL_NODE_KIND, SHACL_LITERAL);
+      } else if (type in TYPE_MAPPINGS) {
+        const mapping = TYPE_MAPPINGS[type];
+        this.context.store.blank(blankId, mapping.predicate, mapping.value);
+      }
+      return blankId;
+    });
+    this.context.store.listOfBlanks(subject, SHACL_OR, blankIds, isBlank);
   }
 
   private mapFormatConstraints(
