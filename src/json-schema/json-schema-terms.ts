@@ -18,9 +18,7 @@ export const JSON_SCHEMA_UNHANDLED_KEYS = new Set([
   'uniqueItems',
   'readOnly',
   'writeOnly',
-  'deprecated',
   'examples',
-  'default',
   'unevaluatedItems',
   '$comment',
   '$schema',
@@ -28,4 +26,18 @@ export const JSON_SCHEMA_UNHANDLED_KEYS = new Set([
   '$anchor',
   '$dynamicAnchor',
   '$dynamicRef',
+]);
+
+export const JSON_SCHEMA_METADATA_KEYS = new Set(['title', 'description', '$defs', 'definitions']);
+
+export const JSON_SCHEMA_SHACL_EDGE_LABELS = new Set([
+  'properties',
+  'allOf',
+  'anyOf',
+  'oneOf',
+  'not',
+  'if',
+  'items',
+  'contains',
+  '$ref',
 ]);

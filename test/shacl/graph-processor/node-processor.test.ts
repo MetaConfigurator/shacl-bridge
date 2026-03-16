@@ -5,12 +5,15 @@ import { GraphBuilder } from '../../../src/graph/graph-builder';
 import { JsonSchemaObjectType } from '../../../src/json-schema/meta/json-schema-type';
 import {
   RDF_FIRST,
+  RDF_TYPE,
   SHACL_AND,
   SHACL_DATATYPE,
   SHACL_HAS_VALUE,
+  SHACL_MAX_COUNT,
   SHACL_MIN_COUNT,
   SHACL_MIN_LENGTH,
   SHACL_NODE,
+  SHACL_NODE_SHAPE,
   SHACL_NOT,
   SHACL_OR,
   SHACL_PATH,
@@ -533,6 +536,131 @@ describe('NodeProcessor', () => {
       const store = processSchema(schema);
 
       expect(getObject(store, `${EX}ArrayShape`, SHACL_NODE)).toBe(`${EX}Item`);
+    });
+  });
+
+  describe('array property constraints', () => {
+    it('should emit minItems/maxItems on property shape when items is a $ref', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}CourseShape`,
+        $defs: { Person: { type: 'object' } },
+        type: 'object',
+        properties: {
+          instructors: {
+            type: 'array',
+            items: { $ref: '#/$defs/Person' },
+            minItems: 1,
+            maxItems: 5,
+          },
+        },
+      };
+
+      const store = processSchema(schema);
+
+      const propertyTerms = getObjectTerms(store, `${EX}CourseShape`, SHACL_PROPERTY);
+      expect(propertyTerms.length).toBe(1);
+
+      const minCount = getObjectFromBlank(store, propertyTerms[0], SHACL_MIN_COUNT);
+      const maxCount = getObjectFromBlank(store, propertyTerms[0], SHACL_MAX_COUNT);
+      const node = getObjectFromBlank(store, propertyTerms[0], SHACL_NODE);
+
+      expect(minCount).toBe('1');
+      expect(maxCount).toBe('5');
+      expect(node).toBe(`${EX}Person`);
+    });
+
+    it('should emit minItems/maxItems on property shape when items has inline constraints', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}ListShape`,
+        type: 'object',
+        properties: {
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            minItems: 2,
+            maxItems: 10,
+          },
+        },
+      };
+
+      const store = processSchema(schema);
+
+      const propertyTerms = getObjectTerms(store, `${EX}ListShape`, SHACL_PROPERTY);
+      const minCount = getObjectFromBlank(store, propertyTerms[0], SHACL_MIN_COUNT);
+      const maxCount = getObjectFromBlank(store, propertyTerms[0], SHACL_MAX_COUNT);
+
+      expect(minCount).toBe('2');
+      expect(maxCount).toBe('10');
+    });
+  });
+
+  describe('required without properties', () => {
+    it('should create property shapes for required fields with no corresponding properties', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        required: ['advisor'],
+      };
+
+      const store = processSchema(schema);
+
+      const propertyTerms = getObjectTerms(store, `${EX}Shape`, SHACL_PROPERTY);
+      expect(propertyTerms.length).toBe(1);
+      expect(getObjectFromBlank(store, propertyTerms[0], SHACL_PATH)).toBe(`${EX}advisor`);
+      expect(getObjectFromBlank(store, propertyTerms[0], SHACL_MIN_COUNT)).toBe('1');
+    });
+
+    it('should not double-emit property shapes for required fields that also appear in properties', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Shape`,
+        type: 'object',
+        properties: { name: { type: 'string' } },
+        required: ['name'],
+      };
+
+      const store = processSchema(schema);
+
+      const propertyTerms = getObjectTerms(store, `${EX}Shape`, SHACL_PROPERTY);
+      expect(propertyTerms.length).toBe(1);
+    });
+  });
+
+  describe('root NodeShape suppression', () => {
+    it('should not create a NodeShape for the root when it has only $defs and metadata', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Root`,
+        title: 'My Schema',
+        description: 'A description',
+        $defs: {
+          Person: { type: 'object', properties: { name: { type: 'string' } } },
+        },
+      };
+
+      const store = processSchema(schema);
+
+      const rootTypeTerms = store.getObjects(
+        DataFactory.namedNode(`${EX}Root`),
+        DataFactory.namedNode(RDF_TYPE),
+        null
+      );
+      expect(rootTypeTerms.some((t) => t.value === SHACL_NODE_SHAPE)).toBe(false);
+    });
+
+    it('should still create a NodeShape for the root when it has properties', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}Root`,
+        title: 'My Schema',
+        type: 'object',
+        properties: { name: { type: 'string' } },
+      };
+
+      const store = processSchema(schema);
+
+      const rootTypeTerms = store.getObjects(
+        DataFactory.namedNode(`${EX}Root`),
+        DataFactory.namedNode(RDF_TYPE),
+        null
+      );
+      expect(rootTypeTerms.some((t) => t.value === SHACL_NODE_SHAPE)).toBe(true);
     });
   });
 });

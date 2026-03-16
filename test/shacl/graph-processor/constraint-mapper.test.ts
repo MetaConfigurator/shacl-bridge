@@ -7,9 +7,12 @@ import {
   SHACL_BLANK_NODE_OR_IRI,
   SHACL_CLOSED,
   SHACL_DATATYPE,
+  SHACL_DEACTIVATED,
+  SHACL_DEFAULT_VALUE,
   SHACL_DESCRIPTION,
   SHACL_HAS_VALUE,
   SHACL_IN,
+  SHACL_LITERAL,
   SHACL_MAX_COUNT,
   SHACL_MAX_EXCLUSIVE,
   SHACL_MAX_INCLUSIVE,
@@ -20,6 +23,7 @@ import {
   SHACL_MIN_LENGTH,
   SHACL_NAME,
   SHACL_NODE_KIND,
+  SHACL_OR,
   SHACL_PATTERN,
   XSD_BOOLEAN,
   XSD_DECIMAL,
@@ -179,6 +183,51 @@ describe('ConstraintMapper', () => {
 
       const firstItem = store.getObjects(inTerm, DataFactory.namedNode(RDF_FIRST), null)[0];
       expect(firstItem.value).toBe('a');
+    });
+  });
+
+  describe('union type', () => {
+    it('should map type array to sh:or with per-type blank nodes', () => {
+      const store = buildAndGetStore({ type: ['number', 'null'] }, `${EX}Shape`);
+
+      const orTerms = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_OR),
+        null
+      );
+      expect(orTerms.length).toBe(1);
+
+      const first = store.getObjects(orTerms[0], DataFactory.namedNode(RDF_FIRST), null)[0];
+      expect(first).toBeDefined();
+      expect(getBlankObject(store, first.value, SHACL_DATATYPE)).toBe(XSD_DECIMAL);
+
+      const rest = store.getObjects(
+        orTerms[0],
+        DataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'),
+        null
+      )[0];
+      const second = store.getObjects(rest, DataFactory.namedNode(RDF_FIRST), null)[0];
+      expect(getBlankObject(store, second.value, SHACL_NODE_KIND)).toBe(SHACL_LITERAL);
+    });
+  });
+
+  describe('annotations', () => {
+    it('should map deprecated:true to sh:deactivated true', () => {
+      const store = buildAndGetStore({ deprecated: true }, `${EX}Shape`);
+
+      expect(getObject(store, `${EX}Shape`, SHACL_DEACTIVATED)).toBe('true');
+    });
+
+    it('should not emit sh:deactivated when deprecated is false', () => {
+      const store = buildAndGetStore({ deprecated: false }, `${EX}Shape`);
+
+      expect(getObject(store, `${EX}Shape`, SHACL_DEACTIVATED)).toBeUndefined();
+    });
+
+    it('should map default to sh:defaultValue', () => {
+      const store = buildAndGetStore({ default: 'user' }, `${EX}Shape`);
+
+      expect(getObject(store, `${EX}Shape`, SHACL_DEFAULT_VALUE)).toBe('user');
     });
   });
 
