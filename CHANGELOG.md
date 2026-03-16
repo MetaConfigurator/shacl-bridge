@@ -16,6 +16,24 @@
 
 * **compare:** add option to compare SHACL documents ([#119](https://github.com/GeezFORCE/shacl-bridge/issues/119)) ([8a3e7eb](https://github.com/GeezFORCE/shacl-bridge/commit/8a3e7ebaa0a85a80a4f3078e8b257bde2acdbd1d))
 
+# [1.6.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.5.0...v1.6.0) (2026-03-16)
+
+
+### Bug Fixes
+
+* **conversion:** add if-then-else conversion ([#117](https://github.com/GeezFORCE/shacl-bridge/issues/117)) ([9f7ffc7](https://github.com/GeezFORCE/shacl-bridge/commit/9f7ffc70a9d5e1334599e90f2589c193d0a49d05))
+* **conversion:** handle blank node references leak ([#108](https://github.com/GeezFORCE/shacl-bridge/issues/108)) ([057af9d](https://github.com/GeezFORCE/shacl-bridge/commit/057af9daecf286acd0ff8c328e8ac351426ac99c))
+* **conversion:** json schema logical operators conversion ([#115](https://github.com/GeezFORCE/shacl-bridge/issues/115)) ([cec11a9](https://github.com/GeezFORCE/shacl-bridge/commit/cec11a924597815eacc3e243eab72ccf4a4da8c2))
+* **conversion:** nodekind conversion missing ([#109](https://github.com/GeezFORCE/shacl-bridge/issues/109)) ([fc5397d](https://github.com/GeezFORCE/shacl-bridge/commit/fc5397d5b53a6e75e76201240950fad0bb758077))
+* **conversion:** remove root id and refs for generated json schema ([b425df3](https://github.com/GeezFORCE/shacl-bridge/commit/b425df3ddbbaf95eb4369a32173e158f7ea17278))
+* **format:** tsconfig.json ([8283358](https://github.com/GeezFORCE/shacl-bridge/commit/8283358bd405b8b9fc0a6488fc5322f226603282))
+* **shacl:** filter out non shapes included as shapes ([7083cea](https://github.com/GeezFORCE/shacl-bridge/commit/7083ceac92ee48f9c20dc3a65c910a88002f0d63))
+
+
+### Features
+
+* **compare:** add option to compare SHACL documents ([#119](https://github.com/GeezFORCE/shacl-bridge/issues/119)) ([8a3e7eb](https://github.com/GeezFORCE/shacl-bridge/commit/8a3e7ebaa0a85a80a4f3078e8b257bde2acdbd1d))
+
 # [1.5.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.4.3...v1.5.0) (2026-02-16)
 
 
