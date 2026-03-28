@@ -1,0 +1,16 @@
+{
+  "excluded": [
+    "string/format/ecmascript-regex",
+    "string/format/hostname",
+    "string/format/idn-email",
+    "string/format/idn-hostname",
+    "string/format/ipv4",
+    "string/format/ipv6",
+    "string/format/iri-reference",
+    "string/format/json-pointer",
+    "string/format/relative-json-pointer",
+    "string/format/unknown",
+    "string/format/uri-reference",
+    "string/format/uri-template"
+  ]
+}
