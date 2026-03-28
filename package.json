@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GeezFORCE/shacl-bridge.git"
+    "url": "git+https://github.com/MetaConfigurator/shacl-bridge.git"
   },
   "keywords": [
     "shacl",
@@ -40,9 +40,9 @@
   "author": "Giridhar C G <girigov39@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GeezFORCE/shacl-bridge/issues"
+    "url": "https://github.com/MetaConfigurator/shacl-bridge/issues"
   },
-  "homepage": "https://github.com/GeezFORCE/shacl-bridge#readme",
+  "homepage": "https://github.com/MetaConfigurator/shacl-bridge#readme",
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@semantic-release/changelog": "^6.0.3",
