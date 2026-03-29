@@ -21,7 +21,7 @@ function printNode(node: SchemaNode, prefix: string, isLast: boolean, lines: str
 function formatNode(node: SchemaNode): string {
   const { schema } = node;
   if (schema.$ref) return `$ref: ${schema.$ref}`;
-  if (schema.title) return `${schema.title} (${schema.type ?? 'object'})`;
+  if (schema.title) return `${schema.title} (${String(schema.type ?? 'object')})`;
   if (schema.type) return `type: ${String(schema.type)}`;
   return '(schema)';
 }
