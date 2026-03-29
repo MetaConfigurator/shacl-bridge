@@ -64,8 +64,8 @@ function resolveEdgeToShapeId(
 }
 
 function emitLogical(
-  edges: SchemaEdge[],
   predicate: string,
+  edges: SchemaEdge[],
   subject: string,
   isBlank: boolean,
   ctx: ShapeContext
@@ -85,7 +85,6 @@ function emitLogical(
 }
 
 function emitNot([edge]: SchemaEdge[], subject: string, isBlank: boolean, ctx: ShapeContext): void {
-  if (!edge) return;
   const resolved = resolveEdgeToShapeId(edge, ctx);
   if (!resolved) return;
 
@@ -103,7 +102,6 @@ function emitItems(
   _isBlank: boolean,
   ctx: ShapeContext
 ): void {
-  if (!edge) return;
   const { schema } = edge.node;
   if (schema.$ref) {
     ctx.writer.store.triple(subject, SHACL_NODE, ctx.writer.resolveRef(schema.$ref), false);
@@ -120,7 +118,6 @@ function emitContains(
   _isBlank: boolean,
   ctx: ShapeContext
 ): void {
-  if (!edge) return;
   const blankId = ctx.writer.nextBlankId();
   ctx.writer.store.triple(subject, SHACL_QUALIFIED_VALUE_SHAPE, blankId, true);
   ctx.mapper.map(edge.node.schema, blankId, true);
@@ -184,40 +181,10 @@ export function emitIfThenElse(
 }
 
 export const LABEL_HANDLERS = new Map<string, Handler>([
-  [
-    'allOf',
-    (edges, s, b, ctx) => {
-      emitLogical(edges, SHACL_AND, s, b, ctx);
-    },
-  ],
-  [
-    'anyOf',
-    (edges, s, b, ctx) => {
-      emitLogical(edges, SHACL_OR, s, b, ctx);
-    },
-  ],
-  [
-    'oneOf',
-    (edges, s, b, ctx) => {
-      emitLogical(edges, SHACL_XONE, s, b, ctx);
-    },
-  ],
-  [
-    'not',
-    (edges, s, b, ctx) => {
-      emitNot(edges, s, b, ctx);
-    },
-  ],
-  [
-    'items',
-    (edges, s, b, ctx) => {
-      emitItems(edges, s, b, ctx);
-    },
-  ],
-  [
-    'contains',
-    (edges, s, b, ctx) => {
-      emitContains(edges, s, b, ctx);
-    },
-  ],
+  ['allOf', emitLogical.bind(null, SHACL_AND)],
+  ['anyOf', emitLogical.bind(null, SHACL_OR)],
+  ['oneOf', emitLogical.bind(null, SHACL_XONE)],
+  ['not', emitNot],
+  ['items', emitItems],
+  ['contains', emitContains],
 ]);
