@@ -1,5 +1,4 @@
 import { DataFactory, Store } from 'n3';
-import { ConstraintMapper } from '../../../src/shacl/graph-processor/constraint-mapper';
 import { WriterContext } from '../../../src/shacl/writer/writer-context';
 import { JsonSchemaObjectType } from '../../../src/json-schema/meta/json-schema-type';
 import {
@@ -30,6 +29,7 @@ import {
   XSD_INTEGER,
   XSD_STRING,
 } from '../../../src/shacl/shacl-terms';
+import { ConstraintMapper } from '../../../src/shacl/tree-processor/constraint-mapper';
 
 const EX = 'http://example.org/';
 
