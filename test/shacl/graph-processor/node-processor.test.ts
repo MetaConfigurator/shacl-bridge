@@ -1,7 +1,5 @@
 import { DataFactory, Store, Term } from 'n3';
-import { NodeProcessor } from '../../../src/shacl/graph-processor/node-processor';
 import { WriterContext } from '../../../src/shacl/writer/writer-context';
-import { GraphBuilder } from '../../../src/graph/graph-builder';
 import { JsonSchemaObjectType } from '../../../src/json-schema/meta/json-schema-type';
 import {
   RDF_FIRST,
@@ -22,6 +20,8 @@ import {
   XSD_INTEGER,
   XSD_STRING,
 } from '../../../src/shacl/shacl-terms';
+import { TreeBuilder } from '../../../src/tree/tree-builder';
+import { NodeProcessor } from '../../../src/shacl/tree-processor/node-processor';
 
 const EX = 'http://example.org/';
 
@@ -56,14 +56,8 @@ function getListItems(store: Store, listHead: Term): string[] {
 
 function processSchema(schema: JsonSchemaObjectType): Store {
   const context = new WriterContext(schema);
-  const graph = new GraphBuilder(schema).build();
-  const processor = new NodeProcessor(context, graph);
-
-  const rootNode = graph.nodes.find((n) => n.key === 'root');
-  if (rootNode) {
-    processor.process(rootNode, context.shapeUri);
-  }
-
+  const root = new TreeBuilder(schema).build();
+  new NodeProcessor(context).process(root, context.shapeUri);
   return context.store.build();
 }
 
