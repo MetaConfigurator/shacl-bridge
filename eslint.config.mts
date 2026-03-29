@@ -5,9 +5,8 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
+    ...js.configs.recommended,
     files: ['**/*.ts'],
-    plugins: { js },
-    extends: ['js/recommended'],
     languageOptions: { globals: globals.browser },
   },
   {
