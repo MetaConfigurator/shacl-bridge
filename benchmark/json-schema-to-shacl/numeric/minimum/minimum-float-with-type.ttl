@@ -5,4 +5,5 @@
 
 ex:Shape
     a               sh:NodeShape ;
-    sh:maxInclusive 3.5 .
+    sh:datatype     xsd:decimal ;
+    sh:minInclusive 1.2 .

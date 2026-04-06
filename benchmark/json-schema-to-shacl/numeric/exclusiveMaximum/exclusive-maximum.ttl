@@ -5,4 +5,4 @@
 
 ex:Shape
     a               sh:NodeShape ;
-    sh:maxInclusive 3.5 .
+    sh:maxExclusive 3.5 .
