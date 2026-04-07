@@ -11,6 +11,10 @@
     "string/format/relative-json-pointer",
     "string/format/unknown",
     "string/format/uri-reference",
-    "string/format/uri-template"
+    "string/format/uri-template",
+    "string/format/unknown",
+    "vocabulary",
+    "required/escaped-characters",
+    "required/js-implementations"
   ]
 }
