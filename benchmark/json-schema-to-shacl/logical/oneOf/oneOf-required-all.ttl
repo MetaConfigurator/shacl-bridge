@@ -4,15 +4,16 @@
 @prefix ex:  <http://example.org/>.
 
 ex:Shape
-    a       sh:NodeShape ;
-    sh:xone ( [ sh:property [ sh:path     ex:foo ;
-                              sh:minCount 1 ;
-                              sh:maxCount 1 ] ;
-                sh:property [ sh:path     ex:bar ;
-                              sh:minCount 1 ;
-                              sh:maxCount 1 ] ] [ sh:property [ sh:path     ex:foo ;
-                                                                sh:minCount 1 ;
-                                                                sh:maxCount 1 ] ;
-                                                  sh:property [ sh:path     ex:baz ;
-                                                                sh:minCount 1 ;
-                                                                sh:maxCount 1 ] ] ) .
+    a           sh:NodeShape ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:xone     ( [ sh:property [ sh:path     ex:foo ;
+                                  sh:minCount 1 ;
+                                  sh:maxCount 1 ] ;
+                    sh:property [ sh:path     ex:bar ;
+                                  sh:minCount 1 ;
+                                  sh:maxCount 1 ] ] [ sh:property [ sh:path     ex:foo ;
+                                                                    sh:minCount 1 ;
+                                                                    sh:maxCount 1 ] ;
+                                                      sh:property [ sh:path     ex:baz ;
+                                                                    sh:minCount 1 ;
+                                                                    sh:maxCount 1 ] ] ) .
