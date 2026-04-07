@@ -5,10 +5,5 @@
 
 ex:Shape
     a      sh:NodeShape ;
-    sh:and ( [ sh:property [ sh:path     ex:bar ;
-                             sh:datatype xsd:integer ;
-                             sh:minCount 1 ;
-                             sh:maxCount 1 ] ] [ sh:property [ sh:path     ex:foo ;
-                                                               sh:datatype xsd:string ;
-                                                               sh:minCount 1 ;
-                                                               sh:maxCount 1 ] ] ) .
+    sh:and ( [ sh:maxInclusive 30 ] [ sh:minInclusive 20 ] ) .
+
