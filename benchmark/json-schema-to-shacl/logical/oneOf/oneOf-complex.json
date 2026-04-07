@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "properties": {
+        "bar": {
+          "type": "integer"
+        }
+      },
+      "required": ["bar"]
+    },
+    {
+      "properties": {
+        "foo": {
+          "type": "string"
+        }
+      },
+      "required": ["foo"]
+    }
+  ]
+}
