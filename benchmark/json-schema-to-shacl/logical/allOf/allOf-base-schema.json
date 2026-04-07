@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "bar": {
+      "type": "integer"
+    }
+  },
+  "required": ["bar"],
+  "allOf": [
+    {
+      "properties": {
+        "foo": {
+          "type": "string"
+        }
+      },
+      "required": ["foo"]
+    },
+    {
+      "properties": {
+        "baz": {
+          "type": "boolean"
+        }
+      },
+      "required": ["baz"]
+    }
+  ]
+}
