@@ -9,3 +9,5 @@ ex:Shape
              sh:property [ sh:path     ex:foo ;
                            sh:maxCount 1 ;
                            sh:datatype xsd:string ] ] .
+
+# Test with sample instances

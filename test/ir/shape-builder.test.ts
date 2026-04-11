@@ -83,10 +83,10 @@ describe('TopologicalShapeBuilder', () => {
       expect(result).toHaveLength(1);
       expect(result[0].nodeKey).toBe(parentShape);
       expect(result[0].dependentShapes).toHaveLength(1);
-      expect(result[0].dependentShapes?.[0]?.nodeKey).toBe('b1');
-      expect(result[0].dependentShapes?.[0]?.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
-      expect(result[0].dependentShapes?.[0]?.shape?.path).toBe('http://xmlns.com/foaf/0.1/name');
-      expect(result[0].dependentShapes?.[0]?.coreConstraints?.minCount).toBe(1);
+      const dep = result[0].dependentShapes?.[0];
+      expect(dep?.shape?.type).toBe(SHAPE_TYPE.PROPERTY_SHAPE);
+      expect(dep?.shape?.path).toBe('http://xmlns.com/foaf/0.1/name');
+      expect(dep?.coreConstraints?.minCount).toBe(1);
     });
 
     it('should build a shape with multiple blank node dependencies', async () => {
@@ -105,8 +105,8 @@ describe('TopologicalShapeBuilder', () => {
       expect(result[0].nodeKey).toBe(parentShape);
       expect(result[0].dependentShapes).toHaveLength(2);
 
-      const depKeys = result[0].dependentShapes?.map((d) => d.nodeKey).sort();
-      expect(depKeys).toEqual(['b1', 'b2']);
+      const depPaths = result[0].dependentShapes?.map((d) => d.shape?.path).sort();
+      expect(depPaths).toEqual(['http://xmlns.com/foaf/0.1/age', 'http://xmlns.com/foaf/0.1/name']);
     });
 
     it('should build nested blank nodes (blank node depending on another blank node)', async () => {
@@ -131,12 +131,10 @@ describe('TopologicalShapeBuilder', () => {
 
       // Check first level dependency
       const firstDep = result[0].dependentShapes?.[0];
-      expect(firstDep?.nodeKey).toBe('b1');
       expect(firstDep?.shape?.path).toBe('http://example.org/address');
 
       // Check nested dependency
       expect(firstDep?.dependentShapes).toHaveLength(1);
-      expect(firstDep?.dependentShapes?.[0]?.nodeKey).toBe('b2');
       expect(firstDep?.dependentShapes?.[0]?.coreConstraints?.datatype).toBe(
         'http://www.w3.org/2001/XMLSchema#string'
       );
@@ -172,9 +170,10 @@ describe('TopologicalShapeBuilder', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].nodeKey).toBe(parentShape);
-      expect(result[0].coreConstraints?.or).toEqual(['or1']);
+      expect(result[0].coreConstraints?.or).toHaveLength(1);
       expect(result[0].dependentShapes).toHaveLength(1);
-      expect(result[0].dependentShapes?.[0]?.nodeKey).toBe('or1');
+      const orDepId = result[0].dependentShapes?.[0]?.nodeKey;
+      expect(result[0].coreConstraints?.or).toEqual([orDepId]);
     });
 
     it('should automatically set PropertyShape type for blank nodes referenced via sh:property', async () => {
@@ -295,10 +294,11 @@ describe('TopologicalShapeBuilder', () => {
       const result = await getShapeDefinitionList(content);
 
       expect(result).toHaveLength(1);
-      expect(result[0].coreConstraints?.qualifiedValueShape).toBe('q1');
+      expect(result[0].dependentShapes).toHaveLength(1);
+      const qDepId = result[0].dependentShapes?.[0]?.nodeKey;
+      expect(result[0].coreConstraints?.qualifiedValueShape).toBe(qDepId);
       expect(result[0].coreConstraints?.qualifiedMinCount).toBe(1);
       expect(result[0].coreConstraints?.qualifiedMaxCount).toBe(10);
-      expect(result[0].dependentShapes).toHaveLength(1);
       expect(result[0].dependentShapes?.[0]?.coreConstraints?.minInclusive).toBe(0);
       expect(result[0].dependentShapes?.[0]?.coreConstraints?.maxInclusive).toBe(100);
     });
@@ -338,14 +338,14 @@ describe('TopologicalShapeBuilder', () => {
         .triple(shape, SHACL_PATH, 'http://example.org/label', false)
         .triple(shape, SHACL_LANGUAGE_IN, 'l1', true)
         .literalString('l1', RDF_FIRST, 'en', true)
-        .literalString('l1', RDF_REST, RDF_NIL, true)
+        .blank('l1', RDF_REST, RDF_NIL)
         .write();
 
       const result = await getShapeDefinitionList(content);
 
       expect(result).toHaveLength(1);
-      expect(result[0].coreConstraints?.languageIn).toEqual(['l1']);
-      expect(result[0].dependentShapes).toHaveLength(1);
+      expect(result[0].coreConstraints?.languageIn).toEqual(['en']);
+      expect(result[0].dependentShapes).toHaveLength(0);
     });
 
     it('should handle minExclusive and maxExclusive', async () => {

@@ -182,11 +182,12 @@ describe('Indexer', () => {
       const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
       expect(quads.size).toBe(2);
-      expect([...quads.keys()].map((term) => term.value)).toStrictEqual([namedShape, 'b1']);
+      const quadKeys = [...quads.keys()].map((term) => term.value);
+      expect(quadKeys).toContain(namedShape);
+      expect(quadKeys.filter((v) => v !== namedShape)).toHaveLength(1);
       expect(shapes.length).toBe(1);
       expect(shapes.map((s) => s.value).includes(namedShape)).toBe(true);
       expect(blanks.length).toBe(1);
-      expect(blanks.map((b) => b.value)).toContain('b1');
       expect(targets.size).toBe(2);
       expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
     });
@@ -229,13 +230,13 @@ describe('Indexer', () => {
       const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
       expect(quads.size).toBe(4);
-      expect([...quads.keys()].map((term) => term.value).sort()).toStrictEqual(
-        [personShape, companyShape, 'b1', 'b2'].sort()
-      );
+      const quadKeyValues = [...quads.keys()].map((term) => term.value);
+      expect(quadKeyValues).toContain(personShape);
+      expect(quadKeyValues).toContain(companyShape);
+      expect(quadKeyValues.filter((v) => v !== personShape && v !== companyShape)).toHaveLength(2);
       expect(shapes.length).toBe(2);
       expect(shapes.map((s) => s.value)).toStrictEqual([personShape, companyShape]);
       expect(blanks.length).toBe(2);
-      expect(blanks.map((b) => b.value)).toStrictEqual(['b1', 'b2']);
       expect(targets.size).toBe(4);
       expect(targets.get(getKey(shapes, 'PersonShape')[0])).toEqual(['Person']);
       expect(targets.get(getKey(shapes, 'CompanyShape')[0])).toEqual(['Company']);
@@ -254,9 +255,9 @@ describe('Indexer', () => {
       const { quads, blanks, shapes, targets } = new Indexer(shaclDocument).build();
 
       expect(blanks.length).toBe(2);
-      expect(blanks.map((b) => b.value)).toStrictEqual(['l1', 'l2']);
       expect(quads.size).toBe(3);
-      expect([...quads.keys()].map((term) => term.value)).toStrictEqual([shape, 'l1', 'l2']);
+      expect([...quads.keys()].map((term) => term.value)).toContain(shape);
+      expect([...quads.keys()].filter((t) => t.termType === 'BlankNode')).toHaveLength(2);
       expect(shapes.length).toBe(1);
       expect(shapes.map((s) => s.value)).toStrictEqual([shape]);
       expect(targets.size).toBe(3);

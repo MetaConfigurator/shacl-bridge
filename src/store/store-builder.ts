@@ -1,15 +1,31 @@
-import jsonld from 'jsonld';
-import { BlankNode, DataFactory, Literal, NamedNode, Quad, Store, Writer } from 'n3';
+import { match, P } from 'ts-pattern';
+import { BlankNode, DataFactory, Literal, NamedNode, Store } from 'n3';
 import {
   RDF_FIRST,
+  RDF_JSON,
   RDF_NIL,
   RDF_REST,
   RDF_TYPE,
   XSD_BOOLEAN,
+  XSD_DECIMAL,
   XSD_INTEGER,
 } from '../shacl/shacl-terms';
+import { StoreWriter } from './store-writer';
 
-type ItemFactory = (item: string) => NamedNode | BlankNode | Literal;
+type ItemFactory = (item: unknown) => NamedNode | BlankNode | Literal;
+
+export function jsValueToLiteral(value: unknown): Literal {
+  return match(value)
+    .with(P.number, (n) =>
+      DataFactory.literal(
+        n.toString(),
+        DataFactory.namedNode(Number.isInteger(n) ? XSD_INTEGER : XSD_DECIMAL)
+      )
+    )
+    .with(P.boolean, (b) => DataFactory.literal(b.toString(), DataFactory.namedNode(XSD_BOOLEAN)))
+    .with(P.string, (s) => DataFactory.literal(s))
+    .otherwise((v) => DataFactory.literal(JSON.stringify(v), DataFactory.namedNode(RDF_JSON)));
+}
 
 export class StoreBuilder {
   private store = new Store();
@@ -57,6 +73,18 @@ export class StoreBuilder {
     return this;
   }
 
+  linkBlank(subject: string, predicate: string, blankId: string, isBlankSubject = false): this {
+    return isBlankSubject
+      ? this.bothBlank(subject, predicate, blankId)
+      : this.triple(subject, predicate, blankId, true);
+  }
+
+  linkNamed(subject: string, predicate: string, uri: string, isBlankSubject = false): this {
+    return isBlankSubject
+      ? this.blank(subject, predicate, uri)
+      : this.triple(subject, predicate, uri, false);
+  }
+
   literalInt(subject: string, predicate: string, value: number, isBlankSubject = false): this {
     this.store.addQuad(
       this.subjectNode(subject, isBlankSubject),
@@ -66,13 +94,12 @@ export class StoreBuilder {
     return this;
   }
 
+  literalNumber(subject: string, predicate: string, value: number, isBlankSubject = false): this {
+    return this.literalValue(subject, predicate, value, isBlankSubject);
+  }
+
   literalBool(subject: string, predicate: string, value: boolean, isBlankSubject = false): this {
-    this.store.addQuad(
-      this.subjectNode(subject, isBlankSubject),
-      DataFactory.namedNode(predicate),
-      DataFactory.literal(value.toString(), DataFactory.namedNode(XSD_BOOLEAN))
-    );
-    return this;
+    return this.literalValue(subject, predicate, value, isBlankSubject);
   }
 
   literalString(subject: string, predicate: string, value: string, isBlankSubject = false): this {
@@ -80,6 +107,15 @@ export class StoreBuilder {
       this.subjectNode(subject, isBlankSubject),
       DataFactory.namedNode(predicate),
       DataFactory.literal(value)
+    );
+    return this;
+  }
+
+  literalValue(subject: string, predicate: string, value: unknown, isBlankSubject = false): this {
+    this.store.addQuad(
+      this.subjectNode(subject, isBlankSubject),
+      DataFactory.namedNode(predicate),
+      jsValueToLiteral(value)
     );
     return this;
   }
@@ -107,8 +143,8 @@ export class StoreBuilder {
     itemsAreUris = false
   ): this {
     const itemFactory: ItemFactory = itemsAreUris
-      ? (item) => DataFactory.namedNode(item)
-      : (item) => DataFactory.literal(item);
+      ? (item) => DataFactory.namedNode(item as string)
+      : (item) => DataFactory.literal(item as string);
     return this.buildList(subject, predicate, items, isBlankSubject, itemFactory);
   }
 
@@ -119,24 +155,30 @@ export class StoreBuilder {
     isBlankSubject = false
   ): this {
     return this.buildList(subject, predicate, blankIds, isBlankSubject, (id) =>
-      DataFactory.blankNode(id)
+      DataFactory.blankNode(id as string)
     );
   }
 
-  build() {
+  listOfValues(subject: string, predicate: string, items: unknown[], isBlankSubject = false): this {
+    return this.buildList(subject, predicate, items, isBlankSubject, (item) =>
+      jsValueToLiteral(item as string | number | boolean)
+    );
+  }
+
+  build(): Store {
     return this.store;
   }
 
-  write(): Promise<string> {
-    const writer = new Writer({ format: 'text/turtle', prefixes: this.prefixes });
-    return this.writeToStore(writer);
+  toWriter(): StoreWriter {
+    return new StoreWriter(this.store, this.prefixes);
   }
 
-  async writeJsonLd(): Promise<string> {
-    const nquads = await this.writeNQuads();
-    const doc = await jsonld.fromRDF(nquads, { format: 'application/n-quads' });
-    const compacted = await jsonld.compact(doc, this.prefixes);
-    return JSON.stringify(compacted, null, 2);
+  write(): Promise<string> {
+    return this.toWriter().write();
+  }
+
+  writeJsonLd(): Promise<string> {
+    return this.toWriter().writeJsonLd();
   }
 
   private subjectNode(subject: string, isBlank: boolean): NamedNode | BlankNode {
@@ -146,7 +188,7 @@ export class StoreBuilder {
   private buildList(
     subject: string,
     predicate: string,
-    items: string[],
+    items: unknown[],
     isBlankSubject: boolean,
     itemFactory: ItemFactory
   ): this {
@@ -183,25 +225,5 @@ export class StoreBuilder {
     });
 
     return this;
-  }
-
-  private writeNQuads(): Promise<string> {
-    const writer = new Writer({ format: 'application/n-quads' });
-    return this.writeToStore(writer);
-  }
-
-  private writeToStore(writer: Writer<Quad>): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.store.forEach((quad) => {
-        writer.addQuad(quad);
-      });
-
-      writer.end((error, result) => {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (error) reject(error);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        else resolve(result);
-      });
-    });
   }
 }

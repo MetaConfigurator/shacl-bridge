@@ -1,18 +1,14 @@
-import { DataFactory, Store } from 'n3';
-import { ConstraintMapper } from '../../../src/shacl/graph-processor/constraint-mapper';
-import { WriterContext } from '../../../src/shacl/writer/writer-context';
-import { JsonSchemaObjectType } from '../../../src/json-schema/meta/json-schema-type';
+import { DataFactory } from 'n3';
+import { ConstraintMapper } from '../../../../src/shacl/tree-processor/mapper/constraint-mapper';
+import { JsonSchemaObjectType } from '../../../../src/json-schema/meta/json-schema-type';
 import {
   RDF_FIRST,
-  SHACL_BLANK_NODE_OR_IRI,
   SHACL_CLOSED,
-  SHACL_DATATYPE,
   SHACL_DEACTIVATED,
   SHACL_DEFAULT_VALUE,
   SHACL_DESCRIPTION,
   SHACL_HAS_VALUE,
   SHACL_IN,
-  SHACL_LITERAL,
   SHACL_MAX_COUNT,
   SHACL_MAX_EXCLUSIVE,
   SHACL_MAX_INCLUSIVE,
@@ -22,39 +18,17 @@ import {
   SHACL_MIN_INCLUSIVE,
   SHACL_MIN_LENGTH,
   SHACL_NAME,
-  SHACL_NODE_KIND,
-  SHACL_OR,
   SHACL_PATTERN,
   XSD_BOOLEAN,
   XSD_DECIMAL,
   XSD_INTEGER,
-  XSD_STRING,
-} from '../../../src/shacl/shacl-terms';
+} from '../../../../src/shacl/shacl-terms';
+import { buildStore, EX, getObject } from '../test-utils';
 
-const EX = 'http://example.org/';
-
-function getObject(store: Store, subject: string, predicate: string): string | undefined {
-  const terms = store.getObjects(
-    DataFactory.namedNode(subject),
-    DataFactory.namedNode(predicate),
-    null
-  );
-  return terms[0]?.value;
-}
-
-function getBlankObject(store: Store, blankId: string, predicate: string): string | undefined {
-  const terms = store.getObjects(
-    DataFactory.blankNode(blankId),
-    DataFactory.namedNode(predicate),
-    null
-  );
-  return terms[0]?.value;
-}
-
-function buildAndGetStore(schema: JsonSchemaObjectType, subject: string, isBlank = false): Store {
-  const context = new WriterContext({ $id: `${EX}Root` });
-  new ConstraintMapper(context).map(schema, subject, isBlank);
-  return context.store.build();
+function buildAndGetStore(schema: JsonSchemaObjectType, subject: string, isBlank = false) {
+  return buildStore(`${EX}Root`, (context) => {
+    new ConstraintMapper(context).map(schema, subject, isBlank);
+  });
 }
 
 describe('ConstraintMapper', () => {
@@ -69,38 +43,6 @@ describe('ConstraintMapper', () => {
       const store = buildAndGetStore({ description: 'A shape for persons' }, `${EX}Shape`);
 
       expect(getObject(store, `${EX}Shape`, SHACL_DESCRIPTION)).toBe('A shape for persons');
-    });
-  });
-
-  describe('type mapping', () => {
-    it('should map object type to sh:nodeKind BlankNodeOrIRI', () => {
-      const store = buildAndGetStore({ type: 'object' }, `${EX}Shape`);
-
-      expect(getObject(store, `${EX}Shape`, SHACL_NODE_KIND)).toBe(SHACL_BLANK_NODE_OR_IRI);
-    });
-
-    it('should map string type to sh:datatype xsd:string', () => {
-      const store = buildAndGetStore({ type: 'string' }, `${EX}Shape`);
-
-      expect(getObject(store, `${EX}Shape`, SHACL_DATATYPE)).toBe(XSD_STRING);
-    });
-
-    it('should map integer type to sh:datatype xsd:integer', () => {
-      const store = buildAndGetStore({ type: 'integer' }, `${EX}Shape`);
-
-      expect(getObject(store, `${EX}Shape`, SHACL_DATATYPE)).toBe(XSD_INTEGER);
-    });
-
-    it('should map number type to sh:datatype xsd:decimal', () => {
-      const store = buildAndGetStore({ type: 'number' }, `${EX}Shape`);
-
-      expect(getObject(store, `${EX}Shape`, SHACL_DATATYPE)).toBe(XSD_DECIMAL);
-    });
-
-    it('should map boolean type to sh:datatype xsd:boolean', () => {
-      const store = buildAndGetStore({ type: 'boolean' }, `${EX}Shape`);
-
-      expect(getObject(store, `${EX}Shape`, SHACL_DATATYPE)).toBe(XSD_BOOLEAN);
     });
   });
 
@@ -148,6 +90,41 @@ describe('ConstraintMapper', () => {
 
       expect(getObject(store, `${EX}Shape`, SHACL_MAX_EXCLUSIVE)).toBe('100');
     });
+
+    it('should use xsd:decimal datatype for float minimum', () => {
+      const store = buildAndGetStore({ minimum: 1.1 }, `${EX}Shape`);
+      const literal = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_MIN_INCLUSIVE),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(literal.value).toBe('1.1');
+      expect(literal.datatype.value).toBe(XSD_DECIMAL);
+    });
+
+    it('should use xsd:decimal datatype for float exclusiveMinimum', () => {
+      const store = buildAndGetStore({ exclusiveMinimum: 1.1 }, `${EX}Shape`);
+      const literal = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_MIN_EXCLUSIVE),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(literal.value).toBe('1.1');
+      expect(literal.datatype.value).toBe(XSD_DECIMAL);
+    });
+
+    it('should use xsd:integer datatype for integer minimum', () => {
+      const store = buildAndGetStore({ minimum: 0 }, `${EX}Shape`);
+      const literal = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_MIN_INCLUSIVE),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(literal.datatype.value).toBe(XSD_INTEGER);
+    });
   });
 
   describe('cardinality constraints', () => {
@@ -171,6 +148,30 @@ describe('ConstraintMapper', () => {
       expect(getObject(store, `${EX}Shape`, SHACL_HAS_VALUE)).toBe('fixed');
     });
 
+    it('should map numeric const to sh:hasValue with xsd:integer datatype', () => {
+      const store = buildAndGetStore({ const: 42 }, `${EX}Shape`);
+      const literal = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_HAS_VALUE),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(literal.value).toBe('42');
+      expect(literal.datatype.value).toBe(XSD_INTEGER);
+    });
+
+    it('should map boolean const to sh:hasValue with xsd:boolean datatype', () => {
+      const store = buildAndGetStore({ const: true }, `${EX}Shape`);
+      const literal = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_HAS_VALUE),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(literal.value).toBe('true');
+      expect(literal.datatype.value).toBe(XSD_BOOLEAN);
+    });
+
     it('should map enum to sh:in', () => {
       const store = buildAndGetStore({ enum: ['a', 'b', 'c'] }, `${EX}Shape`);
 
@@ -184,30 +185,23 @@ describe('ConstraintMapper', () => {
       const firstItem = store.getObjects(inTerm, DataFactory.namedNode(RDF_FIRST), null)[0];
       expect(firstItem.value).toBe('a');
     });
-  });
 
-  describe('union type', () => {
-    it('should map type array to sh:or with per-type blank nodes', () => {
-      const store = buildAndGetStore({ type: ['number', 'null'] }, `${EX}Shape`);
+    it('should map numeric enum to sh:in with xsd:integer datatypes', () => {
+      const store = buildAndGetStore({ enum: [1, 2, 3] }, `${EX}Shape`);
 
-      const orTerms = store.getObjects(
+      const inTerm = store.getObjects(
         DataFactory.namedNode(`${EX}Shape`),
-        DataFactory.namedNode(SHACL_OR),
-        null
-      );
-      expect(orTerms.length).toBe(1);
-
-      const first = store.getObjects(orTerms[0], DataFactory.namedNode(RDF_FIRST), null)[0];
-      expect(first).toBeDefined();
-      expect(getBlankObject(store, first.value, SHACL_DATATYPE)).toBe(XSD_DECIMAL);
-
-      const rest = store.getObjects(
-        orTerms[0],
-        DataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'),
+        DataFactory.namedNode(SHACL_IN),
         null
       )[0];
-      const second = store.getObjects(rest, DataFactory.namedNode(RDF_FIRST), null)[0];
-      expect(getBlankObject(store, second.value, SHACL_NODE_KIND)).toBe(SHACL_LITERAL);
+      const firstItem = store.getObjects(
+        inTerm,
+        DataFactory.namedNode(RDF_FIRST),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(firstItem.value).toBe('1');
+      expect(firstItem.datatype.value).toBe(XSD_INTEGER);
     });
   });
 
@@ -229,6 +223,18 @@ describe('ConstraintMapper', () => {
 
       expect(getObject(store, `${EX}Shape`, SHACL_DEFAULT_VALUE)).toBe('user');
     });
+
+    it('should map numeric default to sh:defaultValue with xsd:integer datatype', () => {
+      const store = buildAndGetStore({ default: 10 }, `${EX}Shape`);
+      const literal = store.getObjects(
+        DataFactory.namedNode(`${EX}Shape`),
+        DataFactory.namedNode(SHACL_DEFAULT_VALUE),
+        null
+      )[0] as import('n3').Literal;
+
+      expect(literal.value).toBe('10');
+      expect(literal.datatype.value).toBe(XSD_INTEGER);
+    });
   });
 
   describe('closed shape', () => {
@@ -242,37 +248,6 @@ describe('ConstraintMapper', () => {
       const store = buildAndGetStore({ additionalProperties: true }, `${EX}Shape`);
 
       expect(getObject(store, `${EX}Shape`, SHACL_CLOSED)).toBeUndefined();
-    });
-  });
-
-  describe('blank node subject', () => {
-    it('should map constraints to blank node when isBlank is true', () => {
-      const context = new WriterContext({ $id: `${EX}Root` });
-      new ConstraintMapper(context).map({ type: 'string', minLength: 1 }, 'prop_0', true);
-      const store = context.store.build();
-
-      expect(getBlankObject(store, 'prop_0', SHACL_DATATYPE)).toBe(XSD_STRING);
-      expect(getBlankObject(store, 'prop_0', SHACL_MIN_LENGTH)).toBe('1');
-    });
-  });
-
-  describe('multiple constraints', () => {
-    it('should map all constraints from a schema', () => {
-      const schema: JsonSchemaObjectType = {
-        title: 'Name',
-        type: 'string',
-        minLength: 1,
-        maxLength: 100,
-        pattern: '^[A-Za-z]+$',
-      };
-
-      const store = buildAndGetStore(schema, `${EX}Shape`);
-
-      expect(getObject(store, `${EX}Shape`, SHACL_NAME)).toBe('Name');
-      expect(getObject(store, `${EX}Shape`, SHACL_DATATYPE)).toBe(XSD_STRING);
-      expect(getObject(store, `${EX}Shape`, SHACL_MIN_LENGTH)).toBe('1');
-      expect(getObject(store, `${EX}Shape`, SHACL_MAX_LENGTH)).toBe('100');
-      expect(getObject(store, `${EX}Shape`, SHACL_PATTERN)).toBe('^[A-Za-z]+$');
     });
   });
 });
