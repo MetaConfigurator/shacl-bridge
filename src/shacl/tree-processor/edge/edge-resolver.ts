@@ -25,12 +25,11 @@ export class EdgeResolver {
     if (schema.$ref) {
       return { id: this.context.resolveRef(schema.$ref), isRef: true };
     }
+    const blankId = this.context.nextBlankId();
     if (this.hasMappableContent(schema)) {
-      const blankId = this.context.nextBlankId();
       this.processFn(edge.node, blankId, true);
-      return { id: blankId, isRef: false };
     }
-    return null;
+    return { id: blankId, isRef: false };
   }
 
   hasMappableContent(schema: JsonSchemaObjectType): boolean {
