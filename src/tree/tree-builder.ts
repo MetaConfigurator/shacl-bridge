@@ -25,6 +25,7 @@ const buildRecordEdges: EdgeBuilder = (prop, value, bc) =>
 /**
  * Builds one edge per item in an array-valued keyword (e.g. `anyOf`, `allOf`, `oneOf`).
  * Each item's position becomes {@link SchemaEdge.index}.
+ * Boolean schemas are preserved as {@link SchemaNode} with {@link SchemaNode.booleanSchema} set.
  */
 const buildArrayEdges: EdgeBuilder = (prop, value, bc) =>
   (value as JsonSchemaType[]).flatMap((child, index) => {
@@ -71,13 +72,27 @@ export class TreeBuilder {
   /** Dispatches to the appropriate {@link EdgeBuilder}, or returns `[]` for unrecognised keywords. */
   private buildEdges(prop: string, value: unknown): SchemaEdge[] {
     const build = KEYWORD_BUILDERS.get(prop);
-    return build ? build(prop, value, (s) => this.buildChild(s)) : [];
+    if (!build) return [];
+    const bc = SCHEMA_ARRAY_KEYWORDS.has(prop)
+      ? (s: JsonSchemaType) => this.buildBooleanOrChild(s)
+      : (s: JsonSchemaType) => this.buildChild(s);
+    return build(prop, value, bc);
   }
 
   /**
-   * Resolves a child schema value to a node.
-   * Boolean schemas (`true` / `false`) return `null` — they carry no structural children
-   * and are handled directly by `ConstraintMapper` on the parent schema.
+   * Resolves a child schema value to a node, preserving boolean schemas as nodes
+   * with {@link SchemaNode.booleanSchema} set. Used for array-keyword contexts where
+   * `true`/`false` schemas in `allOf`/`anyOf`/`oneOf` carry semantic meaning.
+   */
+  private buildBooleanOrChild(schema: JsonSchemaType): SchemaNode {
+    if (typeof schema === 'boolean') return { schema: {}, children: [], booleanSchema: schema };
+    return this.buildNode(schema);
+  }
+
+  /**
+   * Resolves a child schema value to a node, or `null` for boolean schemas.
+   * Boolean schemas in valued/record positions are handled directly by
+   * `ConstraintMapper` on the parent schema.
    */
   private buildChild(schema: JsonSchemaType): SchemaNode | null {
     if (typeof schema === 'boolean') return null;
