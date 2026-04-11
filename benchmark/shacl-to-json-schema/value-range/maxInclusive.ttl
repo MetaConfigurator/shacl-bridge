@@ -1,0 +1,12 @@
+@prefix sh:  <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix ex:  <http://example.org/>.
+
+ex:PersonShape
+    a              sh:NodeShape ;
+    sh:targetClass ex:Person ;
+    sh:property    [ sh:path         ex:age ;
+                     sh:maxInclusive 120 ;
+                     sh:minCount     1 ;
+                     sh:maxCount     1 ; ] .
