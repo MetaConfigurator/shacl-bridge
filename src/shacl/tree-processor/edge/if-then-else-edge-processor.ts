@@ -1,5 +1,4 @@
-import { match, P } from 'ts-pattern';
-import { Edge } from '../../../graph/types';
+import { SchemaEdge } from '../../../tree/types';
 import { SHACL_AND, SHACL_NOT, SHACL_OR } from '../../shacl-terms';
 import { WriterContext } from '../../writer/writer-context';
 import { EdgeProcessor } from './edge-processor';
@@ -11,7 +10,7 @@ export class IfThenElseEdgeProcessor implements EdgeProcessor {
     private readonly resolver: EdgeResolver
   ) {}
 
-  process(edges: Edge[], subject: string, isBlank: boolean): void {
+  process(edges: SchemaEdge[], subject: string, isBlank: boolean): void {
     const ifEdge = edges.find((e) => e.label === 'if');
     const thenEdge = edges.find((e) => e.label === 'then');
     const elseEdge = edges.find((e) => e.label === 'else');
@@ -24,25 +23,24 @@ export class IfThenElseEdgeProcessor implements EdgeProcessor {
     const thenResolved = thenEdge ? this.resolver.resolveEdgeToShapeId(thenEdge) : null;
     const elseResolved = elseEdge ? this.resolver.resolveEdgeToShapeId(elseEdge) : null;
 
-    match([thenResolved, elseResolved])
-      .with([P.not(P.nullish), P.nullish], ([then_]) => {
-        this.emitOrWithNot(ifResolved.id, then_.id, subject, isBlank);
-      })
-      .with([P.nullish, P.not(P.nullish)], ([, else_]) => {
-        this.context.store.listOfBlanks(subject, SHACL_OR, [ifResolved.id, else_.id], isBlank);
-      })
-      .with([P.not(P.nullish), P.not(P.nullish)], ([then_, else_]) => {
-        const notOrBlankId = this.context.nextBlankId();
-        this.emitOrWithNot(ifResolved.id, then_.id, notOrBlankId, true);
+    if (thenResolved && !elseResolved) {
+      this.emitOrWithNot(ifResolved.id, thenResolved.id, subject, isBlank);
+    } else if (!thenResolved && elseResolved) {
+      this.context.store.listOfBlanks(subject, SHACL_OR, [ifResolved.id, elseResolved.id], isBlank);
+    } else if (thenResolved && elseResolved) {
+      const notOrBlankId = this.context.nextBlankId();
+      this.emitOrWithNot(ifResolved.id, thenResolved.id, notOrBlankId, true);
 
-        const ifOrBlankId = this.context.nextBlankId();
-        this.context.store.listOfBlanks(ifOrBlankId, SHACL_OR, [ifResolved.id, else_.id], true);
+      const ifOrBlankId = this.context.nextBlankId();
+      this.context.store.listOfBlanks(
+        ifOrBlankId,
+        SHACL_OR,
+        [ifResolved.id, elseResolved.id],
+        true
+      );
 
-        this.context.store.listOfBlanks(subject, SHACL_AND, [notOrBlankId, ifOrBlankId], isBlank);
-      })
-      .otherwise(() => {
-        /* empty */
-      });
+      this.context.store.listOfBlanks(subject, SHACL_AND, [notOrBlankId, ifOrBlankId], isBlank);
+    }
   }
 
   private emitOrWithNot(

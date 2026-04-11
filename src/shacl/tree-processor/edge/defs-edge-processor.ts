@@ -1,4 +1,4 @@
-import { Edge } from '../../../graph/types';
+import { SchemaEdge } from '../../../tree/types';
 import { WriterContext } from '../../writer/writer-context';
 import { ProcessFn } from './edge-processor';
 
@@ -10,16 +10,14 @@ export class DefsEdgeProcessor {
     private readonly processFn: ProcessFn
   ) {}
 
-  process(edges: Edge[]): void {
-    const defsEdges = edges.filter((e) => e.label === '$defs');
-
-    for (const edge of defsEdges) {
-      const defName = edge.propertyKey;
+  process(edges: SchemaEdge[]): void {
+    for (const edge of edges) {
+      const defName = edge.key;
       if (!defName || this.processedDefs.has(defName)) continue;
 
       this.processedDefs.add(defName);
       const defUri = this.context.buildDefUri(defName);
-      this.processFn(edge.to, defUri, false, defUri);
+      this.processFn(edge.node, defUri, false, defUri);
     }
   }
 }

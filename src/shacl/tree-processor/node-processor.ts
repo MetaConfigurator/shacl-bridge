@@ -1,7 +1,8 @@
-import { Edge, Graph, Node } from '../../graph/types';
+import { SchemaEdge, SchemaNode } from '../../tree/types';
 import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import {
   SHACL_AND,
+  SHACL_NODE,
   SHACL_NODE_SHAPE,
   SHACL_OR,
   SHACL_TARGET_CLASS,
@@ -23,7 +24,6 @@ import { ItemsEdgeProcessor } from './edge/items-edge-processor';
 import { LogicalEdgeProcessor } from './edge/logical-edge-processor';
 import { NotEdgeProcessor } from './edge/not-edge-processor';
 import { PropertyEdgeProcessor } from './edge/property-edge-processor';
-import { RefEdgeProcessor } from './edge/ref-edge-processor';
 
 export class NodeProcessor {
   private readonly shaclMapper: ShaclMapper;
@@ -31,12 +31,14 @@ export class NodeProcessor {
   private readonly defsProcessor: DefsEdgeProcessor;
   private readonly edgeProcessors: Partial<Record<string, EdgeProcessor>>;
 
-  constructor(
-    private readonly context: WriterContext,
-    private readonly graph: Graph
-  ) {
+  constructor(private readonly context: WriterContext) {
     this.shaclMapper = new ShaclMapper(context);
-    const processFn = (node: Node, subject: string, isBlank?: boolean, targetClass?: string) => {
+    const processFn = (
+      node: SchemaNode,
+      subject: string,
+      isBlank?: boolean,
+      targetClass?: string
+    ) => {
       this.process(node, subject, isBlank, targetClass);
     };
     const resolver = new EdgeResolver(context, processFn);
@@ -50,22 +52,16 @@ export class NodeProcessor {
       not: new NotEdgeProcessor(context, resolver),
       if: new IfThenElseEdgeProcessor(context, resolver),
       items: new ItemsEdgeProcessor(context, this.shaclMapper),
-      $ref: new RefEdgeProcessor(context),
       contains: new ContainsEdgeProcessor(context, this.shaclMapper),
     };
   }
 
-  process(node: Node, subject: string, isBlank = false, targetClass?: string): void {
-    if (typeof node.value !== 'object' || node.value === null) {
-      return;
-    }
+  process(node: SchemaNode, subject: string, isBlank = false, targetClass?: string): void {
+    const { schema, children } = node;
 
-    const schema = node.value as JsonSchemaObjectType;
-    const edges = this.getEdgesFrom(node);
+    this.defsProcessor.process(children.filter((e) => e.label === '$defs'));
 
-    this.defsProcessor.process(edges);
-
-    if (!this.hasShapeContent(schema, edges)) return;
+    if (!this.hasShapeContent(schema, children)) return;
 
     if (!isBlank) {
       this.context.store.shape(subject, SHACL_NODE_SHAPE);
@@ -74,28 +70,37 @@ export class NodeProcessor {
       }
     }
 
+    if (schema.$ref) {
+      this.context.store.triple(subject, SHACL_NODE, this.context.resolveRef(schema.$ref), false);
+      return;
+    }
+
     this.shaclMapper.map(schema, subject, isBlank);
-    this.processEdges(edges, subject, schema, isBlank);
+    this.processEdges(children, subject, schema, isBlank);
   }
 
   private processEdges(
-    edges: Edge[],
+    edges: SchemaEdge[],
     subject: string,
     schema: JsonSchemaObjectType,
     isBlank: boolean
   ): void {
     const required = new Set(schema.required ?? []);
-    const propertyEdges = edges.filter((e) => e.label === 'properties');
-    this.propertyProcessor.process(propertyEdges, required, subject, isBlank);
+    this.propertyProcessor.process(
+      edges.filter((e) => e.label === 'properties'),
+      required,
+      subject,
+      isBlank
+    );
 
     const grouped = edges
       .filter((e) => e.label !== 'properties' && e.label !== '$defs')
-      .reduce((map: Map<string, Edge[]>, e: Edge) => {
+      .reduce((map: Map<string, SchemaEdge[]>, e: SchemaEdge) => {
         const list = map.get(e.label) ?? [];
         list.push(e);
         map.set(e.label, list);
         return map;
-      }, new Map<string, Edge[]>());
+      }, new Map<string, SchemaEdge[]>());
 
     const ifEdges = [
       ...(grouped.get('if') ?? []),
@@ -111,21 +116,20 @@ export class NodeProcessor {
     for (const [label, labelEdges] of grouped) {
       const processor = this.edgeProcessors[label];
       if (processor) {
-        processor.process(labelEdges, subject, isBlank);
+        processor.process(labelEdges, subject, isBlank, schema);
       }
     }
   }
 
-  private hasShapeContent(schema: JsonSchemaObjectType, edges: Edge[]): boolean {
+  private hasShapeContent(schema: JsonSchemaObjectType, edges: SchemaEdge[]): boolean {
     const hasShapeEdge = edges.some((e) => JSON_SCHEMA_SHACL_EDGE_LABELS.has(e.label));
     const hasDefEdge = edges.some((e) => e.label === '$defs' || e.label === 'definitions');
     const hasConstraintKey = Object.keys(schema).some(
-      (k) => !JSON_SCHEMA_METADATA_KEYS.has(k) && !JSON_SCHEMA_UNHANDLED_KEYS.has(k)
+      (k) =>
+        !JSON_SCHEMA_METADATA_KEYS.has(k) &&
+        !JSON_SCHEMA_UNHANDLED_KEYS.has(k) &&
+        !k.startsWith('x-')
     );
     return !(hasDefEdge && !hasShapeEdge && !hasConstraintKey);
-  }
-
-  private getEdgesFrom(node: Node): Edge[] {
-    return this.graph.edges.filter((e) => e.from.key === node.key);
   }
 }

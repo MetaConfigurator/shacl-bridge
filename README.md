@@ -1,6 +1,6 @@
 # SHACL Bridge
 
-[![Build Status](https://github.com/GeezFORCE/shacl-bridge/actions/workflows/node.js.yml/badge.svg)](https://github.com/GeezFORCE/shacl-bridge/actions)
+[![Build Status](https://github.com/MetaConfigurator/shacl-bridge/actions/workflows/node.js.yml/badge.svg)](https://github.com/MetaConfigurator/shacl-bridge/actions)
 [![npm version](https://img.shields.io/npm/v/shacl-bridge.svg)](https://www.npmjs.com/package/shacl-bridge)
 [![npm downloads](https://img.shields.io/npm/dm/shacl-bridge.svg)](https://www.npmjs.com/package/shacl-bridge)
 [![codecov](https://codecov.io/gh/GeezFORCE/shacl-bridge/graph/badge.svg?token=FSIANIX7XT)](https://codecov.io/gh/GeezFORCE/shacl-bridge)

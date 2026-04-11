@@ -1,7 +1,5 @@
-import { match, P } from 'ts-pattern';
-import { Edge } from '../../../graph/types';
+import { SchemaEdge } from '../../../tree/types';
 import { JsonSchemaObjectType } from '../../../json-schema/meta/json-schema-type';
-import { SHACL_NOT } from '../../shacl-terms';
 import { JSON_SCHEMA_UNHANDLED_KEYS } from '../../../json-schema/json-schema-terms';
 import { WriterContext } from '../../writer/writer-context';
 import { ProcessFn } from './edge-processor';
@@ -12,30 +10,17 @@ export class EdgeResolver {
     private readonly processFn: ProcessFn
   ) {}
 
-  resolveEdgeToShapeId(edge: Edge): { id: string; isRef: boolean } | null {
-    return match(edge.to.value)
-      .with(true, () => ({ id: this.context.nextBlankId(), isRef: false }))
-      .with(false, () => {
-        const blankId = this.context.nextBlankId();
-        const notTargetBlankId = this.context.nextBlankId();
-        this.context.store.bothBlank(blankId, SHACL_NOT, notTargetBlankId);
-        return { id: blankId, isRef: false };
-      })
-      .with({ $ref: P.string }, (schema) => ({
-        id: this.context.resolveRef(schema.$ref),
-        isRef: true,
-      }))
-      .with(
-        P.when((v): v is JsonSchemaObjectType => typeof v === 'object' && v !== null),
-        (schema) => {
-          const blankId = this.context.nextBlankId();
-          if (this.hasMappableContent(schema)) {
-            this.processFn(edge.to, blankId, true);
-          }
-          return { id: blankId, isRef: false };
-        }
-      )
-      .otherwise(() => null);
+  resolveEdgeToShapeId(edge: SchemaEdge): { id: string; isRef: boolean } | null {
+    const schema = edge.node.schema;
+    if (schema.$ref) {
+      return { id: this.context.resolveRef(schema.$ref), isRef: true };
+    }
+    if (this.hasMappableContent(schema)) {
+      const blankId = this.context.nextBlankId();
+      this.processFn(edge.node, blankId, true);
+      return { id: blankId, isRef: false };
+    }
+    return null;
   }
 
   hasMappableContent(schema: JsonSchemaObjectType): boolean {

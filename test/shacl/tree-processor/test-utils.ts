@@ -1,9 +1,9 @@
 import { DataFactory, Store, Term } from 'n3';
-import { GraphBuilder } from '../../../src/graph/graph-builder';
-import { Edge, Node } from '../../../src/graph/types';
+import { SchemaEdge, SchemaNode } from '../../../src/tree/types';
 import { JsonSchemaObjectType } from '../../../src/json-schema/meta/json-schema-type';
 import { NodeProcessor } from '../../../src/shacl/tree-processor/node-processor';
 import { WriterContext } from '../../../src/shacl/writer/writer-context';
+import { TreeBuilder } from '../../../src/tree/tree-builder';
 import { RDF_FIRST, RDF_NIL, RDF_REST } from '../../../src/shacl/shacl-terms';
 
 export const EX = 'http://example.org/';
@@ -14,20 +14,18 @@ export function buildStore(subject: string, fn: (context: WriterContext) => void
   return context.store.build();
 }
 
-export function makeNode(value: unknown): Node {
-  return { key: 'node', value: value as Node['value'] };
+export function makeNode(schema: JsonSchemaObjectType): SchemaNode {
+  return { schema, children: [] };
 }
 
-export function makeEdge(toValue: unknown, label: string, fromValue: unknown = {}): Edge {
-  return { from: makeNode(fromValue), to: makeNode(toValue), label };
+export function makeEdge(schema: JsonSchemaObjectType, label: string): SchemaEdge {
+  return { label, node: makeNode(schema) };
 }
 
 export function processSchema(schema: JsonSchemaObjectType): Store {
   const context = new WriterContext(schema);
-  const graph = new GraphBuilder(schema).build();
-  const processor = new NodeProcessor(context, graph);
-  const rootNode = graph.nodes.find((n) => n.key === 'root');
-  if (rootNode) processor.process(rootNode, context.shapeUri);
+  const root = new TreeBuilder(schema).build();
+  new NodeProcessor(context).process(root, context.shapeUri);
   return context.store.build();
 }
 

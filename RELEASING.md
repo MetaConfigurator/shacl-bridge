@@ -163,7 +163,7 @@ For the initial release to npm:
 
 ### View Releases
 
-- **GitHub Releases**: https://github.com/GeezFORCE/shacl-bridge/releases
+- **GitHub Releases**: https://github.com/MetaConfigurator/shacl-bridge/releases
 - **npm Package**: https://www.npmjs.com/package/shacl-bridge
 - **Changelog**: Check `CHANGELOG.md` in the repository
 

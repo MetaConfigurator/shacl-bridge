@@ -3,8 +3,8 @@ import { WriterContext } from '../../../../src/shacl/writer/writer-context';
 import { ProcessFn } from '../../../../src/shacl/tree-processor/edge/edge-processor';
 import { EX, makeEdge, makeNode } from '../test-utils';
 
-function makeDefsEdge(defName: string, toValue: unknown) {
-  return { ...makeEdge(toValue, '$defs'), propertyKey: defName };
+function makeDefsEdge(defName: string, toValue: Record<string, unknown>) {
+  return { ...makeEdge(toValue, '$defs'), key: defName };
 }
 
 describe('DefsEdgeProcessor', () => {
@@ -47,9 +47,7 @@ describe('DefsEdgeProcessor', () => {
       calls.push(subject);
     };
 
-    new DefsEdgeProcessor(context, processFn).process([
-      { from: makeNode({}), to: makeNode({}), label: '$defs' },
-    ]);
+    new DefsEdgeProcessor(context, processFn).process([{ label: '$defs', node: makeNode({}) }]);
 
     expect(calls).toHaveLength(0);
   });

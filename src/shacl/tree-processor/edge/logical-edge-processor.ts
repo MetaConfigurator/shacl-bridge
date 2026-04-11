@@ -1,4 +1,4 @@
-import { Edge } from '../../../graph/types';
+import { SchemaEdge } from '../../../tree/types';
 import { WriterContext } from '../../writer/writer-context';
 import { EdgeProcessor } from './edge-processor';
 import { EdgeResolver } from './edge-resolver';
@@ -10,7 +10,7 @@ export class LogicalEdgeProcessor implements EdgeProcessor {
     private readonly predicate: string
   ) {}
 
-  process(edges: Edge[], subject: string, isBlank: boolean): void {
+  process(edges: SchemaEdge[], subject: string, isBlank: boolean): void {
     const resolved = edges
       .map((e) => this.resolver.resolveEdgeToShapeId(e))
       .filter((r): r is { id: string; isRef: boolean } => r !== null);

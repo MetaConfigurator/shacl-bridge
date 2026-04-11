@@ -6,7 +6,7 @@ const SUBJECT = `${EX}Root`;
 
 function buildRefStore(refValue: string) {
   return buildStore(SUBJECT, (context) => {
-    new RefEdgeProcessor(context).process([makeEdge(refValue, '$ref')], SUBJECT, false);
+    new RefEdgeProcessor(context).process([makeEdge({ $ref: refValue }, '$ref')], SUBJECT, false);
   });
 }
 

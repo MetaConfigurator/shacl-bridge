@@ -7,7 +7,7 @@ import { buildStore, EX, makeEdge, processSchema } from '../test-utils';
 
 const SUBJECT = `${EX}Shape`;
 
-function buildNotStore(notValue: unknown) {
+function buildNotStore(notValue: JsonSchemaObjectType) {
   return buildStore(SUBJECT, (context) => {
     const resolver = new EdgeResolver(context, () => {
       /* empty */

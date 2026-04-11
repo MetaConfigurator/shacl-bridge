@@ -1,6 +1,4 @@
-import { match, P } from 'ts-pattern';
-import { Edge } from '../../../graph/types';
-import { JsonSchemaObjectType, JsonSchemaType } from '../../../json-schema/meta/json-schema-type';
+import { SchemaEdge, SchemaNode } from '../../../tree/types';
 import {
   SHACL_AND,
   SHACL_MAX_COUNT,
@@ -15,11 +13,11 @@ import { WriterContext } from '../../writer/writer-context';
 import { ShaclMapper } from '../mapper/shacl-mapper';
 import { ProcessFn } from './edge-processor';
 
-const LOGICAL_OPERATOR_MAP: Record<string, string> = {
-  allOf: SHACL_AND,
-  anyOf: SHACL_OR,
-  oneOf: SHACL_XONE,
-};
+const LOGICAL_PREDICATES = new Map([
+  ['allOf', SHACL_AND],
+  ['anyOf', SHACL_OR],
+  ['oneOf', SHACL_XONE],
+]);
 
 export class PropertyEdgeProcessor {
   constructor(
@@ -28,102 +26,122 @@ export class PropertyEdgeProcessor {
     private readonly processFn: ProcessFn
   ) {}
 
-  process(edges: Edge[], required: Set<string>, subject: string, isBlank: boolean): void {
-    const processedProperties = new Set<string>();
+  process(edges: SchemaEdge[], required: Set<string>, subject: string, isBlank: boolean): void {
+    const byName = new Map(
+      edges.filter((e): e is SchemaEdge & { key: string } => e.key != null).map((e) => [e.key, e])
+    );
 
-    for (const edge of edges) {
-      if (edge.propertyKey) processedProperties.add(edge.propertyKey);
-      this.processPropertyEdge(edge, subject, required, isBlank);
-    }
+    byName.forEach((edge, name) => {
+      this.processPropertyEdge(name, edge, subject, required, isBlank);
+    });
 
     for (const req of required) {
-      if (!processedProperties.has(req)) {
-        const blankId = this.context.nextBlankId();
-        this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
-        this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(req));
-        this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
-        this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 1, true);
+      if (!byName.has(req)) {
+        this.emitRequiredOnlyProperty(req, subject, isBlank);
       }
     }
   }
 
+  private emitRequiredOnlyProperty(name: string, subject: string, isBlank: boolean): void {
+    const blankId = this.context.nextBlankId();
+    this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
+    this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
+    this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
+  }
+
   private processPropertyEdge(
-    edge: Edge,
+    name: string,
+    edge: SchemaEdge,
     subject: string,
     required: Set<string>,
     isBlank: boolean
   ): void {
-    const propName = edge.propertyKey;
-    if (!propName) return;
-
     const blankId = this.context.nextBlankId();
     this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
-    this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(propName));
+    this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
 
-    if (required.has(propName)) {
+    if (required.has(name)) {
       this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
     }
 
-    const rawValue = edge.to.value;
+    const { schema } = edge.node;
 
-    if (rawValue === false) {
-      this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 0, true);
-      return;
-    }
-
-    const propSchema = rawValue as JsonSchemaObjectType;
-
-    if (propSchema.type !== 'array') {
+    if (schema.type !== 'array') {
       this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 1, true);
     }
 
-    this.processPropertySchema(blankId, propSchema, edge);
+    this.processPropertySchema(blankId, edge.node);
   }
 
-  private processPropertySchema(blankId: string, schema: JsonSchemaObjectType, edge: Edge): void {
-    match(schema)
-      .with({ $ref: P.string }, (s) => {
-        this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(s.$ref));
-      })
-      .with({ type: 'object', properties: P.not(P.nullish) }, () => {
-        const nestedBlankId = this.context.nextBlankId();
-        this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
-        this.processFn(edge.to, nestedBlankId, true);
-      })
-      .with({ type: 'array', items: P.not(P.nullish) }, (s) => {
-        this.shaclMapper.map(s, blankId, true);
-        match(s.items as JsonSchemaObjectType)
-          .with({ $ref: P.string }, (items) => {
-            this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(items.$ref));
-          })
-          .otherwise((items) => {
-            const nestedBlankId = this.context.nextBlankId();
-            this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
-            this.shaclMapper.map(items, nestedBlankId, true);
-          });
-      })
-      .otherwise((s) => {
-        for (const [key, predicate] of Object.entries(LOGICAL_OPERATOR_MAP)) {
-          const items = (s as Record<string, unknown>)[key];
-          if (Array.isArray(items)) {
-            this.processPropertyLogicalOperator(blankId, items as JsonSchemaType[], predicate);
-            return;
-          }
+  private processPropertySchema(blankId: string, node: SchemaNode): void {
+    const { schema } = node;
+
+    if (schema.$ref) {
+      this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(schema.$ref));
+      return;
+    }
+
+    if (schema.type === 'object' && schema.properties) {
+      const nestedBlankId = this.context.nextBlankId();
+      this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
+      this.processFn(node, nestedBlankId, true);
+      return;
+    }
+
+    if (schema.type === 'array' && schema.items) {
+      this.shaclMapper.map(schema, blankId, true);
+      const itemsEdge = node.children.find((e) => e.label === 'items');
+      if (itemsEdge) {
+        const itemsSchema = itemsEdge.node.schema;
+        if (itemsSchema.$ref) {
+          this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(itemsSchema.$ref));
+        } else {
+          const nestedBlankId = this.context.nextBlankId();
+          this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
+          this.shaclMapper.map(itemsSchema, nestedBlankId, true);
         }
-        this.shaclMapper.map(s, blankId, true);
-      });
+      }
+      return;
+    }
+
+    for (const [label, predicate] of LOGICAL_PREDICATES) {
+      const children = node.children.filter((e) => e.label === label);
+      if (children.length > 0) {
+        this.processPropertyLogicalOperator(blankId, children, predicate);
+        return;
+      }
+    }
+
+    this.shaclMapper.map(schema, blankId, true);
   }
 
   private processPropertyLogicalOperator(
     blankId: string,
-    schemas: JsonSchemaType[],
+    edges: SchemaEdge[],
     predicate: string
   ): void {
-    const refs = schemas.flatMap((s) =>
-      typeof s === 'object' && s.$ref ? [this.context.resolveRef(s.$ref)] : []
-    );
-    if (refs.length > 0) {
+    if (edges.every((e) => !!e.node.schema.$ref)) {
+      const refs = edges
+        .map((e) => e.node.schema.$ref)
+        .filter((ref): ref is string => ref !== undefined)
+        .map((ref) => this.context.resolveRef(ref));
       this.context.store.list(blankId, predicate, refs, true, true);
+      return;
     }
+
+    const ids = edges.map((e) => {
+      const innerBlank = this.context.nextBlankId();
+      if (e.node.schema.$ref) {
+        this.context.store.blank(
+          innerBlank,
+          SHACL_NODE,
+          this.context.resolveRef(e.node.schema.$ref)
+        );
+      } else {
+        this.shaclMapper.map(e.node.schema, innerBlank, true);
+      }
+      return innerBlank;
+    });
+    this.context.store.listOfBlanks(blankId, predicate, ids, true);
   }
 }

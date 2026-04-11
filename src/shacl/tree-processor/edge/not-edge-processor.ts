@@ -1,4 +1,4 @@
-import { Edge } from '../../../graph/types';
+import { SchemaEdge } from '../../../tree/types';
 import { SHACL_NOT } from '../../shacl-terms';
 import { WriterContext } from '../../writer/writer-context';
 import { EdgeProcessor } from './edge-processor';
@@ -10,16 +10,15 @@ export class NotEdgeProcessor implements EdgeProcessor {
     private readonly resolver: EdgeResolver
   ) {}
 
-  process(edges: Edge[], subject: string, isBlank: boolean): void {
-    for (const edge of edges) {
-      const resolved = this.resolver.resolveEdgeToShapeId(edge);
-      if (!resolved) continue;
+  process([edge]: SchemaEdge[], subject: string, isBlank: boolean): void {
+    const resolved = this.resolver.resolveEdgeToShapeId(edge);
+    if (!resolved) return;
 
-      if (resolved.isRef) {
-        this.context.store.linkNamed(subject, SHACL_NOT, resolved.id, isBlank);
-      } else {
-        this.context.store.linkBlank(subject, SHACL_NOT, resolved.id, isBlank);
-      }
+    if (isBlank) {
+      if (resolved.isRef) this.context.store.blank(subject, SHACL_NOT, resolved.id);
+      else this.context.store.bothBlank(subject, SHACL_NOT, resolved.id);
+    } else {
+      this.context.store.triple(subject, SHACL_NOT, resolved.id, !resolved.isRef);
     }
   }
 }

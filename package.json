@@ -1,6 +1,6 @@
 {
   "name": "shacl-bridge",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "TypeScript library and CLI for parsing SHACL documents and transforming them into JSON Schema",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GeezFORCE/shacl-bridge.git"
+    "url": "git+https://github.com/MetaConfigurator/shacl-bridge.git"
   },
   "keywords": [
     "shacl",
@@ -40,17 +40,17 @@
   "author": "Giridhar C G <girigov39@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GeezFORCE/shacl-bridge/issues"
+    "url": "https://github.com/MetaConfigurator/shacl-bridge/issues"
   },
-  "homepage": "https://github.com/GeezFORCE/shacl-bridge#readme",
+  "homepage": "https://github.com/MetaConfigurator/shacl-bridge#readme",
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/jsonld": "^1.5.15",
     "@types/n3": "^1.26.1",
-    "eslint": "^9.39.4",
+    "eslint": "^10.1.0",
     "globals": "^17.4.0",
     "husky": "^9.1.7",
     "jest": "^30.3.0",

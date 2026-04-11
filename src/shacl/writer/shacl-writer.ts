@@ -1,9 +1,9 @@
-import { GraphBuilder } from '../../graph/graph-builder';
 import { JsonSchemaObjectType } from '../../json-schema/meta/json-schema-type';
 import { StoreBuilder } from '../../store/store-builder';
-import { NodeProcessor } from '../tree-processor/node-processor';
 import { WriterContext } from './writer-context';
 import { Store } from 'n3';
+import { TreeBuilder } from '../../tree/tree-builder';
+import { NodeProcessor } from '../tree-processor/node-processor';
 
 export class ShaclWriter {
   private readonly context: WriterContext;
@@ -23,13 +23,7 @@ export class ShaclWriter {
   }
 
   private process(): void {
-    const graph = new GraphBuilder(this.schema).build();
-    // console.log(printGraph(graph));
-    const processor = new NodeProcessor(this.context, graph);
-
-    const rootNode = graph.nodes.find((n) => n.key === 'root');
-    if (rootNode) {
-      processor.process(rootNode, this.context.shapeUri);
-    }
+    const root = new TreeBuilder(this.schema).build();
+    new NodeProcessor(this.context).process(root, this.context.shapeUri);
   }
 }

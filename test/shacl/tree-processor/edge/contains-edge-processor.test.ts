@@ -12,12 +12,16 @@ import { buildStore, EX, getBlankObject, getObject, makeEdge } from '../test-uti
 
 const SUBJECT = `${EX}ArrayShape`;
 
-function buildContainsStore(toValue: unknown, fromValue: unknown = {}) {
+function buildContainsStore(
+  toValue: Record<string, unknown>,
+  parentSchema: Record<string, unknown> = {}
+) {
   return buildStore(SUBJECT, (context) => {
     new ContainsEdgeProcessor(context, new ShaclMapper(context)).process(
-      [makeEdge(toValue, 'contains', fromValue)],
+      [makeEdge(toValue, 'contains')],
       SUBJECT,
-      false
+      false,
+      parentSchema
     );
   });
 }
