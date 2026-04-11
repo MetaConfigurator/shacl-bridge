@@ -171,10 +171,12 @@ export class StoreWriter {
         const items: (NamedNode | BlankNode | Literal)[] = [];
         let current = quad.object as BlankNode | NamedNode;
         while (current.termType === 'BlankNode') {
-          const [firstQuad] = this.store.getQuads(current, rdfFirst, null, null);
-          items.push(firstQuad.object as NamedNode | BlankNode | Literal);
-          const [restQuad] = this.store.getQuads(current, rdfRest, null, null);
-          current = restQuad.object as BlankNode | NamedNode;
+          const firstQuads = this.store.getQuads(current, rdfFirst, null, null);
+          if (firstQuads.length === 0) break;
+          items.push(firstQuads[0].object as NamedNode | BlankNode | Literal);
+          const restQuads = this.store.getQuads(current, rdfRest, null, null);
+          if (restQuads.length === 0) break;
+          current = restQuads[0].object as BlankNode | NamedNode;
         }
         listHeads.set(quad.object.value, items);
       }
@@ -185,8 +187,9 @@ export class StoreWriter {
       let current: BlankNode | NamedNode = DataFactory.blankNode(headId);
       while (current.termType === 'BlankNode') {
         listChainNodes.add(current.value);
-        const [restQuad] = this.store.getQuads(current, rdfRest, null, null);
-        current = restQuad.object as BlankNode | NamedNode;
+        const restQuads = this.store.getQuads(current, rdfRest, null, null);
+        if (restQuads.length === 0) break;
+        current = restQuads[0].object as BlankNode | NamedNode;
       }
     }
 
