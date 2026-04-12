@@ -15,10 +15,9 @@ import {
 } from '../../json-schema/json-schema-terms';
 import { ShaclMapper } from './mapper/shacl-mapper';
 import { WriterContext } from '../writer/writer-context';
+import { ChildNode, EdgeProcessor } from './edge/edge-processor';
 import { ContainsEdgeProcessor } from './edge/contains-edge-processor';
 import { DefsEdgeProcessor } from './edge/defs-edge-processor';
-import { EdgeProcessor } from './edge/edge-processor';
-import { EdgeResolver } from './edge/edge-resolver';
 import { IfThenElseEdgeProcessor } from './edge/if-then-else-edge-processor';
 import { ItemsEdgeProcessor } from './edge/items-edge-processor';
 import { LogicalEdgeProcessor } from './edge/logical-edge-processor';
@@ -27,97 +26,69 @@ import { PropertyEdgeProcessor } from './edge/property-edge-processor';
 
 export class NodeProcessor {
   private readonly shaclMapper: ShaclMapper;
-  private readonly propertyProcessor: PropertyEdgeProcessor;
   private readonly defsProcessor: DefsEdgeProcessor;
-  private readonly edgeProcessors: Partial<Record<string, EdgeProcessor>>;
+  private readonly propertyProcessor: PropertyEdgeProcessor;
+  private readonly edgeProcessors: EdgeProcessor[];
 
   constructor(private readonly context: WriterContext) {
     this.shaclMapper = new ShaclMapper(context);
-    const processFn = (
-      node: SchemaNode,
-      subject: string,
-      isBlank?: boolean,
-      targetClass?: string
-    ) => {
-      this.process(node, subject, isBlank, targetClass);
-    };
-    const resolver = new EdgeResolver(context, processFn);
-
-    this.propertyProcessor = new PropertyEdgeProcessor(context, this.shaclMapper, processFn);
-    this.defsProcessor = new DefsEdgeProcessor(context, processFn);
-    this.edgeProcessors = {
-      allOf: new LogicalEdgeProcessor(context, resolver, SHACL_AND),
-      anyOf: new LogicalEdgeProcessor(context, resolver, SHACL_OR),
-      oneOf: new LogicalEdgeProcessor(context, resolver, SHACL_XONE),
-      not: new NotEdgeProcessor(context, resolver),
-      if: new IfThenElseEdgeProcessor(context, resolver),
-      items: new ItemsEdgeProcessor(context, this.shaclMapper),
-      contains: new ContainsEdgeProcessor(context, this.shaclMapper),
-    };
-  }
-
-  process(node: SchemaNode, subject: string, isBlank = false, targetClass?: string): void {
-    const { schema, children } = node;
-
-    this.defsProcessor.process(children.filter((e) => e.label === '$defs'));
-
-    if (!this.hasShapeContent(schema, children)) return;
-
-    if (!isBlank) {
-      this.context.store.shape(subject, SHACL_NODE_SHAPE);
-      if (targetClass) {
-        this.context.store.triple(subject, SHACL_TARGET_CLASS, targetClass, false);
-      }
-    }
-
-    if (schema.$ref) {
-      this.context.store.triple(subject, SHACL_NODE, this.context.resolveRef(schema.$ref), false);
-      return;
-    }
-
-    this.shaclMapper.map(schema, subject, isBlank);
-    this.processEdges(children, subject, schema, isBlank);
-  }
-
-  private processEdges(
-    edges: SchemaEdge[],
-    subject: string,
-    schema: JsonSchemaObjectType,
-    isBlank: boolean
-  ): void {
-    const required = new Set(schema.required ?? []);
-    this.propertyProcessor.process(
-      edges.filter((e) => e.label === 'properties'),
-      required,
-      subject,
-      isBlank
-    );
-
-    const grouped = edges
-      .filter((e) => e.label !== 'properties' && e.label !== '$defs')
-      .reduce((map: Map<string, SchemaEdge[]>, e: SchemaEdge) => {
-        const list = map.get(e.label) ?? [];
-        list.push(e);
-        map.set(e.label, list);
-        return map;
-      }, new Map<string, SchemaEdge[]>());
-
-    const ifEdges = [
-      ...(grouped.get('if') ?? []),
-      ...(grouped.get('then') ?? []),
-      ...(grouped.get('else') ?? []),
+    this.defsProcessor = new DefsEdgeProcessor(context);
+    this.propertyProcessor = new PropertyEdgeProcessor(context, this.shaclMapper);
+    this.edgeProcessors = [
+      new LogicalEdgeProcessor(context, 'allOf', SHACL_AND),
+      new LogicalEdgeProcessor(context, 'anyOf', SHACL_OR),
+      new LogicalEdgeProcessor(context, 'oneOf', SHACL_XONE),
+      new IfThenElseEdgeProcessor(context),
+      new NotEdgeProcessor(context),
+      new ItemsEdgeProcessor(context, this.shaclMapper),
+      new ContainsEdgeProcessor(context, this.shaclMapper),
     ];
-    if (ifEdges.length > 0) {
-      grouped.set('if', ifEdges);
-      grouped.delete('then');
-      grouped.delete('else');
-    }
+  }
 
-    for (const [label, labelEdges] of grouped) {
-      const processor = this.edgeProcessors[label];
-      if (processor) {
-        processor.process(labelEdges, subject, isBlank, schema);
+  process(root: SchemaNode, subject: string, isBlank = false, targetClass?: string): void {
+    const stack: ChildNode[] = [{ node: root, subject, isBlank, targetClass }];
+
+    while (stack.length > 0) {
+      const { node, subject, isBlank = false, targetClass } = stack.pop() ?? {};
+      const { schema, children } = node ?? { schema: {}, children: [] };
+      if (subject == null) continue;
+
+      const defEdges = this.defsProcessor.filter(children);
+      if (defEdges.length > 0) {
+        stack.push(...this.defsProcessor.process({ edges: defEdges, subject, isBlank, schema }));
       }
+
+      if (!this.hasShapeContent(schema, children)) continue;
+
+      if (!isBlank) {
+        this.context.store.shape(subject, SHACL_NODE_SHAPE);
+        if (targetClass) {
+          this.context.store.triple(subject, SHACL_TARGET_CLASS, targetClass, false);
+        }
+      }
+
+      if (schema.$ref) {
+        this.context.store.triple(subject, SHACL_NODE, this.context.resolveRef(schema.$ref), false);
+        continue;
+      }
+
+      this.shaclMapper.map(schema, subject, isBlank);
+
+      for (const processor of this.edgeProcessors) {
+        const edges = processor.filter(children);
+        if (edges.length === 0) continue;
+        const prepared = processor.prepare?.(edges) ?? edges;
+        stack.push(...processor.process({ edges: prepared, subject, isBlank, schema }));
+      }
+
+      stack.push(
+        ...this.propertyProcessor.process({
+          edges: children.filter((e) => e.label === 'properties'),
+          subject,
+          isBlank,
+          schema,
+        })
+      );
     }
   }
 
@@ -130,6 +101,6 @@ export class NodeProcessor {
         !JSON_SCHEMA_UNHANDLED_KEYS.has(k) &&
         !k.startsWith('x-')
     );
-    return !(hasDefEdge && !hasShapeEdge && !hasConstraintKey);
+    return !hasDefEdge || hasShapeEdge || hasConstraintKey;
   }
 }

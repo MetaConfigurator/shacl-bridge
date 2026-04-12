@@ -17,12 +17,12 @@ function buildContainsStore(
   parentSchema: Record<string, unknown> = {}
 ) {
   return buildStore(SUBJECT, (context) => {
-    new ContainsEdgeProcessor(context, new ShaclMapper(context)).process(
-      [makeEdge(toValue, 'contains')],
-      SUBJECT,
-      false,
-      parentSchema
-    );
+    new ContainsEdgeProcessor(context, new ShaclMapper(context)).process({
+      edges: [makeEdge(toValue, 'contains')],
+      subject: SUBJECT,
+      isBlank: false,
+      schema: parentSchema,
+    });
   });
 }
 

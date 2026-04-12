@@ -1,6 +1,5 @@
 import { DataFactory } from 'n3';
 import { NotEdgeProcessor } from '../../../../src/shacl/tree-processor/edge/not-edge-processor';
-import { EdgeResolver } from '../../../../src/shacl/tree-processor/edge/edge-resolver';
 import { JsonSchemaObjectType } from '../../../../src/json-schema/meta/json-schema-type';
 import { SHACL_NOT, SHACL_PATH, SHACL_PROPERTY } from '../../../../src/shacl/shacl-terms';
 import { buildStore, EX, makeEdge, processSchema } from '../test-utils';
@@ -9,10 +8,11 @@ const SUBJECT = `${EX}Shape`;
 
 function buildNotStore(notValue: JsonSchemaObjectType) {
   return buildStore(SUBJECT, (context) => {
-    const resolver = new EdgeResolver(context, () => {
-      /* empty */
+    new NotEdgeProcessor(context).process({
+      edges: [makeEdge(notValue, 'not')],
+      subject: SUBJECT,
+      isBlank: false,
     });
-    new NotEdgeProcessor(context, resolver).process([makeEdge(notValue, 'not')], SUBJECT, false);
   });
 }
 

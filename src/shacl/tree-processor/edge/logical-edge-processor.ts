@@ -1,21 +1,28 @@
 import { SchemaEdge } from '../../../tree/types';
 import { WriterContext } from '../../writer/writer-context';
-import { EdgeProcessor } from './edge-processor';
+import { ChildNode, EdgeContext, EdgeProcessor } from './edge-processor';
 import { EdgeResolver } from './edge-resolver';
 
 export class LogicalEdgeProcessor implements EdgeProcessor {
+  private readonly resolver: EdgeResolver;
+
   constructor(
     private readonly context: WriterContext,
-    private readonly resolver: EdgeResolver,
+    private readonly label: string,
     private readonly predicate: string
-  ) {}
+  ) {
+    this.resolver = new EdgeResolver(context);
+  }
 
-  process(edges: SchemaEdge[], subject: string, isBlank: boolean): void {
-    const resolved = edges
-      .map((e) => this.resolver.resolveEdgeToShapeId(e))
-      .filter((r): r is { id: string; isRef: boolean } => r !== null);
+  filter(edges: SchemaEdge[]): SchemaEdge[] {
+    return edges.filter((e) => e.label === this.label);
+  }
 
-    if (resolved.length === 0) return;
+  process({ edges, subject, isBlank }: EdgeContext): ChildNode[] {
+    if (subject == null) return [];
+    const resolved = edges.map((e) => this.resolver.resolveEdgeToShapeId(e));
+
+    if (resolved.length === 0) return [];
 
     const ids = resolved.map((r) => r.id);
     if (resolved.every((r) => r.isRef)) {
@@ -23,5 +30,7 @@ export class LogicalEdgeProcessor implements EdgeProcessor {
     } else {
       this.context.store.listOfBlanks(subject, this.predicate, ids, isBlank);
     }
+
+    return resolved.flatMap((r) => (r.child ? [r.child] : []));
   }
 }

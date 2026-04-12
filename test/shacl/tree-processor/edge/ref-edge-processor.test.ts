@@ -6,14 +6,17 @@ const SUBJECT = `${EX}Root`;
 
 function buildRefStore(refValue: string) {
   return buildStore(SUBJECT, (context) => {
-    new RefEdgeProcessor(context).process([makeEdge({ $ref: refValue }, '$ref')], SUBJECT, false);
+    new RefEdgeProcessor(context).process({
+      edges: [makeEdge({ $ref: refValue }, '$ref')],
+      subject: SUBJECT,
+      isBlank: false,
+    });
   });
 }
 
 describe('RefEdgeProcessor', () => {
   it('should map $ref to sh:node as named node', () => {
     const store = buildRefStore('#/$defs/Person');
-
     expect(getObject(store, SUBJECT, SHACL_NODE)).toBe(`${EX}Person`);
   });
 });

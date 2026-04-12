@@ -11,7 +11,7 @@ import {
 } from '../../shacl-terms';
 import { WriterContext } from '../../writer/writer-context';
 import { ShaclMapper } from '../mapper/shacl-mapper';
-import { ProcessFn } from './edge-processor';
+import { ChildNode, EdgeContext, EdgeProcessor } from './edge-processor';
 
 const LOGICAL_PREDICATES = new Map([
   ['allOf', SHACL_AND],
@@ -19,20 +19,28 @@ const LOGICAL_PREDICATES = new Map([
   ['oneOf', SHACL_XONE],
 ]);
 
-export class PropertyEdgeProcessor {
+export class PropertyEdgeProcessor implements EdgeProcessor {
   constructor(
     private readonly context: WriterContext,
-    private readonly shaclMapper: ShaclMapper,
-    private readonly processFn: ProcessFn
+    private readonly shaclMapper: ShaclMapper
   ) {}
 
-  process(edges: SchemaEdge[], required: Set<string>, subject: string, isBlank: boolean): void {
+  filter(edges: SchemaEdge[]): SchemaEdge[] {
+    return edges.filter((e) => e.label === 'properties');
+  }
+
+  process({ edges, subject, isBlank, schema }: EdgeContext): ChildNode[] {
+    if (schema == null || subject == null || isBlank == null) return [];
+    const required = new Set(schema.required ?? []);
     const byName = new Map(
       edges.filter((e): e is SchemaEdge & { key: string } => e.key != null).map((e) => [e.key, e])
     );
 
+    const children: ChildNode[] = [];
+
     byName.forEach((edge, name) => {
-      this.processPropertyEdge(name, edge, subject, required, isBlank);
+      const child = this.processPropertyEdge(name, edge, subject, required, isBlank);
+      if (child) children.push(child);
     });
 
     for (const req of required) {
@@ -40,6 +48,8 @@ export class PropertyEdgeProcessor {
         this.emitRequiredOnlyProperty(req, subject, isBlank);
       }
     }
+
+    return children;
   }
 
   private emitRequiredOnlyProperty(name: string, subject: string, isBlank: boolean): void {
@@ -55,7 +65,7 @@ export class PropertyEdgeProcessor {
     subject: string,
     required: Set<string>,
     isBlank: boolean
-  ): void {
+  ): ChildNode | null {
     const blankId = this.context.nextBlankId();
     this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
     this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
@@ -64,28 +74,25 @@ export class PropertyEdgeProcessor {
       this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
     }
 
-    const { schema } = edge.node;
-
-    if (schema.type !== 'array') {
+    if (edge.node.schema.type !== 'array') {
       this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 1, true);
     }
 
-    this.processPropertySchema(blankId, edge.node);
+    return this.processPropertySchema(blankId, edge.node);
   }
 
-  private processPropertySchema(blankId: string, node: SchemaNode): void {
+  private processPropertySchema(blankId: string, node: SchemaNode): ChildNode | null {
     const { schema } = node;
 
     if (schema.$ref) {
       this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(schema.$ref));
-      return;
+      return null;
     }
 
     if (schema.type === 'object' && schema.properties) {
       const nestedBlankId = this.context.nextBlankId();
       this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
-      this.processFn(node, nestedBlankId, true);
-      return;
+      return { node, subject: nestedBlankId, isBlank: true };
     }
 
     if (schema.type === 'array' && schema.items) {
@@ -101,18 +108,19 @@ export class PropertyEdgeProcessor {
           this.shaclMapper.map(itemsSchema, nestedBlankId, true);
         }
       }
-      return;
+      return null;
     }
 
     for (const [label, predicate] of LOGICAL_PREDICATES) {
       const children = node.children.filter((e) => e.label === label);
       if (children.length > 0) {
         this.processPropertyLogicalOperator(blankId, children, predicate);
-        return;
+        return null;
       }
     }
 
     this.shaclMapper.map(schema, blankId, true);
+    return null;
   }
 
   private processPropertyLogicalOperator(

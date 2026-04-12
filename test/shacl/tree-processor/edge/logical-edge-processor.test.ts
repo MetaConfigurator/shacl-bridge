@@ -1,6 +1,5 @@
 import { DataFactory } from 'n3';
 import { LogicalEdgeProcessor } from '../../../../src/shacl/tree-processor/edge/logical-edge-processor';
-import { EdgeResolver } from '../../../../src/shacl/tree-processor/edge/edge-resolver';
 import { SchemaEdge } from '../../../../src/tree/types';
 import { JsonSchemaObjectType } from '../../../../src/json-schema/meta/json-schema-type';
 import { SHACL_AND, SHACL_OR, SHACL_PROPERTY, SHACL_XONE } from '../../../../src/shacl/shacl-terms';
@@ -12,12 +11,20 @@ function makeRefEdge(ref: string, label: string): SchemaEdge {
   return makeEdge({ $ref: ref }, label);
 }
 
+const PREDICATE_TO_LABEL = new Map([
+  [SHACL_AND, 'allOf'],
+  [SHACL_OR, 'anyOf'],
+  [SHACL_XONE, 'oneOf'],
+]);
+
 function buildLogicalStore(edges: SchemaEdge[], predicate: string) {
+  const label = PREDICATE_TO_LABEL.get(predicate) ?? '';
   return buildStore(SUBJECT, (context) => {
-    const resolver = new EdgeResolver(context, () => {
-      /* empty */
+    new LogicalEdgeProcessor(context, label, predicate).process({
+      edges,
+      subject: SUBJECT,
+      isBlank: false,
     });
-    new LogicalEdgeProcessor(context, resolver, predicate).process(edges, SUBJECT, false);
   });
 }
 

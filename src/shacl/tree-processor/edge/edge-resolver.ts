@@ -3,33 +3,40 @@ import { JsonSchemaObjectType } from '../../../json-schema/meta/json-schema-type
 import { SHACL_NOT } from '../../shacl-terms';
 import { JSON_SCHEMA_UNHANDLED_KEYS } from '../../../json-schema/json-schema-terms';
 import { WriterContext } from '../../writer/writer-context';
-import { ProcessFn } from './edge-processor';
+import { ChildNode } from './edge-processor';
+import { match, P } from 'ts-pattern';
+
+export interface ResolvedEdge {
+  id: string;
+  isRef: boolean;
+  child?: ChildNode;
+}
 
 export class EdgeResolver {
-  constructor(
-    private readonly context: WriterContext,
-    private readonly processFn: ProcessFn
-  ) {}
+  constructor(private readonly context: WriterContext) {}
 
-  resolveEdgeToShapeId(edge: SchemaEdge): { id: string; isRef: boolean } | null {
-    if (edge.node.booleanSchema === false) {
-      const blankId = this.context.nextBlankId();
-      const notTargetBlankId = this.context.nextBlankId();
-      this.context.store.bothBlank(blankId, SHACL_NOT, notTargetBlankId);
-      return { id: blankId, isRef: false };
-    }
-    if (edge.node.booleanSchema === true) {
-      return { id: this.context.nextBlankId(), isRef: false };
-    }
-    const schema = edge.node.schema;
-    if (schema.$ref) {
-      return { id: this.context.resolveRef(schema.$ref), isRef: true };
-    }
-    const blankId = this.context.nextBlankId();
-    if (this.hasMappableContent(schema)) {
-      this.processFn(edge.node, blankId, true);
-    }
-    return { id: blankId, isRef: false };
+  resolveEdgeToShapeId(edge: SchemaEdge): ResolvedEdge {
+    return match(edge.node)
+      .with({ booleanSchema: false }, () => {
+        const blankId = this.context.nextBlankId();
+        const notTargetBlankId = this.context.nextBlankId();
+        this.context.store.bothBlank(blankId, SHACL_NOT, notTargetBlankId);
+        return { id: blankId, isRef: false };
+      })
+      .with({ booleanSchema: false }, () => {
+        return { id: this.context.nextBlankId(), isRef: false };
+      })
+      .with({ schema: { $ref: P.string } }, ({ schema }) => ({
+        id: this.context.resolveRef(schema.$ref),
+        isRef: true,
+      }))
+      .otherwise(({ schema }) => {
+        const blankId = this.context.nextBlankId();
+        const child: ChildNode | undefined = this.hasMappableContent(schema)
+          ? { node: edge.node, subject: blankId, isBlank: true }
+          : undefined;
+        return { id: blankId, isRef: false, child };
+      });
   }
 
   hasMappableContent(schema: JsonSchemaObjectType): boolean {

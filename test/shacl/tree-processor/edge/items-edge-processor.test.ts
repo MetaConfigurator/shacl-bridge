@@ -9,11 +9,10 @@ const SUBJECT = `${EX}ArrayShape`;
 
 function buildItemsStore(toValue: JsonSchemaObjectType) {
   return buildStore(SUBJECT, (context) => {
-    new ItemsEdgeProcessor(context, new ShaclMapper(context)).process(
-      [makeEdge(toValue, 'items')],
-      SUBJECT,
-      false
-    );
+    new ItemsEdgeProcessor(context, new ShaclMapper(context)).process({
+      edges: [makeEdge(toValue, 'items')],
+      subject: SUBJECT,
+    });
   });
 }
 

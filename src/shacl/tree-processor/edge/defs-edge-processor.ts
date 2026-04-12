@@ -1,23 +1,24 @@
 import { SchemaEdge } from '../../../tree/types';
 import { WriterContext } from '../../writer/writer-context';
-import { ProcessFn } from './edge-processor';
+import { ChildNode, EdgeContext, EdgeProcessor } from './edge-processor';
 
-export class DefsEdgeProcessor {
+export class DefsEdgeProcessor implements EdgeProcessor {
   private readonly processedDefs = new Set<string>();
 
-  constructor(
-    private readonly context: WriterContext,
-    private readonly processFn: ProcessFn
-  ) {}
+  constructor(private readonly context: WriterContext) {}
 
-  process(edges: SchemaEdge[]): void {
+  filter(edges: SchemaEdge[]): SchemaEdge[] {
+    return edges.filter((e) => e.label === '$defs');
+  }
+
+  process({ edges }: EdgeContext): ChildNode[] {
+    const children: ChildNode[] = [];
     for (const edge of edges) {
-      const defName = edge.key;
-      if (!defName || this.processedDefs.has(defName)) continue;
-
-      this.processedDefs.add(defName);
-      const defUri = this.context.buildDefUri(defName);
-      this.processFn(edge.node, defUri, false, defUri);
+      if (!edge.key || this.processedDefs.has(edge.key)) continue;
+      this.processedDefs.add(edge.key);
+      const defUri = this.context.buildDefUri(edge.key);
+      children.push({ node: edge.node, subject: defUri, isBlank: false, targetClass: defUri });
     }
+    return children;
   }
 }

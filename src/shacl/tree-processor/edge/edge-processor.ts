@@ -1,18 +1,22 @@
 import { SchemaEdge, SchemaNode } from '../../../tree/types';
 import { JsonSchemaObjectType } from '../../../json-schema/meta/json-schema-type';
 
-export type ProcessFn = (
-  node: SchemaNode,
-  subject: string,
-  isBlank?: boolean,
-  targetClass?: string
-) => void;
+export interface ChildNode {
+  node: SchemaNode;
+  subject: string;
+  isBlank?: boolean;
+  targetClass?: string;
+}
+
+export interface EdgeContext {
+  edges: SchemaEdge[];
+  subject?: string;
+  isBlank?: boolean;
+  schema?: JsonSchemaObjectType;
+}
 
 export interface EdgeProcessor {
-  process(
-    edges: SchemaEdge[],
-    subject: string,
-    isBlank: boolean,
-    parentSchema?: JsonSchemaObjectType
-  ): void;
+  filter(edges: SchemaEdge[]): SchemaEdge[];
+  prepare?(edges: SchemaEdge[]): SchemaEdge[];
+  process(ctx: EdgeContext): ChildNode[];
 }
