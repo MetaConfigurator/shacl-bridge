@@ -32,7 +32,7 @@ function findFiles(dir: string, ext: string): string[] {
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) {
       results.push(...findFiles(full, ext));
-    } else if (entry.endsWith(ext)) {
+    } else if (entry.endsWith(ext) && entry !== 'manifest.json') {
       results.push(full);
     }
   }
