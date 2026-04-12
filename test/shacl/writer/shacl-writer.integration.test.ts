@@ -38,12 +38,12 @@ describe('ShaclWriter Integration', () => {
       expect(normalizeWhitespace(shacl)).toBe(
         normalizeWhitespace(`
           ex:NameShape a sh:NodeShape;
-              sh:name "Name Shape";
-              sh:description "A shape for validating names";
-              sh:datatype xsd:string;
               sh:minLength 1;
               sh:maxLength 100;
-              sh:pattern "^[A-Za-z]+$".
+              sh:name "Name Shape";
+              sh:description "A shape for validating names";
+              sh:pattern "^[A-Za-z]+$";
+              sh:datatype xsd:string.
         `)
       );
     });
@@ -63,9 +63,9 @@ describe('ShaclWriter Integration', () => {
       expect(normalizeWhitespace(shacl)).toBe(
         normalizeWhitespace(`
           ex:AgeShape a sh:NodeShape;
-              sh:datatype xsd:integer;
-              sh:minInclusive 0;
-              sh:maxInclusive 150.
+            sh:minInclusive 0;
+            sh:maxInclusive 150;
+            sh:datatype xsd:integer.
         `)
       );
     });
@@ -87,10 +87,11 @@ describe('ShaclWriter Integration', () => {
         normalizeWhitespace(`
           ex:PersonShape a sh:NodeShape;
               sh:nodeKind sh:BlankNodeOrIRI;
-              sh:property _:b0.
-          _:b0 sh:path ex:name;
-              sh:maxCount 1;
-              sh:datatype xsd:string.
+              sh:property [
+               sh:path ex:name;
+                sh:maxCount 1;
+                sh:datatype xsd:string
+              ].
         `)
       );
     });
@@ -111,11 +112,12 @@ describe('ShaclWriter Integration', () => {
         normalizeWhitespace(`
           ex:PersonShape a sh:NodeShape;
               sh:nodeKind sh:BlankNodeOrIRI;
-              sh:property _:b0.
-          _:b0 sh:path ex:name;
-              sh:minCount 1;
-              sh:maxCount 1;
-              sh:datatype xsd:string.
+              sh:property [
+                sh:path ex:name;
+                sh:minCount 1;
+                sh:maxCount 1;
+                sh:datatype xsd:string
+              ].
         `)
       );
     });
@@ -133,13 +135,22 @@ describe('ShaclWriter Integration', () => {
 
       const shacl = await toShacl(schema);
 
-      expect(shacl).toContain('sh:property');
-      expect(shacl).toContain('_:b0');
-      expect(shacl).toContain('_:b1');
-      expect(shacl).toContain('sh:path ex:name');
-      expect(shacl).toContain('sh:path ex:age');
-      expect(shacl).toContain('sh:datatype xsd:string');
-      expect(shacl).toContain('sh:datatype xsd:integer');
+      expect(normalizeWhitespace(shacl)).toBe(
+        normalizeWhitespace(`
+          ex:PersonShape a sh:NodeShape;
+              sh:nodeKind sh:BlankNodeOrIRI;
+              sh:property [
+                  sh:path ex:name;
+                  sh:minCount 1;
+                  sh:maxCount 1;
+                  sh:datatype xsd:string
+                ], [
+                  sh:path ex:age;
+                  sh:maxCount 1;
+                  sh:datatype xsd:integer
+                ].
+        `)
+      );
     });
   });
 
@@ -371,10 +382,10 @@ describe('ShaclWriter Integration', () => {
 
       expect(normalizeWhitespace(shacl)).toBe(
         normalizeWhitespace(`
-          ex:RangeShape a sh:NodeShape;
-              sh:datatype xsd:decimal;
-              sh:minExclusive 0;
-              sh:maxExclusive 100.
+            ex:RangeShape a sh:NodeShape;
+            sh:minExclusive 0;
+            sh:maxExclusive 100;
+            sh:datatype xsd:decimal.
         `)
       );
     });

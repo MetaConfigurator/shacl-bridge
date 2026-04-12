@@ -3,6 +3,7 @@ import { JsonSchemaObjectType } from '../json-schema/meta/json-schema-type';
 export interface SchemaNode {
   schema: JsonSchemaObjectType;
   children: SchemaEdge[];
+  booleanSchema?: boolean;
 }
 
 export interface SchemaEdge {

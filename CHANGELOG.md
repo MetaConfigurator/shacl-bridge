@@ -1,9 +1,9 @@
 ## [1.6.1](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.6.0...v1.6.1) (2026-03-30)
 
-
 ### Bug Fixes
 
-* **conversion:** fix some constraint mapping issues ([#123](https://github.com/MetaConfigurator/shacl-bridge/issues/123)) ([5f988a8](https://github.com/MetaConfigurator/shacl-bridge/commit/5f988a83a8dd5a29d73c09c991b045b3927c441c))
+* **conversion:** fix some constraint mapping
+  issues ([#123](https://github.com/MetaConfigurator/shacl-bridge/issues/123)) ([5f988a8](https://github.com/MetaConfigurator/shacl-bridge/commit/5f988a83a8dd5a29d73c09c991b045b3927c441c))
 
 # [1.6.0](https://github.com/GeezFORCE/shacl-bridge/compare/v1.5.0...v1.6.0) (2026-03-16)
 

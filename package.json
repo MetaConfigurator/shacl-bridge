@@ -19,7 +19,8 @@
     "test:watch": "jest --watch",
     "prepare": "husky",
     "fix:lint-format": "npm run lint:fix && npm run format",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "benchmark": "npm run build && npm link && npx jiti benchmark/run-benchmark.ts"
   },
   "repository": {
     "type": "git",

@@ -298,40 +298,6 @@ export class ShapeDefinitionBuilder {
     return this;
   }
 
-  private getRdfValueFromTerm(object: Term) {
-    return match(object.termType)
-      .with('Literal', () => {
-        const literal = object as {
-          value: string;
-          language?: string;
-          datatype: { value: string };
-        };
-        return literal.language
-          ? {
-              type: 'langString',
-              value: literal.value,
-              language: literal.language,
-            }
-          : {
-              type: 'literal',
-              value: literal.value,
-              datatype: literal.datatype.value,
-            };
-      })
-      .with('NamedNode', () => {
-        return {
-          type: 'uri',
-          value: object.value,
-        };
-      })
-      .otherwise(() => {
-        return {
-          type: 'uri',
-          value: object.value,
-        };
-      }) as RdfValue;
-  }
-
   build(): ShapeDefinition {
     // Default if not found yet
     this.shape.type ??= SHAPE_TYPE.NODE_SHAPE;
@@ -452,6 +418,40 @@ export class ShapeDefinitionBuilder {
 
   getSparqlConstraintBlankNodes(): string[] {
     return this.sparqlConstraintBlankNodes;
+  }
+
+  private getRdfValueFromTerm(object: Term) {
+    return match(object.termType)
+      .with('Literal', () => {
+        const literal = object as {
+          value: string;
+          language?: string;
+          datatype: { value: string };
+        };
+        return literal.language
+          ? {
+              type: 'langString',
+              value: literal.value,
+              language: literal.language,
+            }
+          : {
+              type: 'literal',
+              value: literal.value,
+              datatype: literal.datatype.value,
+            };
+      })
+      .with('NamedNode', () => {
+        return {
+          type: 'uri',
+          value: object.value,
+        };
+      })
+      .otherwise(() => {
+        return {
+          type: 'uri',
+          value: object.value,
+        };
+      }) as RdfValue;
   }
 
   /**

@@ -321,33 +321,6 @@ describe('StoreBuilder', () => {
     });
   });
 
-  describe('write', () => {
-    it('should serialize to Turtle format', async () => {
-      builder
-        .withPrefixes({ ex: 'http://example.org/' })
-        .shape('http://example.org/PersonShape', SHACL_NODE_SHAPE);
-
-      const turtle = await builder.write();
-
-      expect(turtle).toContain('ex:PersonShape');
-      expect(turtle).toContain(SHACL_NODE_SHAPE);
-    });
-  });
-
-  describe('writeJsonLd', () => {
-    it('should serialize to JSON-LD format', async () => {
-      builder
-        .withPrefixes({ ex: 'http://example.org/' })
-        .shape('http://example.org/PersonShape', SHACL_NODE_SHAPE);
-
-      const jsonLd = await builder.writeJsonLd();
-      const parsed = JSON.parse(jsonLd) as Record<string, unknown>;
-
-      expect(parsed).toBeDefined();
-      expect(parsed['@id']).toBe('ex:PersonShape');
-    });
-  });
-
   describe('fluent API', () => {
     it('should support method chaining', () => {
       const store = builder

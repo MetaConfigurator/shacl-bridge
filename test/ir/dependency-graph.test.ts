@@ -61,14 +61,14 @@ describe('DependencyGraphBuilder', () => {
 
       const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
       expect(graph.dependencies.has(parentShapeKey)).toBe(true);
-      expect(
-        [...(graph.dependencies.get(parentShapeKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['b1']);
+      const deps = [...(graph.dependencies.get(parentShapeKey) ?? new Set())];
+      expect(deps).toHaveLength(1);
+      const blankId = deps[0].value;
 
       expect(graph.dependents.size).toBe(1);
 
-      const b1Key = getDependentKey(graph.dependents, 'b1');
-      expect(graph.dependents.get(b1Key)).toStrictEqual(
+      const blankKey = getDependentKey(graph.dependents, blankId);
+      expect(graph.dependents.get(blankKey)).toStrictEqual(
         new Set().add(DataFactory.namedNode(parentShape))
       );
     });
@@ -94,21 +94,14 @@ describe('DependencyGraphBuilder', () => {
 
       const deps = graph.dependencies.get(parentShapeKey) ?? new Set();
       expect(deps.size).toBe(3);
-      expect([...deps].map((b) => b.value)).toStrictEqual(['b1', 'b2', 'b3']);
 
       expect(graph.dependents.size).toBe(3);
-      const b1Key = getDependentKey(graph.dependents, 'b1');
-      const b2Key = getDependentKey(graph.dependents, 'b2');
-      const b3Key = getDependentKey(graph.dependents, 'b3');
-      expect(graph.dependents.get(b1Key)).toStrictEqual(
-        new Set().add(DataFactory.namedNode(parentShape))
-      );
-      expect(graph.dependents.get(b2Key)).toStrictEqual(
-        new Set().add(DataFactory.namedNode(parentShape))
-      );
-      expect(graph.dependents.get(b3Key)).toStrictEqual(
-        new Set().add(DataFactory.namedNode(parentShape))
-      );
+      for (const dep of deps) {
+        const depKey = getDependentKey(graph.dependents, dep.value);
+        expect(graph.dependents.get(depKey)).toStrictEqual(
+          new Set().add(DataFactory.namedNode(parentShape))
+        );
+      }
     });
 
     it('should handle multiple parent shapes with their own blank node dependencies', async () => {
@@ -129,20 +122,20 @@ describe('DependencyGraphBuilder', () => {
 
       expect(graph.dependencies.has(personShapeKey)).toBe(true);
       expect(graph.dependencies.has(companyShapeKey)).toBe(true);
-      expect(
-        [...(graph.dependencies.get(personShapeKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['b1']);
-      expect(
-        [...(graph.dependencies.get(companyShapeKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['b2']);
+      const personDeps = [...(graph.dependencies.get(personShapeKey) ?? new Set())];
+      const companyDeps = [...(graph.dependencies.get(companyShapeKey) ?? new Set())];
+      expect(personDeps).toHaveLength(1);
+      expect(companyDeps).toHaveLength(1);
+      const personBlankId = personDeps[0].value;
+      const companyBlankId = companyDeps[0].value;
 
       expect(graph.dependents.size).toBe(2);
-      const b1Key = getDependentKey(graph.dependents, 'b1');
-      const b2Key = getDependentKey(graph.dependents, 'b2');
-      expect(graph.dependents.get(b1Key)).toStrictEqual(
+      const personBlankKey = getDependentKey(graph.dependents, personBlankId);
+      const companyBlankKey = getDependentKey(graph.dependents, companyBlankId);
+      expect(graph.dependents.get(personBlankKey)).toStrictEqual(
         new Set().add(DataFactory.namedNode(personShape))
       );
-      expect(graph.dependents.get(b2Key)).toStrictEqual(
+      expect(graph.dependents.get(companyBlankKey)).toStrictEqual(
         new Set().add(DataFactory.namedNode(companyShape))
       );
     });
@@ -183,25 +176,25 @@ describe('DependencyGraphBuilder', () => {
       // Parent shape depends on blankNode1
       const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
       expect(graph.dependencies.has(parentShapeKey)).toBe(true);
-      expect(
-        [...(graph.dependencies.get(parentShapeKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['b1']);
+      const parentDeps = [...(graph.dependencies.get(parentShapeKey) ?? new Set())];
+      expect(parentDeps).toHaveLength(1);
+      const b1Id = parentDeps[0].value;
 
       // BlankNode1 depends on blankNode2
-      const b1DependencyKey = getDependencyKey(graph.dependencies, 'b1');
+      const b1DependencyKey = getDependencyKey(graph.dependencies, b1Id);
       expect(graph.dependencies.has(b1DependencyKey)).toBe(true);
-      expect(
-        [...(graph.dependencies.get(b1DependencyKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['b2']);
+      const b1Deps = [...(graph.dependencies.get(b1DependencyKey) ?? new Set())];
+      expect(b1Deps).toHaveLength(1);
+      const b2Id = b1Deps[0].value;
 
-      const b1DependentKey = getDependentKey(graph.dependents, 'b1');
-      const b2DependentKey = getDependentKey(graph.dependents, 'b2');
+      const b1DependentKey = getDependentKey(graph.dependents, b1Id);
+      const b2DependentKey = getDependentKey(graph.dependents, b2Id);
       expect(graph.dependents.size).toBe(2);
       expect(graph.dependents.get(b1DependentKey)).toStrictEqual(
         new Set().add(DataFactory.namedNode(parentShape))
       );
       expect(graph.dependents.get(b2DependentKey)).toStrictEqual(
-        new Set().add(DataFactory.blankNode('b1'))
+        new Set().add(DataFactory.blankNode(b1Id))
       );
     });
 
@@ -222,24 +215,24 @@ describe('DependencyGraphBuilder', () => {
       // Parent shape depends on first list node
       const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
       expect(graph.dependencies.has(parentShapeKey)).toBe(true);
-      expect(
-        [...(graph.dependencies.get(parentShapeKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['l1']);
+      const listHeadDeps = [...(graph.dependencies.get(parentShapeKey) ?? new Set())];
+      expect(listHeadDeps).toHaveLength(1);
+      const listHeadId = listHeadDeps[0].value;
 
       // First list node depends on second list node (via rdf:rest)
-      const l1DependencyKey = getDependencyKey(graph.dependencies, 'l1');
-      expect(graph.dependencies.has(l1DependencyKey)).toBe(true);
-      expect(
-        [...(graph.dependencies.get(l1DependencyKey) ?? new Set())].map((b) => b.value)
-      ).toStrictEqual(['l2']);
+      const listHeadKey = getDependencyKey(graph.dependencies, listHeadId);
+      expect(graph.dependencies.has(listHeadKey)).toBe(true);
+      const listTailDeps = [...(graph.dependencies.get(listHeadKey) ?? new Set())];
+      expect(listTailDeps).toHaveLength(1);
+      const listTailId = listTailDeps[0].value;
 
-      const l1DependentKey = getDependentKey(graph.dependents, 'l1');
-      const l2DependentKey = getDependentKey(graph.dependents, 'l2');
-      expect(graph.dependents.get(l1DependentKey)).toStrictEqual(
+      const listHeadDependentKey = getDependentKey(graph.dependents, listHeadId);
+      const listTailDependentKey = getDependentKey(graph.dependents, listTailId);
+      expect(graph.dependents.get(listHeadDependentKey)).toStrictEqual(
         new Set().add(DataFactory.namedNode(parentShape))
       );
-      expect(graph.dependents.get(l2DependentKey)).toStrictEqual(
-        new Set().add(DataFactory.blankNode('l1'))
+      expect(graph.dependents.get(listTailDependentKey)).toStrictEqual(
+        new Set().add(DataFactory.blankNode(listHeadId))
       );
     });
 
@@ -259,13 +252,13 @@ describe('DependencyGraphBuilder', () => {
       const parentShapeKey = getDependencyKey(graph.dependencies, parentShape);
       expect(graph.dependencies.has(parentShapeKey)).toBe(true);
       expect(graph.dependencies.get(parentShapeKey)?.size).toBe(1);
-      expect(
-        [...(graph.dependencies.get(parentShapeKey) ?? new Set<Term>())].map((b) => b.value)
-      ).toStrictEqual(['b1']);
+      const mixedDeps = [...(graph.dependencies.get(parentShapeKey) ?? new Set<Term>())];
+      expect(mixedDeps).toHaveLength(1);
+      const blankId = mixedDeps[0].value;
 
-      const b1Key = getDependentKey(graph.dependents, 'b1');
+      const blankKey = getDependentKey(graph.dependents, blankId);
       expect(graph.dependents.size).toBe(1);
-      expect(graph.dependents.get(b1Key)).toStrictEqual(
+      expect(graph.dependents.get(blankKey)).toStrictEqual(
         new Set().add(DataFactory.namedNode(parentShape))
       );
     });

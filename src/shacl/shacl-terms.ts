@@ -2,6 +2,7 @@ export const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 export const RDF_FIRST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first';
 export const RDF_REST = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest';
 export const RDF_NIL = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil';
+export const RDF_JSON = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON';
 export const SHACL_NODE_SHAPE = 'http://www.w3.org/ns/shacl#NodeShape';
 export const SHACL_PROPERTY_SHAPE = 'http://www.w3.org/ns/shacl#PropertyShape';
 export const SHACL_PATH = 'http://www.w3.org/ns/shacl#path';
