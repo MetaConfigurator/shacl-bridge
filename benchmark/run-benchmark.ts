@@ -21,6 +21,9 @@ interface TestResult {
   suite: string;
   name: string;
   score: string;
+  inputFile: string;
+  expectedFile: string;
+  skipped?: boolean;
 }
 
 function findFiles(dir: string, ext: string): string[] {
@@ -29,7 +32,7 @@ function findFiles(dir: string, ext: string): string[] {
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) {
       results.push(...findFiles(full, ext));
-    } else if (entry.endsWith(ext)) {
+    } else if (entry.endsWith(ext) && entry !== 'manifest.json') {
       results.push(full);
     }
   }
@@ -113,21 +116,30 @@ function writeJunit(results: TestResult[], outFile: string): void {
     return !isNaN(n) && n >= FAIL_THRESHOLD && n < WARN_THRESHOLD;
   };
 
-  const totalFailures = results.filter((r) => isFail(r.score)).length;
+  const totalFailures = results.filter((r) => !r.skipped && isFail(r.score)).length;
+  const totalSkipped = results.filter((r) => r.skipped).length;
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<testsuites name="shacl-bridge" tests="${String(results.length)}" failures="${String(totalFailures)}">\n`;
+  xml += `<testsuites name="shacl-bridge" tests="${String(results.length)}" failures="${String(totalFailures)}" skipped="${String(totalSkipped)}">\n`;
 
   for (const [suiteName, suiteResults] of suites) {
-    const failures = suiteResults.filter((r) => isFail(r.score)).length;
-    xml += `  <testsuite name="${escapeXml(suiteName)}" tests="${String(suiteResults.length)}" failures="${String(failures)}">\n`;
+    const failures = suiteResults.filter((r) => !r.skipped && isFail(r.score)).length;
+    const skipped = suiteResults.filter((r) => r.skipped).length;
+    xml += `  <testsuite name="${escapeXml(suiteName)}" tests="${String(suiteResults.length)}" failures="${String(failures)}" skipped="${String(skipped)}">\n`;
     for (const r of suiteResults) {
       xml += `    <testcase name="${escapeXml(r.name)}" classname="${escapeXml(suiteName)}">\n`;
-      if (isFail(r.score)) {
+      if (r.skipped) {
+        xml += `      <skipped message="No expected file found: ${escapeXml(r.expectedFile)}" />\n`;
+      } else if (isFail(r.score)) {
         xml += `      <failure message="${escapeXml(`Score ${r.score} is below threshold ${String(FAIL_THRESHOLD)}`)}" />\n`;
       } else if (isWarn(r.score)) {
-        xml += `      <failure type="warning" message="${escapeXml(`Score ${r.score} is below ${String(WARN_THRESHOLD)}`)}" />\n`;
+        xml += `      <system-out>WARNING: Score ${escapeXml(r.score)} is below ${String(WARN_THRESHOLD)}</system-out>\n`;
       }
+      xml += `      <properties>\n`;
+      xml += `        <property name="score" value="${escapeXml(r.score)}" />\n`;
+      xml += `        <property name="input" value="${escapeXml(r.inputFile)}" />\n`;
+      xml += `        <property name="expected" value="${escapeXml(r.expectedFile)}" />\n`;
+      xml += `      </properties>\n`;
       xml += `    </testcase>\n`;
     }
     xml += `  </testsuite>\n`;
@@ -160,18 +172,38 @@ try {
     const dir = dirname(jsonFile);
     const base = basename(jsonFile, '.json');
     const ttlFile = join(dir, `${base}.ttl`);
-    if (!existsSync(ttlFile)) continue;
+    const relDir = relative(JS_TO_SHACL_DIR, dir) || '.';
+    if (!existsSync(ttlFile)) {
+      testNum++;
+      console.log(
+        `${pad(String(testNum), col.num)} ${pad('json-schema-to-shacl', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(jsonFile), col.file)} SKIPPED`
+      );
+      results.push({
+        suite: 'json-schema-to-shacl',
+        name: `${relDir}/${base}`,
+        score: 'N/A',
+        inputFile: jsonFile,
+        expectedFile: ttlFile,
+        skipped: true,
+      });
+      continue;
+    }
 
     testNum++;
     const tempTtl = join(tempDir, `${String(testNum)}_${base}.ttl`);
     const converted = toShacl(jsonFile, tempTtl);
     const score = converted ? compareShacl(ttlFile, tempTtl) : 'ERROR';
-    const relDir = relative(JS_TO_SHACL_DIR, dir) || '.';
 
     console.log(
       `${pad(String(testNum), col.num)} ${pad('json-schema-to-shacl', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(jsonFile), col.file)} ${score}`
     );
-    results.push({ suite: 'json-schema-to-shacl', name: `${relDir}/${base}`, score });
+    results.push({
+      suite: 'json-schema-to-shacl',
+      name: `${relDir}/${base}`,
+      score,
+      inputFile: jsonFile,
+      expectedFile: ttlFile,
+    });
   }
 
   // shacl-to-json-schema
@@ -180,18 +212,38 @@ try {
       const dir = dirname(ttlFile);
       const base = basename(ttlFile, '.ttl');
       const jsonFile = join(dir, `${base}.json`);
-      if (!existsSync(jsonFile)) continue;
+      const relDir = relative(SHACL_TO_JS_DIR, dir) || '.';
+      if (!existsSync(jsonFile)) {
+        testNum++;
+        console.log(
+          `${pad(String(testNum), col.num)} ${pad('shacl-to-json-schema', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(ttlFile), col.file)} SKIPPED`
+        );
+        results.push({
+          suite: 'shacl-to-json-schema',
+          name: `${relDir}/${base}`,
+          score: 'N/A',
+          inputFile: ttlFile,
+          expectedFile: jsonFile,
+          skipped: true,
+        });
+        continue;
+      }
 
       testNum++;
       const tempJson = join(tempDir, `${String(testNum)}_${base}.json`);
       const converted = toJsonSchema(ttlFile, tempJson);
       const score = converted ? compareJson(jsonFile, tempJson) : 'ERROR';
-      const relDir = relative(SHACL_TO_JS_DIR, dir) || '.';
 
       console.log(
         `${pad(String(testNum), col.num)} ${pad('shacl-to-json-schema', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(ttlFile), col.file)} ${score}`
       );
-      results.push({ suite: 'shacl-to-json-schema', name: `${relDir}/${base}`, score });
+      results.push({
+        suite: 'shacl-to-json-schema',
+        name: `${relDir}/${base}`,
+        score,
+        inputFile: ttlFile,
+        expectedFile: jsonFile,
+      });
     }
   }
 
