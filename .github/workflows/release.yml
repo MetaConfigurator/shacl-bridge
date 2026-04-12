@@ -19,13 +19,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -42,6 +42,43 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: Benchmark Results
+          path: junit.xml
+          reporter: java-junit
+          fail-on-error: true
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: unit-test-results
+          path: junit.xml
+          retention-days: 30
+
+      - name: Run benchmark
+        run: npm run benchmark -- --junit ${{ github.workspace }}/benchmark-results.xml
+
+      - name: Publish benchmark results
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: Benchmark Results
+          path: benchmark-results.xml
+          reporter: java-junit
+          fail-on-error: true
+
+      - name: Upload benchmark report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results
+          path: benchmark-results.xml
+          retention-days: 30
 
       - name: Release
         run: npx semantic-release
