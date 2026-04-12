@@ -23,7 +23,7 @@ export class EdgeResolver {
         this.context.store.bothBlank(blankId, SHACL_NOT, notTargetBlankId);
         return { id: blankId, isRef: false };
       })
-      .with({ booleanSchema: false }, () => {
+      .with({ booleanSchema: true }, () => {
         return { id: this.context.nextBlankId(), isRef: false };
       })
       .with({ schema: { $ref: P.string } }, ({ schema }) => ({

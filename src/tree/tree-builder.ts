@@ -73,9 +73,10 @@ export class TreeBuilder {
   private buildEdges(prop: string, value: unknown): SchemaEdge[] {
     const build = KEYWORD_BUILDERS.get(prop);
     if (!build) return [];
-    const bc = SCHEMA_ARRAY_KEYWORDS.has(prop)
-      ? (s: JsonSchemaType) => this.buildBooleanOrChild(s)
-      : (s: JsonSchemaType) => this.buildChild(s);
+    const bc =
+      SCHEMA_ARRAY_KEYWORDS.has(prop) || prop === 'properties'
+        ? (s: JsonSchemaType) => this.buildBooleanOrChild(s)
+        : (s: JsonSchemaType) => this.buildChild(s);
     return build(prop, value, bc);
   }
 

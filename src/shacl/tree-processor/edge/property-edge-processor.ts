@@ -57,6 +57,7 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
     this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
     this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
     this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
+    this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 1, true);
   }
 
   private processPropertyEdge(
@@ -70,13 +71,20 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
     this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
     this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
 
+    if (edge.node.booleanSchema === false) {
+      this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 0, true);
+      return null;
+    }
+
     if (required.has(name)) {
       this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
     }
 
-    if (edge.node.schema.type !== 'array') {
+    if (edge.node.booleanSchema === true || edge.node.schema.type !== 'array') {
       this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 1, true);
     }
+
+    if (edge.node.booleanSchema === true) return null;
 
     return this.processPropertySchema(blankId, edge.node);
   }
@@ -131,7 +139,7 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
     if (edges.every((e) => !!e.node.schema.$ref)) {
       const refs = edges
         .map((e) => e.node.schema.$ref)
-        .filter((ref): ref is string => ref !== undefined)
+        .filter((ref): ref is string => ref != null)
         .map((ref) => this.context.resolveRef(ref));
       this.context.store.list(blankId, predicate, refs, true, true);
       return;

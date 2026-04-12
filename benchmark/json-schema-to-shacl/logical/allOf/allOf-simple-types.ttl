@@ -5,4 +5,4 @@
 
 ex:Shape
     a      sh:NodeShape ;
-    sh:and ( [ sh:minInclusive 20 ] [ sh:maxInclusive 30 ] ) .
+    sh:and ( [ sh:maxInclusive 30 ] [ sh:minInclusive 20 ] ) .
