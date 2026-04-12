@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: unit-test-results
+          name: unit-test-results-${{ matrix.node-version }}-$GITHUB_RUN_ID
           path: junit.xml
           retention-days: 30
 
