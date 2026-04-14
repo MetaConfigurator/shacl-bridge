@@ -32,6 +32,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Person',
         $defs: {
           Person: {
             title: 'Person',
@@ -70,6 +71,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Document',
         $defs: {
           Document: {
             title: 'Document',
@@ -106,6 +108,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Article',
         $defs: {
           Article: {
             title: 'Article',
@@ -141,6 +144,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Record',
         $defs: {
           Record: {
             title: 'Record',
@@ -177,6 +181,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Instructor',
         $defs: {
           Instructor: {
             title: 'Instructor',
@@ -215,6 +220,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Contact',
         $defs: {
           Contact: {
             title: 'Contact',
@@ -251,6 +257,7 @@ describe('IR Schema Converter - Complex Paths', () => {
       }).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
+        $ref: '#/$defs/Person',
         $defs: {
           Person: {
             title: 'Person',

@@ -11,6 +11,7 @@ export interface ToJsonSchemaOptions {
   mode: OutputMode;
   excludeShaclExtensions: boolean;
   schemaId?: string;
+  root?: string;
 }
 
 export interface ToShaclOptions {
@@ -71,6 +72,11 @@ export const TO_JSON_SCHEMA = {
   schemaId: {
     flag: '--schema-id <uri>',
     description: 'URI to use as the $id of the generated JSON Schema',
+  },
+  root: {
+    flag: '--root <shape>',
+    description:
+      'SHACL shape to use as the root (local name or full URI); auto-detected if omitted',
   },
 };
 

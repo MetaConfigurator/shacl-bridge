@@ -123,6 +123,7 @@ ex:PersonShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -203,6 +204,7 @@ ex:PersonShape
             required: ['email'],
           },
         },
+        $ref: '#/$defs/Person',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
@@ -238,6 +240,7 @@ ex:SafeMimeTypeShape
 
       expect(schema).toStrictEqual({
         $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $ref: '#/$defs/MimeType',
         $defs: {
           MimeType: {
             type: 'object',

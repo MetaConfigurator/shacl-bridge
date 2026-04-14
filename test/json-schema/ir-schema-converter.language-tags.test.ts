@@ -65,6 +65,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -124,6 +125,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -186,6 +188,7 @@ describe('IR Schema Converter - Language Tags', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -268,6 +271,7 @@ describe('IR Schema Converter - Language Tags', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -330,6 +334,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -391,6 +396,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -475,6 +481,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -538,6 +545,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -589,6 +597,7 @@ describe('IR Schema Converter - Language Tags', () => {
             },
           },
         },
+        $ref: '#/$defs/Simple',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -634,6 +643,7 @@ describe('IR Schema Converter - Language Tags', () => {
             },
           },
         },
+        $ref: '#/$defs/Simple',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -738,6 +748,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ],
           },
         },
+        $ref: '#/$defs/System',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           dcterms: 'http://purl.org/dc/terms/',
