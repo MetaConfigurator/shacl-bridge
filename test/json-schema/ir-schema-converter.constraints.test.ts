@@ -63,11 +63,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/FlexibleType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -114,11 +109,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/RestrictedType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -165,11 +155,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/ExclusiveType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -210,11 +195,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/NegativeType',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -284,11 +264,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         $ref: '#/$defs/ComplexType',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -390,11 +365,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Payment',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -440,11 +410,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Account',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -484,11 +449,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         $ref: '#/$defs/Contact',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -530,11 +490,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         $ref: '#/$defs/WebResource',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -579,11 +534,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Resource',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -627,11 +577,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Sensor',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -670,11 +615,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Statistics',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -713,11 +653,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/TestResult',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -758,11 +693,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Event',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -812,11 +742,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Account',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -856,7 +781,6 @@ describe('IR Schema Converter - Constraints', () => {
               },
               confirmEmail: {
                 type: 'string',
-                'x-shacl-equals': 'email',
               },
             },
             additionalProperties: true,
@@ -864,11 +788,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -912,7 +831,6 @@ describe('IR Schema Converter - Constraints', () => {
               endDate: {
                 type: 'string',
                 format: 'date',
-                'x-shacl-lessThan': 'startDate',
               },
             },
             required: ['startDate', 'endDate'],
@@ -921,11 +839,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/DateRange',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -963,11 +876,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1002,11 +910,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Metadata',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1044,11 +947,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Article',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1083,11 +981,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Entity',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1105,9 +998,7 @@ describe('IR Schema Converter - Constraints', () => {
                 sh:nodeKind sh:BlankNodeOrIRI ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         $ref: '#/$defs/Student',
@@ -1161,11 +1052,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         $ref: '#/$defs/Content',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1206,11 +1092,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Thing',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1259,11 +1140,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1313,11 +1189,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Config',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1370,11 +1241,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Task',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1421,11 +1287,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Settings',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1475,11 +1336,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1517,7 +1373,6 @@ describe('IR Schema Converter - Constraints', () => {
                   type: 'string',
                 },
                 minItems: 1,
-                'x-shacl-uniqueLang': true,
               },
             },
             required: ['title'],
@@ -1526,11 +1381,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1562,8 +1412,6 @@ describe('IR Schema Converter - Constraints', () => {
             properties: {
               description: {
                 type: 'string',
-                'x-shacl-languageIn': ['en', 'de', 'fr', 'es'],
-                'x-shacl-uniqueLang': true,
               },
             },
             additionalProperties: true,
@@ -1571,11 +1419,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Content',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1617,7 +1460,6 @@ describe('IR Schema Converter - Constraints', () => {
               },
               maxVersion: {
                 type: 'number',
-                'x-shacl-lessThanOrEquals': 'minVersion',
               },
             },
             required: ['minVersion', 'maxVersion'],
@@ -1626,11 +1468,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Version',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1673,13 +1510,9 @@ describe('IR Schema Converter - Constraints', () => {
                 },
                 minItems: 2,
                 maxItems: 2,
-                'x-shacl-languageIn': ['en', 'fr'],
-                'x-shacl-uniqueLang': true,
               },
               description: {
                 type: 'string',
-                'x-shacl-languageIn': ['en', 'de', 'fr', 'es', 'it'],
-                'x-shacl-uniqueLang': true,
               },
             },
             required: ['name'],
@@ -1688,11 +1521,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1732,7 +1560,6 @@ describe('IR Schema Converter - Constraints', () => {
               },
               manager: {
                 type: 'string',
-                'x-shacl-disjoint': 'employee',
               },
             },
             additionalProperties: true,
@@ -1740,11 +1567,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1788,7 +1610,6 @@ describe('IR Schema Converter - Constraints', () => {
               },
               externalConsultant: {
                 type: 'string',
-                'x-shacl-disjoint': ['member', 'lead'],
               },
             },
             additionalProperties: true,
@@ -1796,11 +1617,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1846,7 +1662,6 @@ describe('IR Schema Converter - Constraints', () => {
                   type: 'string',
                 },
                 minItems: 1,
-                'x-shacl-disjoint': 'admin',
               },
             },
             required: ['admin', 'user'],
@@ -1855,11 +1670,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Role',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1916,7 +1726,6 @@ describe('IR Schema Converter - Constraints', () => {
                 allOf: [
                   {
                     $ref: '#/$defs/HomeAddress',
-                    'x-shacl-qualifiedValueShapesDisjoint': true,
                   },
                   {
                     $ref: '#/$defs/WorkAddress',
@@ -1949,11 +1758,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Contact',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1991,11 +1795,6 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['value'],
             title: 'Node1',
             type: 'object',
-            'x-shacl-targetNodes': [
-              'http://example.org/Node1',
-              'http://example.org/Node2',
-              'http://example.org/Node3',
-            ],
           },
           Node2: {
             additionalProperties: true,
@@ -2007,11 +1806,6 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['value'],
             title: 'Node2',
             type: 'object',
-            'x-shacl-targetNodes': [
-              'http://example.org/Node1',
-              'http://example.org/Node2',
-              'http://example.org/Node3',
-            ],
           },
           Node3: {
             additionalProperties: true,
@@ -2023,11 +1817,6 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['value'],
             title: 'Node3',
             type: 'object',
-            'x-shacl-targetNodes': [
-              'http://example.org/Node1',
-              'http://example.org/Node2',
-              'http://example.org/Node3',
-            ],
           },
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
@@ -2042,11 +1831,6 @@ describe('IR Schema Converter - Constraints', () => {
             $ref: '#/$defs/Node3',
           },
         ],
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2082,16 +1866,10 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['name'],
             title: 'ObjectTarget',
             additionalProperties: true,
-            'x-shacl-targetObjectsOf': 'http://example.org/hasMember',
           },
         },
         $ref: '#/$defs/ObjectTarget',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2127,16 +1905,10 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['title'],
             additionalProperties: true,
             title: 'SubjectTarget',
-            'x-shacl-targetSubjectsOf': 'http://example.org/manages',
           },
         },
         $ref: '#/$defs/SubjectTarget',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2172,8 +1944,6 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['identifier'],
             title: 'Person',
             type: 'object',
-            'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
-            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
           },
           SpecialPerson: {
             additionalProperties: true,
@@ -2185,8 +1955,6 @@ describe('IR Schema Converter - Constraints', () => {
             required: ['identifier'],
             title: 'SpecialPerson',
             type: 'object',
-            'x-shacl-targetNodes': ['http://example.org/SpecialPerson'],
-            'x-shacl-targetSubjectsOf': 'http://example.org/knows',
           },
         },
         anyOf: [
@@ -2198,11 +1966,6 @@ describe('IR Schema Converter - Constraints', () => {
           },
         ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -2253,11 +2016,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Config',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2303,11 +2061,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Constant',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2356,11 +2109,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/FeatureFlag',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2408,11 +2156,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Resource',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2454,11 +2197,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Restricted',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -2498,11 +2236,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2542,11 +2275,6 @@ describe('IR Schema Converter - Constraints', () => {
           },
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2584,11 +2312,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -2629,15 +2352,12 @@ describe('IR Schema Converter - Constraints', () => {
             properties: {
               field1: {
                 type: 'string',
-                'x-shacl-order': 1,
               },
               field2: {
                 type: 'string',
-                'x-shacl-order': 2,
               },
               field3: {
                 type: 'string',
-                'x-shacl-order': 3,
               },
             },
             additionalProperties: true,
@@ -2645,11 +2365,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Form',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -2720,11 +2435,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2783,11 +2493,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Company',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2849,11 +2554,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -2887,21 +2587,11 @@ describe('IR Schema Converter - Constraints', () => {
                 type: 'string',
               },
             },
-            'x-shacl-targetObjectsOf': [
-              'http://example.org/worksFor',
-              'http://example.org/memberOf',
-              'http://example.org/affiliatedWith',
-            ],
             additionalProperties: true,
           },
         },
         $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -2949,18 +2639,12 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             required: ['name'],
-            'x-shacl-targetObjectsOf': 'http://xmlns.com/foaf/0.1/knows',
+
             additionalProperties: true,
           },
         },
         $ref: '#/$defs/Friend',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          foaf: 'http://xmlns.com/foaf/0.1/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3006,18 +2690,12 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             required: ['creatorId'],
-            'x-shacl-targetSubjectsOf': 'http://purl.org/dc/terms/creator',
+
             additionalProperties: true,
           },
         },
         $ref: '#/$defs/Creator',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          dcterms: 'http://purl.org/dc/terms/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -3050,7 +2728,6 @@ describe('IR Schema Converter - Constraints', () => {
               code: {
                 pattern: '^[a-z]+$',
                 type: 'string',
-                'x-shacl-flags': 'i',
               },
             },
             additionalProperties: true,
@@ -3058,11 +2735,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/CaseInsensitive',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3093,7 +2765,6 @@ describe('IR Schema Converter - Constraints', () => {
               text: {
                 pattern: '^Line 1.*Line 2$',
                 type: 'string',
-                'x-shacl-flags': 's',
               },
             },
             additionalProperties: true,
@@ -3101,11 +2772,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Multiline',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3136,7 +2802,6 @@ describe('IR Schema Converter - Constraints', () => {
               content: {
                 pattern: 'pattern',
                 type: 'string',
-                'x-shacl-flags': 'im',
               },
             },
             additionalProperties: true,
@@ -3144,11 +2809,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/MultiFlag',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -3180,20 +2840,10 @@ describe('IR Schema Converter - Constraints', () => {
           Person: {
             title: 'Person',
             type: 'object',
-            'x-shacl-message': {
-              datatype: 'http://www.w3.org/2001/XMLSchema#string',
-              type: 'literal',
-              value: 'Person validation failed',
-            },
             properties: {
               email: {
                 type: 'string',
                 pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-                'x-shacl-message': {
-                  datatype: 'http://www.w3.org/2001/XMLSchema#string',
-                  type: 'literal',
-                  value: 'Email must be a valid email address',
-                },
               },
             },
             required: ['email'],
@@ -3202,11 +2852,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3241,16 +2886,14 @@ describe('IR Schema Converter - Constraints', () => {
           DataRecord: {
             title: 'DataRecord',
             type: 'object',
-            'x-shacl-severity': 'sh:Warning',
+
             properties: {
               optionalField: {
                 type: 'string',
                 maxLength: 100,
-                'x-shacl-severity': 'sh:Info',
               },
               criticalField: {
                 type: 'string',
-                'x-shacl-severity': 'sh:Violation',
               },
             },
             required: ['criticalField'],
@@ -3259,11 +2902,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/DataRecord',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3300,32 +2938,15 @@ describe('IR Schema Converter - Constraints', () => {
                 maxLength: 20,
                 minLength: 3,
                 type: 'string',
-                'x-shacl-message': {
-                  datatype: 'http://www.w3.org/2001/XMLSchema#string',
-                  type: 'literal',
-                  value: 'Username must be between 3 and 20 characters',
-                },
-                'x-shacl-severity': 'sh:Warning',
               },
             },
             required: ['username'],
             title: 'ValidationTest',
             type: 'object',
-            'x-shacl-message': {
-              datatype: 'http://www.w3.org/2001/XMLSchema#string',
-              type: 'literal',
-              value: 'Shape validation constraints not met',
-            },
-            'x-shacl-severity': 'sh:Violation',
           },
         },
         $ref: '#/$defs/ValidationTest',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -3355,7 +2976,7 @@ describe('IR Schema Converter - Constraints', () => {
           LegacyUser: {
             title: 'LegacyUser',
             type: 'object',
-            'x-shacl-deactivated': true,
+
             properties: {
               username: {
                 type: 'string',
@@ -3367,11 +2988,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/LegacyUser',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3409,7 +3025,6 @@ describe('IR Schema Converter - Constraints', () => {
               },
               legacyField: {
                 type: 'string',
-                'x-shacl-deactivated': true,
               },
             },
             required: ['email'],
@@ -3418,11 +3033,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3460,11 +3070,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/ActiveUser',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -3509,11 +3114,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/StrictPerson',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3549,17 +3149,10 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             additionalProperties: false,
-            'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
           },
         },
         $ref: '#/$defs/TypedPerson',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-          rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-        },
       });
     });
 
@@ -3595,11 +3188,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/FlexiblePerson',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -3638,11 +3226,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Singleton',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3677,11 +3260,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/MixedEnum',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3716,11 +3294,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -3760,11 +3333,6 @@ describe('IR Schema Converter - Constraints', () => {
         },
         $ref: '#/$defs/Task',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -3813,22 +3381,10 @@ describe('IR Schema Converter - Constraints', () => {
             },
             required: ['title'],
             additionalProperties: false,
-            'x-shacl-ignoredProperties': [
-              'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              'http://www.w3.org/2000/01/rdf-schema#label',
-              'http://www.w3.org/2000/01/rdf-schema#comment',
-            ],
           },
         },
         $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-          rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-          rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
-        },
       });
     });
 
@@ -3865,17 +3421,10 @@ describe('IR Schema Converter - Constraints', () => {
               },
             },
             additionalProperties: true,
-            'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
           },
         },
         $ref: '#/$defs/OpenEntity',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-          rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-        },
       });
     });
   });

@@ -32,7 +32,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -68,8 +68,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -93,7 +93,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -128,8 +128,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -155,7 +155,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -191,8 +191,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -221,7 +221,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -274,8 +274,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -302,7 +302,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -337,9 +337,9 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
           dcterms: 'http://purl.org/dc/terms/',
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -364,7 +364,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -399,9 +399,9 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
           dcterms: 'http://purl.org/dc/terms/',
+          ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -430,7 +430,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -484,10 +484,10 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
           dcterms: 'http://purl.org/dc/terms/',
+          ex: 'http://example.org/',
           rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -513,7 +513,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -548,8 +548,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -572,7 +572,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -600,8 +600,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Simple',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -623,7 +623,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -646,8 +646,8 @@ describe('IR Schema Converter - Language Tags', () => {
         $ref: '#/$defs/Simple',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -680,7 +680,7 @@ describe('IR Schema Converter - Language Tags', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {

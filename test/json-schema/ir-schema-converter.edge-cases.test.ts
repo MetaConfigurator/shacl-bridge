@@ -43,11 +43,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Item',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -83,11 +78,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Document',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -128,11 +118,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Article',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -175,11 +160,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -216,11 +196,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Item',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -275,11 +250,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Project',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -322,11 +292,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Batch',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -369,11 +334,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -425,11 +385,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -478,11 +433,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/TaxPayer',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -533,11 +483,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Publication',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -614,11 +559,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/ApiResponse',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -680,11 +620,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -760,11 +695,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Participant',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -902,11 +832,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Location',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -947,11 +872,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Schedule',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -987,11 +907,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Event',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1033,11 +948,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/PartialDate',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1086,11 +996,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/IntegerVariants',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1132,11 +1037,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/FloatingPoint',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1179,11 +1079,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/BinaryData',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1243,11 +1138,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Unsigned',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1307,11 +1197,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Signed',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1374,11 +1259,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/StringVariants',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1414,11 +1294,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Unconstrained',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1443,10 +1318,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Empty',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-        },
       });
     });
 
@@ -1472,31 +1343,10 @@ describe('IR Schema Converter - Edge Cases', () => {
             additionalProperties: true,
             title: 'MetadataOnly',
             type: 'object',
-            'x-shacl-description': {
-              datatype: 'string',
-              type: 'literal',
-              value: 'A shape with only metadata',
-            },
-            'x-shacl-message': {
-              datatype: 'http://www.w3.org/2001/XMLSchema#string',
-              type: 'literal',
-              value: 'Validation failed',
-            },
-            'x-shacl-name': {
-              datatype: 'string',
-              type: 'literal',
-              value: 'Metadata Only ',
-            },
-            'x-shacl-severity': 'sh:Info',
           },
         },
         $ref: '#/$defs/MetadataOnly',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1579,11 +1429,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Contact',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1670,11 +1515,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/MultiNode',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1723,11 +1563,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Restricted',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1764,11 +1599,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Contradictory',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1803,11 +1633,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/ContradictoryString',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1842,11 +1667,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/ContradictoryNumber',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1879,11 +1699,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/EmptyOr',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1918,11 +1733,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/ZeroCardinality',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1960,11 +1770,6 @@ describe('IR Schema Converter - Edge Cases', () => {
         },
         $ref: '#/$defs/Singleton',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });

@@ -40,9 +40,9 @@ const toJsonSchemaCommand = new Command(TO_JSON_SCHEMA.command)
     TO_JSON_SCHEMA.jsonLd.default
   )
   .option(
-    TO_JSON_SCHEMA.excludeShaclExtensions.flag,
-    TO_JSON_SCHEMA.excludeShaclExtensions.description,
-    TO_JSON_SCHEMA.excludeShaclExtensions.default
+    TO_JSON_SCHEMA.includeShaclExtensions.flag,
+    TO_JSON_SCHEMA.includeShaclExtensions.description,
+    TO_JSON_SCHEMA.includeShaclExtensions.default
   )
   .addOption(
     new CommanderOption(TO_JSON_SCHEMA.mode.flag, TO_JSON_SCHEMA.mode.description)

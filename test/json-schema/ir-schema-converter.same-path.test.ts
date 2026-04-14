@@ -60,11 +60,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -118,11 +113,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -178,11 +168,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -246,11 +231,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -315,11 +295,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -381,11 +356,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -449,11 +419,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -507,11 +472,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -611,11 +571,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
                   },
                   {
                     pattern: '^[^@]+@[^@]+\\.[^@]+$',
-                    'x-shacl-message': {
-                      type: 'literal',
-                      value: 'Email must be a valid email address.',
-                      datatype: 'http://www.w3.org/2001/XMLSchema#string',
-                    },
                   },
                   {
                     type: 'array',
@@ -641,12 +596,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
                   },
                   {
                     type: 'array',
-                    'x-shacl-lessThan': 'retirementAge',
-                    'x-shacl-message': {
-                      type: 'literal',
-                      value: 'Age must be less than retirement age.',
-                      datatype: 'http://www.w3.org/2001/XMLSchema#string',
-                    },
                   },
                 ],
               },
@@ -658,11 +607,6 @@ describe('IrSchemaConverter - Same Path Properties', () => {
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/ns#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });

@@ -51,7 +51,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       // Standard constraints should be converted, SPARQL preserved as extension
       expect(schema).toStrictEqual({
@@ -92,8 +92,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -139,7 +139,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -180,8 +180,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -238,7 +238,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -287,8 +287,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -334,7 +334,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -367,8 +367,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/User',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -424,7 +424,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -477,8 +477,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Team',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -536,7 +536,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -592,8 +592,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -667,7 +667,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -737,8 +737,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Order',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -787,7 +787,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -830,8 +830,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Contact',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -880,7 +880,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -921,8 +921,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Event',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -972,7 +972,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -1014,8 +1014,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Rectangle',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -1065,7 +1065,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -1107,8 +1107,8 @@ describe('SPARQL Constraints in SHACL', () => {
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -1159,7 +1159,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -1197,11 +1197,11 @@ describe('SPARQL Constraints in SHACL', () => {
             ],
           },
         },
-        $schema: 'https://json-schema.org/draft/2020-12/schema',
         $ref: '#/$defs/Employee',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
@@ -1255,7 +1255,7 @@ describe('SPARQL Constraints in SHACL', () => {
             ] .
       `;
       const ir = await getIr(content);
-      const schema = new IrSchemaConverter(ir).convert();
+      const schema = new IrSchemaConverter(ir, { includeShaclExtensions: true }).convert();
 
       expect(schema).toStrictEqual({
         $defs: {
@@ -1307,8 +1307,8 @@ describe('SPARQL Constraints in SHACL', () => {
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
           ex: 'http://example.org/',
+          sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });

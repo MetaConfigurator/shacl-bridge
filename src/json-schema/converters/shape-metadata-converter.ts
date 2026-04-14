@@ -18,7 +18,7 @@ export class ShapeMetadataConverter {
 
   constructor(
     shapeDefinition: ShapeDefinition,
-    options: ConversionOptions = { excludeShaclExtensions: false }
+    options: ConversionOptions = { includeShaclExtensions: false }
   ) {
     this.shape = shapeDefinition.shape;
     this.additionalProperties = shapeDefinition.additionalProperties;
@@ -27,7 +27,7 @@ export class ShapeMetadataConverter {
 
   applyToBuilder(builder: JsonSchemaObjectBuilder): void {
     if (!this.shape) return;
-    if (this.options.excludeShaclExtensions) return;
+    if (!this.options.includeShaclExtensions) return;
 
     Object.keys(this.shape).forEach((key) => {
       match(key)

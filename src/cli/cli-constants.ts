@@ -9,7 +9,7 @@ export interface ToJsonSchemaOptions {
   jsonLd: boolean;
   output?: string;
   mode: OutputMode;
-  excludeShaclExtensions: boolean;
+  includeShaclExtensions: boolean;
   schemaId?: string;
   root?: string;
 }
@@ -58,9 +58,9 @@ export const TO_JSON_SCHEMA = {
     description: 'Input content as JSON LD',
     default: false,
   },
-  excludeShaclExtensions: {
-    flag: '--exclude-shacl-extensions',
-    description: 'Exclude x-shacl-* properties from output',
+  includeShaclExtensions: {
+    flag: '--include-shacl-extensions',
+    description: 'Include x-shacl-* extension properties in output',
     default: false,
   },
   mode: {

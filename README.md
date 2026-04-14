@@ -36,8 +36,8 @@ shacl-bridge to-json-schema -i input.jsonld --json-ld
 # Output each schema definition to separate files
 shacl-bridge to-json-schema -i input.ttl --mode multi -o ./schemas/
 
-# Exclude x-shacl-* extension properties from output
-shacl-bridge to-json-schema -i input.ttl --exclude-shacl-extensions
+# Include x-shacl-* extension properties in output
+shacl-bridge to-json-schema -i input.ttl --include-shacl-extensions
 
 # Set a custom $id on the generated JSON Schema
 shacl-bridge to-json-schema -i input.ttl --schema-id https://example.org/my-schema
@@ -107,7 +107,7 @@ identifiers.
 | `--from-clipboard`           | Read SHACL content from clipboard                                       |
 | `--json-ld`                  | Parse input as JSON-LD format                                           |
 | `-m, --mode <mode>`          | Output mode: `single` (default) or `multi`                              |
-| `--exclude-shacl-extensions` | Exclude `x-shacl-*` properties from output                              |
+| `--include-shacl-extensions` | Include `x-shacl-*` extension properties in output                      |
 | `--schema-id <uri>`          | Set the `$id` of the generated JSON Schema                              |
 | `--root <shape>`             | Shape to use as root (local name or full URI); auto-detected if omitted |
 
@@ -174,7 +174,7 @@ const jsonSchema = await new ShaclReader().fromJsonLdContent(jsonLdString).conve
 // With options (exclude x-shacl-* extensions)
 const jsonSchema = await new ShaclReader()
   .fromPath('input.ttl')
-  .withOptions({ excludeShaclExtensions: true })
+  .withOptions({ includeShaclExtensions: true })
   .convert();
 ```
 
