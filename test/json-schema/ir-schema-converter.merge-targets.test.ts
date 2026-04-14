@@ -59,6 +59,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -120,6 +121,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -201,6 +203,14 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Organization',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -338,6 +348,17 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Organization',
+          },
+          {
+            $ref: '#/$defs/Product',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -403,6 +424,14 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Employee',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -456,6 +485,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             'x-shacl-targetNodes': ['http://example.org/john'],
           },
         },
+        $ref: '#/$defs/john',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -571,6 +601,17 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Organization',
+          },
+          {
+            $ref: '#/$defs/Product',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -650,6 +691,17 @@ describe('IR Schema Converter - Merge Targets', () => {
             type: 'object',
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Employee',
+          },
+          {
+            $ref: '#/$defs/User',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -729,6 +781,20 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Employee',
+          },
+          {
+            $ref: '#/$defs/Manager',
+          },
+          {
+            $ref: '#/$defs/Director',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -781,6 +847,14 @@ describe('IR Schema Converter - Merge Targets', () => {
             'x-shacl-targetNodes': ['http://example.org/john'],
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/john',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -925,6 +999,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             'x-shacl-targetNodes': ['http://example.org/Person'],
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -986,6 +1061,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -1045,6 +1121,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -1107,6 +1184,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -1152,6 +1230,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: true,
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1204,6 +1283,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             additionalProperties: false,
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1242,6 +1322,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           ex: 'http://example.org/',
@@ -1300,6 +1381,7 @@ describe('IR Schema Converter - Merge Targets', () => {
             },
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',

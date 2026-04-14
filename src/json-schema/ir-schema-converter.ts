@@ -13,6 +13,7 @@ import { ConstraintConverter } from './converters/constraints/constraint-convert
 import { ShaclDocument } from '../shacl/shacl-document';
 import { ConversionOptions } from './conversion-options';
 import mergeAllOf from 'json-schema-merge-allof';
+import { extractStrippedName } from '../util/helpers';
 
 export class IrSchemaConverter {
   private processed = new Map<ShapeDefinition, StackElement>();
@@ -49,6 +50,8 @@ export class IrSchemaConverter {
     });
 
     builder.$id(this.options.schemaId).$schema(JSON_SCHEMA_DRAFT).$defs(defs);
+
+    this.applyRootReference(builder, defs);
 
     if (!this.options.excludeShaclExtensions) {
       builder.customProperty('x-shacl-prefixes', this.addPrefixes());
@@ -136,6 +139,53 @@ export class IrSchemaConverter {
         }
       }
     });
+  }
+
+  private applyRootReference(
+    builder: JsonSchemaObjectBuilder,
+    defs: Record<string, JsonSchemaType>
+  ): void {
+    const roots = this.resolveRootShapes(defs);
+    if (roots.length === 1) {
+      builder.$ref(`#/$defs/${roots[0]}`);
+    } else if (roots.length > 1) {
+      builder.anyOf(roots.map((name) => ({ $ref: `#/$defs/${name}` })));
+    }
+  }
+
+  private resolveRootShapes(defs: Record<string, JsonSchemaType>): string[] {
+    if (this.options.rootShape) {
+      return this.resolveExplicitRoot(defs);
+    }
+    const referenced = this.collectReferencedDefs(defs);
+    return Object.keys(defs).filter((name) => !referenced.has(name));
+  }
+
+  private resolveExplicitRoot(defs: Record<string, JsonSchemaType>): string[] {
+    const name = extractStrippedName(this.options.rootShape ?? '');
+    if (!defs[name]) {
+      throw new Error(
+        `Root shape "${name}" not found. Available shapes: ${Object.keys(defs).join(', ')}`
+      );
+    }
+    return [name];
+  }
+
+  private collectReferencedDefs(obj: unknown): Set<string> {
+    const referenced = new Set<string>();
+    const REF_PREFIX = '#/$defs/';
+    const collect = (node: unknown): void => {
+      if (typeof node !== 'object' || node === null) return;
+      for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+        if (key === '$ref' && typeof value === 'string' && value.startsWith(REF_PREFIX)) {
+          referenced.add(value.slice(REF_PREFIX.length));
+        } else {
+          collect(value);
+        }
+      }
+    };
+    collect(obj);
+    return referenced;
   }
 
   private addPrefixes(): Record<string, string> {

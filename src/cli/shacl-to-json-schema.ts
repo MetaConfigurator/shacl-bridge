@@ -18,6 +18,7 @@ export class ShaclToJsonSchema {
       .withOptions({
         excludeShaclExtensions: this.options.excludeShaclExtensions,
         schemaId: this.options.schemaId,
+        rootShape: this.options.root,
       })
       .convert();
     match(this.options.mode)

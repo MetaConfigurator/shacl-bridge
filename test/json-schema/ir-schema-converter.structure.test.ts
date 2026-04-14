@@ -71,6 +71,7 @@ describe('IR Schema Converter - Structure', () => {
           type: 'object',
         },
       },
+      $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       'x-shacl-prefixes': {
         sh: 'http://www.w3.org/ns/shacl#',
@@ -259,6 +260,7 @@ ex:PersonReferenceShape
           type: 'object',
         },
       },
+      $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       'x-shacl-prefixes': {
         sh: 'http://www.w3.org/ns/shacl#',
@@ -455,6 +457,7 @@ ex:PersonReferenceShape
           type: 'object',
         },
       },
+      $ref: '#/$defs/Publication',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       'x-shacl-prefixes': {
         sh: 'http://www.w3.org/ns/shacl#',
@@ -512,6 +515,7 @@ ex:PersonReferenceShape
           'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
         },
       },
+      $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       'x-shacl-prefixes': {
         ex: 'http://example.org/',
@@ -653,6 +657,7 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -789,6 +794,7 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1081,6 +1087,7 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/Company',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1294,6 +1301,14 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        anyOf: [
+          {
+            $ref: '#/$defs/Person',
+          },
+          {
+            $ref: '#/$defs/Company',
+          },
+        ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1401,6 +1416,7 @@ ex:PersonReferenceShape
             additionalProperties: true,
           },
         },
+        $ref: '#/$defs/RegistrationForm',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1498,6 +1514,7 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/ShippingForm',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1613,6 +1630,7 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/ContactForm',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',
@@ -1668,6 +1686,7 @@ ex:PersonReferenceShape
             type: 'object',
           },
         },
+        $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
         'x-shacl-prefixes': {
           sh: 'http://www.w3.org/ns/shacl#',

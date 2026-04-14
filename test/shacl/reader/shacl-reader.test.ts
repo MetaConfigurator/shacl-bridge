@@ -35,6 +35,7 @@ describe('ShaclReader', () => {
           type: 'object',
         },
       },
+      $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       'x-shacl-prefixes': {
         ex: 'http://example.org/',

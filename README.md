@@ -41,6 +41,9 @@ shacl-bridge to-json-schema -i input.ttl --exclude-shacl-extensions
 
 # Set a custom $id on the generated JSON Schema
 shacl-bridge to-json-schema -i input.ttl --schema-id https://example.org/my-schema
+
+# Use a specific SHACL shape as the root (auto-detected if omitted)
+shacl-bridge to-json-schema -i input.ttl --root Person
 ```
 
 #### JSON Schema to SHACL
@@ -88,21 +91,25 @@ Only in schema-v2.ttl:
     _:c14n0 <http://www.w3.org/ns/shacl#minCount> "2" .
 ```
 
-The similarity score is computed using [Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index) on the canonicalized RDF triples of both files (via URDNA2015). Blank nodes are assigned deterministic labels based on their structural context, so structurally identical property shapes compare as equal regardless of their original blank node identifiers.
+The similarity score is computed using [Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index) on the
+canonicalized RDF triples of both files (via URDNA2015). Blank nodes are assigned deterministic labels based on their
+structural context, so structurally identical property shapes compare as equal regardless of their original blank node
+identifiers.
 
 #### Command Options
 
 ##### `to-json-schema`
 
-| Option                       | Description                                         |
-| ---------------------------- | --------------------------------------------------- |
-| `-i, --input <file>`         | SHACL file to convert (Turtle or JSON-LD)           |
-| `-o, --output <file>`        | Output file (single mode) or directory (multi mode) |
-| `--from-clipboard`           | Read SHACL content from clipboard                   |
-| `--json-ld`                  | Parse input as JSON-LD format                       |
-| `-m, --mode <mode>`          | Output mode: `single` (default) or `multi`          |
-| `--exclude-shacl-extensions` | Exclude `x-shacl-*` properties from output          |
-| `--schema-id <uri>`          | Set the `$id` of the generated JSON Schema          |
+| Option                       | Description                                                             |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| `-i, --input <file>`         | SHACL file to convert (Turtle or JSON-LD)                               |
+| `-o, --output <file>`        | Output file (single mode) or directory (multi mode)                     |
+| `--from-clipboard`           | Read SHACL content from clipboard                                       |
+| `--json-ld`                  | Parse input as JSON-LD format                                           |
+| `-m, --mode <mode>`          | Output mode: `single` (default) or `multi`                              |
+| `--exclude-shacl-extensions` | Exclude `x-shacl-*` properties from output                              |
+| `--schema-id <uri>`          | Set the `$id` of the generated JSON Schema                              |
+| `--root <shape>`             | Shape to use as root (local name or full URI); auto-detected if omitted |
 
 ##### `to-shacl`
 

@@ -251,6 +251,26 @@ describe('CLI', () => {
       });
     });
 
+    describe('--root option', () => {
+      it('should show --root option in help', () => {
+        const output = runCli('to-json-schema --help');
+        expect(output).toContain(TO_JSON_SCHEMA.root.flag);
+      });
+
+      it('should set $ref when --root is provided with a valid shape name', () => {
+        const output = runCli(`to-json-schema -i ${simpleShaclPath} --root Person`);
+        const schema = JSON.parse(output) as JsonSchemaObjectType;
+
+        expect(schema.$ref).toBe('#/$defs/Person');
+      });
+
+      it('should error when --root shape does not exist', () => {
+        expect(() => {
+          runCli(`to-json-schema -i ${simpleShaclPath} --root NonExistentShape`);
+        }).toThrow();
+      });
+    });
+
     describe('--mode option', () => {
       it('should show --mode option in help', () => {
         const output = runCli('to-json-schema --help');
