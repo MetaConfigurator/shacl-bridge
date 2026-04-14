@@ -603,7 +603,9 @@ describe('ConstraintConverter', () => {
       it('should apply x-shacl-lessThan custom property', () => {
         mockShape.coreConstraints = { lessThan: 'http://example.com/otherProperty' };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-lessThan']).toBe('otherProperty');
@@ -614,7 +616,9 @@ describe('ConstraintConverter', () => {
       it('should apply x-shacl-equals custom property', () => {
         mockShape.coreConstraints = { equals: 'http://example.com/sameProperty' };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-equals']).toBe('sameProperty');
@@ -663,7 +667,9 @@ describe('ConstraintConverter', () => {
       it('should apply x-shacl-lessThanOrEquals custom property', () => {
         mockShape.coreConstraints = { lessThanOrEquals: 'http://example.com/maxProperty' };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-lessThanOrEquals']).toBe('maxProperty');
@@ -674,7 +680,9 @@ describe('ConstraintConverter', () => {
       it('should apply x-shacl-disjoint as single value for one item', () => {
         mockShape.coreConstraints = { disjoint: ['http://example.com/prop1'] };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-disjoint']).toBe('prop1');
@@ -685,7 +693,9 @@ describe('ConstraintConverter', () => {
           disjoint: ['http://example.com/prop1', 'http://example.com/prop2'],
         };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-disjoint']).toEqual(['prop1', 'prop2']);
@@ -694,7 +704,9 @@ describe('ConstraintConverter', () => {
       it('should not apply disjoint when empty array', () => {
         mockShape.coreConstraints = { disjoint: [] };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-disjoint']).toBeUndefined();
@@ -707,7 +719,9 @@ describe('ConstraintConverter', () => {
           ignoredProperties: ['http://example.com/ignored1', 'http://example.com/ignored2'],
         };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-ignoredProperties']).toEqual([
@@ -719,7 +733,9 @@ describe('ConstraintConverter', () => {
       it('should not apply ignoredProperties when empty array', () => {
         mockShape.coreConstraints = { ignoredProperties: [] };
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-ignoredProperties']).toBeUndefined();
@@ -741,7 +757,9 @@ describe('ConstraintConverter', () => {
       it('should apply custom x-shacl property for unmapped constraint', () => {
         mockShape.coreConstraints = { uniqueLang: true } as CoreConstraints;
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-uniqueLang']).toBe(true);
@@ -750,7 +768,9 @@ describe('ConstraintConverter', () => {
       it('should not apply custom property for "property" key', () => {
         mockShape.coreConstraints = { property: ['someProperty'] } as CoreConstraints;
 
-        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
+        const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
+          includeShaclExtensions: true,
+        });
         const result = converter.convert();
 
         expect(result['x-shacl-property']).toBeUndefined();

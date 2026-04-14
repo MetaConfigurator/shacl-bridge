@@ -44,3 +44,8 @@ export function nonEmptyArray(candidate: ConstraintCandidate): boolean {
   const value = constraints[key];
   return Array.isArray(value) && value.length > 0;
 }
+
+export function extensionsEnabled(candidate: ConstraintCandidate): boolean {
+  const { context } = candidate;
+  return context.extensionsEnabled;
+}

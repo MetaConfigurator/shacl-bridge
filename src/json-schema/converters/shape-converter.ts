@@ -16,7 +16,7 @@ export class ShapeConverter {
   constructor(
     private readonly sb: StackElementBuilder,
     private readonly processed: Map<ShapeDefinition, StackElement>,
-    options: ConversionOptions = { excludeShaclExtensions: false }
+    options: ConversionOptions = { includeShaclExtensions: false }
   ) {
     this.builder = sb.getBuilder();
     this.shape = sb.getShape();

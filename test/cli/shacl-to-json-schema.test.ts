@@ -16,7 +16,7 @@ describe('ShaclToJsonSchema', () => {
     fromClipboard: false,
     jsonLd: false,
     mode: 'single',
-    excludeShaclExtensions: false,
+    includeShaclExtensions: false,
   };
 
   describe('constructor validation', () => {
@@ -86,7 +86,7 @@ describe('ShaclToJsonSchema', () => {
       }
     });
 
-    it('should include x-shacl-prefixes by default', async () => {
+    it('should exclude x-shacl-prefixes by default', async () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const converter = new ShaclToJsonSchema(defaultOptions);
@@ -95,24 +95,24 @@ describe('ShaclToJsonSchema', () => {
       const output = consoleSpy.mock.calls[0][0] as string;
       const schema = JSON.parse(output) as JsonSchemaObjectType;
 
-      expect(schema['x-shacl-prefixes']).toBeDefined();
+      expect(schema['x-shacl-prefixes']).toBeUndefined();
 
       consoleSpy.mockRestore();
     });
 
-    it('should exclude x-shacl-prefixes when excludeShaclExtensions is true', async () => {
+    it('should include x-shacl-prefixes when includeShaclExtensions is true', async () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const converter = new ShaclToJsonSchema({
         ...defaultOptions,
-        excludeShaclExtensions: true,
+        includeShaclExtensions: true,
       });
       await converter.convert();
 
       const output = consoleSpy.mock.calls[0][0] as string;
       const schema = JSON.parse(output) as JsonSchemaObjectType;
 
-      expect(schema['x-shacl-prefixes']).toBeUndefined();
+      expect(schema['x-shacl-prefixes']).toBeDefined();
 
       consoleSpy.mockRestore();
     });

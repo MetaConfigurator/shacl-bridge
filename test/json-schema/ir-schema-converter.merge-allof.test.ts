@@ -125,11 +125,6 @@ ex:PersonShape
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          ex: 'http://example.org/',
-          sh: 'http://www.w3.org/ns/shacl#',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -205,11 +200,6 @@ ex:PersonShape
           },
         },
         $ref: '#/$defs/Person',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -258,11 +248,6 @@ ex:SafeMimeTypeShape
               },
             },
           },
-        },
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
         },
       });
     });

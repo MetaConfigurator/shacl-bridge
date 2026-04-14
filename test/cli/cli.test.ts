@@ -43,7 +43,7 @@ describe('CLI', () => {
       expect(output).toContain(TO_JSON_SCHEMA.output.flag);
       expect(output).toContain(TO_JSON_SCHEMA.fromClipboard.flag);
       expect(output).toContain(TO_JSON_SCHEMA.jsonLd.flag);
-      expect(output).toContain(TO_JSON_SCHEMA.excludeShaclExtensions.flag);
+      expect(output).toContain(TO_JSON_SCHEMA.includeShaclExtensions.flag);
       expect(output).toContain(TO_JSON_SCHEMA.mode.flag);
     });
 
@@ -160,35 +160,35 @@ describe('CLI', () => {
       });
     });
 
-    describe('--exclude-shacl-extensions flag', () => {
-      it('should include x-shacl-prefixes by default', () => {
+    describe('--include-shacl-extensions flag', () => {
+      it('should exclude x-shacl-prefixes by default', () => {
         const output = runCli(`to-json-schema -i ${simpleShaclPath}`);
         const schema = JSON.parse(output) as JsonSchemaObjectType;
 
-        expect(schema['x-shacl-prefixes']).toBeDefined();
+        expect(schema['x-shacl-prefixes']).toBeUndefined();
       });
 
-      it('should exclude x-shacl-prefixes when --exclude-shacl-extensions is specified', () => {
-        const output = runCli(`to-json-schema -i ${simpleShaclPath} --exclude-shacl-extensions`);
+      it('should include x-shacl-prefixes when --include-shacl-extensions is specified', () => {
+        const output = runCli(`to-json-schema -i ${simpleShaclPath} --include-shacl-extensions`);
         const schema = JSON.parse(output) as JsonSchemaObjectType;
 
-        expect(schema['x-shacl-prefixes']).toBeUndefined();
+        expect(schema['x-shacl-prefixes']).toBeDefined();
         expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
         expect(schema.$defs).toBeDefined();
       });
 
       it('should work with --output option', () => {
-        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-exclude-ext-test-'));
+        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-include-ext-test-'));
         const outputPath = path.join(tempDir, 'schema.json');
 
         try {
           runCli(
-            `to-json-schema --input ${simpleShaclPath} --exclude-shacl-extensions --output ${outputPath}`
+            `to-json-schema --input ${simpleShaclPath} --include-shacl-extensions --output ${outputPath}`
           );
           expect(fs.existsSync(outputPath)).toBe(true);
           const content = fs.readFileSync(outputPath, 'utf-8');
           const schema = JSON.parse(content) as JsonSchemaObjectType;
-          expect(schema['x-shacl-prefixes']).toBeUndefined();
+          expect(schema['x-shacl-prefixes']).toBeDefined();
         } finally {
           fs.rmSync(tempDir, { recursive: true });
         }
@@ -196,20 +196,20 @@ describe('CLI', () => {
 
       it('should work with --json-ld flag', () => {
         const output = runCli(
-          `to-json-schema -i ${simpleJsonLdPath} --json-ld --exclude-shacl-extensions`
+          `to-json-schema -i ${simpleJsonLdPath} --json-ld --include-shacl-extensions`
         );
         const schema = JSON.parse(output) as JsonSchemaObjectType;
 
-        expect(schema['x-shacl-prefixes']).toBeUndefined();
+        expect(schema['x-shacl-prefixes']).toBeDefined();
         expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
       });
 
       it('should work with --mode multi', () => {
-        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-multi-exclude-test-'));
+        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shacl-cli-multi-include-test-'));
 
         try {
           runCli(
-            `to-json-schema -i ${simpleShaclPath} --mode multi --output ${tempDir} --exclude-shacl-extensions`
+            `to-json-schema -i ${simpleShaclPath} --mode multi --output ${tempDir} --include-shacl-extensions`
           );
 
           const files = fs.readdirSync(tempDir);
@@ -221,7 +221,7 @@ describe('CLI', () => {
           const personSchema = JSON.parse(
             fs.readFileSync(personFile, 'utf-8')
           ) as JsonSchemaObjectType;
-          expect(personSchema['x-shacl-prefixes']).toBeUndefined();
+          expect(personSchema['x-shacl-prefixes']).toBeDefined();
         } finally {
           fs.rmSync(tempDir, { recursive: true });
         }

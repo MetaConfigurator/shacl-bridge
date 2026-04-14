@@ -53,7 +53,7 @@ export class IrSchemaConverter {
 
     this.applyRootReference(builder, defs);
 
-    if (!this.options.excludeShaclExtensions) {
+    if (this.options.includeShaclExtensions) {
       builder.customProperty('x-shacl-prefixes', this.addPrefixes());
     }
 

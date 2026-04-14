@@ -73,11 +73,6 @@ describe('IR Schema Converter - Structure', () => {
       },
       $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
-      'x-shacl-prefixes': {
-        sh: 'http://www.w3.org/ns/shacl#',
-        ex: 'http://example.org/',
-        xsd: 'http://www.w3.org/2001/XMLSchema#',
-      },
     });
   });
 
@@ -262,11 +257,6 @@ ex:PersonReferenceShape
       },
       $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
-      'x-shacl-prefixes': {
-        sh: 'http://www.w3.org/ns/shacl#',
-        ex: 'http://example.org/',
-        xsd: 'http://www.w3.org/2001/XMLSchema#',
-      },
     });
   });
 
@@ -459,11 +449,6 @@ ex:PersonReferenceShape
       },
       $ref: '#/$defs/Publication',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
-      'x-shacl-prefixes': {
-        sh: 'http://www.w3.org/ns/shacl#',
-        ex: 'http://example.org/',
-        xsd: 'http://www.w3.org/2001/XMLSchema#',
-      },
     });
   });
 
@@ -512,18 +497,10 @@ ex:PersonReferenceShape
           },
           title: 'Person',
           type: 'object',
-          'x-shacl-ignoredProperties': ['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],
         },
       },
       $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
-      'x-shacl-prefixes': {
-        ex: 'http://example.org/',
-        sh: 'http://www.w3.org/ns/shacl#',
-        foaf: 'http://xmlns.com/foaf/0.1/',
-        rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-        xsd: 'http://www.w3.org/2001/XMLSchema#',
-      },
     });
   });
 
@@ -659,11 +636,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/Product',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -796,11 +768,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/Organization',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -849,11 +816,6 @@ ex:PersonReferenceShape
           },
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -923,11 +885,6 @@ ex:PersonReferenceShape
           },
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1089,11 +1046,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/Company',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1197,11 +1149,6 @@ ex:PersonReferenceShape
           },
         },
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1310,11 +1257,6 @@ ex:PersonReferenceShape
           },
         ],
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1401,7 +1343,6 @@ ex:PersonReferenceShape
               },
               confirmPassword: {
                 type: 'string',
-                'x-shacl-equals': 'password',
               },
               age: {
                 type: 'integer',
@@ -1418,11 +1359,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/RegistrationForm',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1516,11 +1452,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/ShippingForm',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 
@@ -1632,11 +1563,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/ContactForm',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
   });
@@ -1688,11 +1614,6 @@ ex:PersonReferenceShape
         },
         $ref: '#/$defs/Person',
         $schema: 'https://json-schema.org/draft/2020-12/schema',
-        'x-shacl-prefixes': {
-          sh: 'http://www.w3.org/ns/shacl#',
-          ex: 'http://example.org/',
-          xsd: 'http://www.w3.org/2001/XMLSchema#',
-        },
       });
     });
 

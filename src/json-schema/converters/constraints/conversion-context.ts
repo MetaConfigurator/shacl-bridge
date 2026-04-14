@@ -14,6 +14,7 @@ export class ConversionContext {
   isInvalid = false;
   isFragment: boolean;
   isPathBlankNode: boolean;
+  extensionsEnabled: boolean;
 
   constructor(
     private readonly parentShape: ShapeDefinition,
@@ -29,6 +30,7 @@ export class ConversionContext {
     if (!this.isFragment && !this.isPathBlankNode) {
       this.needToBeArray();
     }
+    this.extensionsEnabled = false;
   }
 
   checkForInvalidNumericConstraint() {

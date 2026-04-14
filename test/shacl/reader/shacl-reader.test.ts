@@ -37,11 +37,6 @@ describe('ShaclReader', () => {
       },
       $ref: '#/$defs/Person',
       $schema: 'https://json-schema.org/draft/2020-12/schema',
-      'x-shacl-prefixes': {
-        ex: 'http://example.org/',
-        sh: 'http://www.w3.org/ns/shacl#',
-        xsd: 'http://www.w3.org/2001/XMLSchema#',
-      },
     });
   });
 
@@ -53,13 +48,13 @@ describe('ShaclReader', () => {
     expect(result.$defs).toBeDefined();
   });
 
-  it('should support excludeShaclExtensions option', async () => {
+  it('should support includeShaclExtensions option', async () => {
     const result = await new ShaclReader()
       .fromContent(SIMPLE_SHACL)
-      .withOptions({ excludeShaclExtensions: true })
+      .withOptions({ includeShaclExtensions: true })
       .convert();
 
-    expect(result['x-shacl-prefixes']).toBeUndefined();
+    expect(result['x-shacl-prefixes']).toBeDefined();
   });
 
   it('should convert JSON-LD content to JSON Schema', async () => {

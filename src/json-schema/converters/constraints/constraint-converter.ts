@@ -16,6 +16,7 @@ import { CoreConstraints } from '../../../ir/meta-model/core-constraints';
 import {
   arraySetByContext,
   ConstraintCandidate,
+  extensionsEnabled,
   isNotNull,
   nonEmptyArray,
   numericDatatypeSpecified,
@@ -33,17 +34,16 @@ export class ConstraintConverter {
   private readonly context: ConversionContext;
   private readonly constraints: CoreConstraints;
   private readonly options: ConversionOptions;
-  private readonly extensionsEnabled: () => boolean;
 
   constructor(
     private readonly sb: StackElementBuilder,
     private readonly processed: Map<ShapeDefinition, StackElement>,
-    options: ConversionOptions = { excludeShaclExtensions: false }
+    options: ConversionOptions = { includeShaclExtensions: false }
   ) {
     this.context = sb.getContext();
     this.constraints = sb.getShape().coreConstraints ?? {};
     this.options = options;
-    this.extensionsEnabled = () => !this.options.excludeShaclExtensions;
+    this.context.extensionsEnabled = this.options.includeShaclExtensions === true;
   }
 
   convert(): JsonSchemaObjectType {
@@ -485,7 +485,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThan`,
@@ -502,7 +502,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-equals`,
@@ -537,7 +537,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.customProperty(
                 `${PREFIX}-lessThanOrEquals`,
@@ -554,7 +554,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .allOf(nonEmptyArray)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const disjointPaths =
@@ -573,7 +573,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .allOf(nonEmptyArray)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const ignoredProperties = candidate.constraints.ignoredProperties ?? [];
@@ -601,7 +601,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const sparqlConstraints = candidate.constraints.sparqlConstraints;
               if (sparqlConstraints && sparqlConstraints.length > 0) {
@@ -619,7 +619,7 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .must(this.extensionsEnabled)
+            .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const value = candidate.constraints[key as keyof CoreConstraints];
               if (value == null) return;

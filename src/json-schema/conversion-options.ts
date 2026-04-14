@@ -1,5 +1,5 @@
 export interface ConversionOptions {
-  excludeShaclExtensions?: boolean;
+  includeShaclExtensions?: boolean;
   schemaId?: string;
   rootShape?: string;
 }

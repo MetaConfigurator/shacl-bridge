@@ -16,7 +16,7 @@ export class ShaclToJsonSchema {
     const reader = await this.configureReader();
     const result = await reader
       .withOptions({
-        excludeShaclExtensions: this.options.excludeShaclExtensions,
+        includeShaclExtensions: this.options.includeShaclExtensions,
         schemaId: this.options.schemaId,
         rootShape: this.options.root,
       })

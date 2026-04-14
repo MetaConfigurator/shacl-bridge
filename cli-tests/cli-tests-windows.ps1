@@ -286,63 +286,77 @@ try {
     Write-Host "Correctly rejects invalid mode values" -ForegroundColor Green
 
     Write-Host ""
-    Write-Host "Test 15: --exclude-shacl-extensions excludes x-shacl-prefixes"
-    $excludeExtOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --exclude-shacl-extensions
-    if ($LASTEXITCODE -ne 0) { throw "Exclude extensions conversion failed" }
-
-    try {
-        $excludeExtJson = $excludeExtOutput | ConvertFrom-Json
-        if ($excludeExtJson.'x-shacl-prefixes') {
-            Write-Host "x-shacl-prefixes should not be present with --exclude-shacl-extensions" -ForegroundColor Red
-            exit 1
-        }
-        if (-not $excludeExtJson.'$schema') {
-            Write-Host "Output should still have `$schema" -ForegroundColor Red
-            exit 1
-        }
-        Write-Host "--exclude-shacl-extensions correctly excludes x-shacl-prefixes" -ForegroundColor Green
-    } catch {
-        Write-Host "Exclude extensions output is not valid JSON" -ForegroundColor Red
-        exit 1
-    }
-
-    Write-Host ""
-    Write-Host "Test 16: Without --exclude-shacl-extensions, x-shacl-prefixes is present"
+    Write-Host "Test 15: x-shacl-prefixes is absent by default"
     $defaultOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl
-    if ($LASTEXITCODE -ne 0) { throw "Default conversion failed" }
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "Default conversion failed"
+    }
 
     try {
         $defaultJson = $defaultOutput | ConvertFrom-Json
-        if (-not $defaultJson.'x-shacl-prefixes') {
-            Write-Host "x-shacl-prefixes should be present by default" -ForegroundColor Red
+        if ($defaultJson.'x-shacl-prefixes')
+        {
+            Write-Host "x-shacl-prefixes should not be present by default" -ForegroundColor Red
             exit 1
         }
-        Write-Host "x-shacl-prefixes is present by default" -ForegroundColor Green
+        if (-not $defaultJson.'$schema')
+        {
+            Write-Host "Output should still have `$schema" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "x-shacl-prefixes is correctly absent by default" -ForegroundColor Green
     } catch {
         Write-Host "Default output is not valid JSON" -ForegroundColor Red
         exit 1
     }
 
     Write-Host ""
-    Write-Host "Test 17: --exclude-shacl-extensions works with --mode multi"
-    $multiExcludeDir = Join-Path $TempDir "multi-exclude-output"
-    New-Item -ItemType Directory -Path $multiExcludeDir -Force | Out-Null
-    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode multi -o $multiExcludeDir --exclude-shacl-extensions
-    if ($LASTEXITCODE -ne 0) { throw "Multi mode with exclude extensions failed" }
+    Write-Host "Test 16: --include-shacl-extensions includes x-shacl-prefixes"
+    $includeExtOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --include-shacl-extensions
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "Include extensions conversion failed"
+    }
 
-    $personExcludeFile = Join-Path $multiExcludeDir "Person.json"
-    if (-not (Test-Path $personExcludeFile)) {
-        Write-Host "Person.json not created in multi mode with --exclude-shacl-extensions" -ForegroundColor Red
+    try {
+        $includeExtJson = $includeExtOutput | ConvertFrom-Json
+        if (-not $includeExtJson.'x-shacl-prefixes')
+        {
+            Write-Host "x-shacl-prefixes should be present with --include-shacl-extensions" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "--include-shacl-extensions correctly includes x-shacl-prefixes" -ForegroundColor Green
+    } catch {
+        Write-Host "Include extensions output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 17: --include-shacl-extensions works with --mode multi"
+    $multiIncludeDir = Join-Path $TempDir "multi-include-output"
+    New-Item -ItemType Directory -Path $multiIncludeDir -Force | Out-Null
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --mode multi -o $multiIncludeDir --include-shacl-extensions
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "Multi mode with include extensions failed"
+    }
+
+    $personIncludeFile = Join-Path $multiIncludeDir "Person.json"
+    if (-not (Test-Path $personIncludeFile))
+    {
+        Write-Host "Person.json not created in multi mode with --include-shacl-extensions" -ForegroundColor Red
         exit 1
     }
 
     try {
-        $personExcludeContent = Get-Content $personExcludeFile -Raw | ConvertFrom-Json
-        if ($personExcludeContent.'x-shacl-prefixes') {
-            Write-Host "x-shacl-prefixes should not be present in multi mode with --exclude-shacl-extensions" -ForegroundColor Red
+        $personIncludeContent = Get-Content $personIncludeFile -Raw | ConvertFrom-Json
+        if (-not $personIncludeContent.'x-shacl-prefixes')
+        {
+            Write-Host "x-shacl-prefixes should be present in multi mode with --include-shacl-extensions" -ForegroundColor Red
             exit 1
         }
-        Write-Host "--exclude-shacl-extensions works correctly with --mode multi" -ForegroundColor Green
+        Write-Host "--include-shacl-extensions works correctly with --mode multi" -ForegroundColor Green
     } catch {
         Write-Host "Person.json is not valid JSON" -ForegroundColor Red
         exit 1

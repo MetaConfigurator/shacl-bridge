@@ -27,9 +27,7 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:minCount 1 ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Person',
@@ -66,9 +64,7 @@ describe('IR Schema Converter - Complex Paths', () => {
             sh:path [sh:zeroOrMorePath ex:parent] ;
             sh:datatype xsd:string .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Document',
@@ -103,9 +99,7 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:datatype xsd:string ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Article',
@@ -139,9 +133,7 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:nodeKind sh:IRI ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Record',
@@ -176,9 +168,7 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:minCount 1 ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Instructor',
@@ -215,9 +205,7 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:datatype xsd:string ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Contact',
@@ -252,9 +240,7 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:datatype xsd:string ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content), {
-        excludeShaclExtensions: true,
-      }).convert();
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
       expect(schema).toStrictEqual({
         $schema: JSON_SCHEMA_DRAFT,
         $ref: '#/$defs/Person',
@@ -288,7 +274,9 @@ describe('IR Schema Converter - Complex Paths', () => {
                 sh:minCount 1 ;
             ] .
       `;
-      const schema = new IrSchemaConverter(await getIr(content)).convert();
+      const schema = new IrSchemaConverter(await getIr(content), {
+        includeShaclExtensions: true,
+      }).convert();
       const personDef = schema.$defs?.Person as Record<string, unknown>;
       const knowsProp = (personDef.properties as Record<string, unknown>).knows;
       expect(knowsProp).toBeDefined();
