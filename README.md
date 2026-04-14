@@ -101,7 +101,7 @@ identifiers.
 ##### `to-json-schema`
 
 | Option                       | Description                                                             |
-|------------------------------|-------------------------------------------------------------------------|
+| ---------------------------- | ----------------------------------------------------------------------- |
 | `-i, --input <file>`         | SHACL file to convert (Turtle or JSON-LD)                               |
 | `-o, --output <file>`        | Output file (single mode) or directory (multi mode)                     |
 | `--from-clipboard`           | Read SHACL content from clipboard                                       |
@@ -174,7 +174,7 @@ const jsonSchema = await new ShaclReader().fromJsonLdContent(jsonLdString).conve
 // With options (exclude x-shacl-* extensions)
 const jsonSchema = await new ShaclReader()
   .fromPath('input.ttl')
-        .withOptions({includeShaclExtensions: true})
+  .withOptions({ includeShaclExtensions: true })
   .convert();
 ```
 
