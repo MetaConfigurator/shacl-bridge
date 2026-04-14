@@ -503,4 +503,39 @@ fi
 echo -e "${GREEN}Correctly handles nonexistent files${NC}"
 
 echo ""
+echo "=== Root Shape Tests ==="
+
+echo ""
+echo "Test 33: --root flag appears in to-json-schema help"
+ROOT_HELP=$(shacl-bridge to-json-schema --help)
+if [[ $ROOT_HELP == *"--root"* ]]; then
+    echo -e "${GREEN}--root flag appears in help${NC}"
+else
+    echo -e "${RED}--root flag missing from help${NC}"
+    exit 1
+fi
+
+echo ""
+echo "Test 34: --root sets \$ref in output"
+ROOT_OUTPUT=$(shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --root Person)
+if ! echo "$ROOT_OUTPUT" | jq empty 2>/dev/null; then
+    echo -e "${RED}--root output is not valid JSON${NC}"
+    exit 1
+fi
+ROOT_REF=$(echo "$ROOT_OUTPUT" | jq -r '."$ref"')
+if [ "$ROOT_REF" != "#/\$defs/Person" ]; then
+    echo -e "${RED}Expected \$ref to be '#/\$defs/Person', got '$ROOT_REF'${NC}"
+    exit 1
+fi
+echo -e "${GREEN}--root correctly sets \$ref in output${NC}"
+
+echo ""
+echo "Test 35: --root with nonexistent shape should fail"
+if shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --root NonExistentShape 2>/dev/null; then
+    echo -e "${RED}Should have failed with nonexistent root shape${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Correctly errors on nonexistent root shape${NC}"
+
+echo ""
 echo -e "${GREEN}All tests passed!${NC}"

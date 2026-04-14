@@ -639,6 +639,56 @@ try {
     Write-Host "Correctly handles nonexistent files" -ForegroundColor Green
 
     Write-Host ""
+    Write-Host "=== Root Shape Tests ==="
+
+    Write-Host ""
+    Write-Host "Test 33: --root flag appears in to-json-schema help"
+    $rootHelp = shacl-bridge to-json-schema --help
+    if ($rootHelp -like "*--root*")
+    {
+        Write-Host "--root flag appears in help" -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "--root flag missing from help" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 34: --root sets `$ref in output"
+    $rootOutput = shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --root Person
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "--root conversion failed"
+    }
+
+    try
+    {
+        $rootJson = $rootOutput | ConvertFrom-Json
+        if ($rootJson.'$ref' -ne '#/$defs/Person')
+        {
+            Write-Host "Expected `$ref to be '#/`$defs/Person', got '$( $rootJson.'$ref' )'" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "--root correctly sets `$ref in output" -ForegroundColor Green
+    }
+    catch
+    {
+        Write-Host "--root output is not valid JSON" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "Test 35: --root with nonexistent shape should fail"
+    shacl-bridge to-json-schema -i samples/shacl/simple-shacl.ttl --root NonExistentShape 2> $null
+    if ($LASTEXITCODE -eq 0)
+    {
+        Write-Host "Should have failed with nonexistent root shape" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Correctly errors on nonexistent root shape" -ForegroundColor Green
+
+    Write-Host ""
     Write-Host "All tests passed!" -ForegroundColor Green
 
 } finally {
