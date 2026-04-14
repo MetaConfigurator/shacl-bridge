@@ -101,7 +101,7 @@ identifiers.
 ##### `to-json-schema`
 
 | Option                       | Description                                                             |
-|------------------------------|-------------------------------------------------------------------------|
+| ---------------------------- | ----------------------------------------------------------------------- |
 | `-i, --input <file>`         | SHACL file to convert (Turtle or JSON-LD)                               |
 | `-o, --output <file>`        | Output file (single mode) or directory (multi mode)                     |
 | `--from-clipboard`           | Read SHACL content from clipboard                                       |
@@ -114,7 +114,7 @@ identifiers.
 ##### `to-shacl`
 
 | Option                | Description                             |
-|-----------------------|-----------------------------------------|
+| --------------------- | --------------------------------------- |
 | `-i, --input <file>`  | JSON Schema file to convert             |
 | `-o, --output <file>` | Output file for SHACL                   |
 | `--from-clipboard`    | Read JSON Schema content from clipboard |
@@ -124,7 +124,7 @@ identifiers.
 ##### `compare`
 
 | Option           | Description                                            |
-|------------------|--------------------------------------------------------|
+| ---------------- | ------------------------------------------------------ |
 | `--file1 <file>` | First SHACL file to compare (Turtle, required)         |
 | `--file2 <file>` | Second SHACL file to compare (Turtle, required)        |
 | `--shorten`      | Shorten URIs in diff output using prefixes from inputs |
@@ -157,7 +157,7 @@ npm install shacl-bridge
 #### SHACL to JSON Schema
 
 ```typescript
-import {ShaclReader} from 'shacl-bridge';
+import { ShaclReader } from 'shacl-bridge';
 
 // Convert from Turtle file
 const jsonSchema = await new ShaclReader().fromPath('input.ttl').convert();
@@ -173,37 +173,37 @@ const jsonSchema = await new ShaclReader().fromJsonLdContent(jsonLdString).conve
 
 // With options (exclude x-shacl-* extensions)
 const jsonSchema = await new ShaclReader()
-        .fromPath('input.ttl')
-        .withOptions({excludeShaclExtensions: true})
-        .convert();
+  .fromPath('input.ttl')
+  .withOptions({ excludeShaclExtensions: true })
+  .convert();
 ```
 
 #### JSON Schema to SHACL
 
 ```typescript
-import {ShaclWriter, DEFAULT_PREFIXES} from 'shacl-bridge';
+import { ShaclWriter, DEFAULT_PREFIXES } from 'shacl-bridge';
 
 const jsonSchema = {
   $id: 'http://example.org/PersonShape',
   type: 'object',
   properties: {
-    name: {type: 'string', minLength: 1},
-    age: {type: 'integer', minimum: 0},
+    name: { type: 'string', minLength: 1 },
+    age: { type: 'integer', minimum: 0 },
   },
   required: ['name'],
 };
 
 // Convert to Turtle
 const turtle = await new ShaclWriter(jsonSchema)
-        .getStoreBuilder()
-        .withPrefixes({...DEFAULT_PREFIXES, ex: 'http://example.org/'})
-        .write();
+  .getStoreBuilder()
+  .withPrefixes({ ...DEFAULT_PREFIXES, ex: 'http://example.org/' })
+  .write();
 
 // Convert to JSON-LD
 const jsonLd = await new ShaclWriter(jsonSchema)
-        .getStoreBuilder()
-        .withPrefixes({...DEFAULT_PREFIXES, ex: 'http://example.org/'})
-        .writeJsonLd();
+  .getStoreBuilder()
+  .withPrefixes({ ...DEFAULT_PREFIXES, ex: 'http://example.org/' })
+  .writeJsonLd();
 ```
 
 ## Development
