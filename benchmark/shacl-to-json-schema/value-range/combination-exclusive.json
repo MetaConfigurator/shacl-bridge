@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "type": "object",
+  "properties": {
+    "birthYear": {
+      "type": "integer",
+      "exclusiveMinimum": 1900,
+      "exclusiveMaximum": 2027
+    }
+  },
+  "required": ["birthYear"]
+}

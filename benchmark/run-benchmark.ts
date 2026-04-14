@@ -9,7 +9,8 @@ import {
   writeFileSync,
 } from 'fs';
 import { tmpdir } from 'os';
-import { basename, dirname, join, relative } from 'path';
+import { basename, dirname, join, relative, resolve } from 'path';
+import { compareJsonSchemas, JsonValue } from './compare-json-schemas';
 
 const JS_TO_SHACL_DIR = join(__dirname, 'json-schema-to-shacl');
 const SHACL_TO_JS_DIR = join(__dirname, 'shacl-to-json-schema');
@@ -70,23 +71,15 @@ function compareShacl(file1: string, file2: string): string {
   }
 }
 
-function sortDeep(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(sortDeep);
-  if (value !== null && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([k, v]) => [k, sortDeep(v)])
-    );
-  }
-  return value;
-}
-
 function compareJson(expectedFile: string, actualFile: string): string {
   try {
     const expected = JSON.parse(readFileSync(expectedFile, 'utf8')) as JSON;
     const actual = JSON.parse(readFileSync(actualFile, 'utf8')) as JSON;
-    return JSON.stringify(sortDeep(expected)) === JSON.stringify(sortDeep(actual)) ? '1.0' : '0.0';
+    const result = compareJsonSchemas(
+      expected as unknown as JsonValue,
+      actual as unknown as JsonValue
+    );
+    return result.f1.toFixed(2);
   } catch {
     return 'N/A';
   }
@@ -152,6 +145,19 @@ function writeJunit(results: TestResult[], outFile: string): void {
 const junitArgIndex = process.argv.indexOf('--junit');
 const junitFile = junitArgIndex !== -1 ? process.argv[junitArgIndex + 1] : null;
 
+const fileArgIndex = process.argv.indexOf('--file');
+const fileArg = fileArgIndex !== -1 ? resolve(process.argv[fileArgIndex + 1]) : null;
+
+const fileArgIsDir = fileArg !== null && existsSync(fileArg) && statSync(fileArg).isDirectory();
+
+function matchesFileFilter(inputFile: string, expectedFile: string): boolean {
+  if (!fileArg) return true;
+  if (fileArgIsDir) {
+    return resolve(inputFile).startsWith(fileArg) || resolve(expectedFile).startsWith(fileArg);
+  }
+  return fileArg === resolve(inputFile) || fileArg === resolve(expectedFile);
+}
+
 const tempDir = mkdtempSync(join(tmpdir(), 'shacl-benchmark-'));
 const results: TestResult[] = [];
 
@@ -173,6 +179,7 @@ try {
     const base = basename(jsonFile, '.json');
     const ttlFile = join(dir, `${base}.ttl`);
     const relDir = relative(JS_TO_SHACL_DIR, dir) || '.';
+    if (!matchesFileFilter(jsonFile, ttlFile)) continue;
     if (!existsSync(ttlFile)) {
       testNum++;
       console.log(
@@ -213,6 +220,7 @@ try {
       const base = basename(ttlFile, '.ttl');
       const jsonFile = join(dir, `${base}.json`);
       const relDir = relative(SHACL_TO_JS_DIR, dir) || '.';
+      if (!matchesFileFilter(ttlFile, jsonFile)) continue;
       if (!existsSync(jsonFile)) {
         testNum++;
         console.log(
