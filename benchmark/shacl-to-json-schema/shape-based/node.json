@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Item",
+  "type": "object",
+  "$defs": {
+    "Address": {
+      "title": "Address",
+      "type": "object",
+      "properties": {
+        "postalCode": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 10
+        }
+      },
+      "required": ["postalCode"]
+    }
+  },
+  "properties": {
+    "address": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Address"
+      }
+    }
+  },
+  "required": ["address"]
+}
