@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Name",
+  "type": "object",
+  "anyOf": [
+    {
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 25
+        }
+      },
+      "required": ["firstName"]
+    },
+    {
+      "properties": {
+        "givenName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 25
+        }
+      },
+      "required": ["givenName"]
+    }
+  ]
+}
