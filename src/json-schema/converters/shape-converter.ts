@@ -37,20 +37,23 @@ export class ShapeConverter {
     }
 
     const schemaWithMetadata = propertyBuilder.build();
+    const possibleTargets = this.shape.targets;
 
-    // For fragments (logical or ref), don't create property structure - just merge schema
-    if (this.sb.isFragment()) {
+    // For fragments (logical or ref) without sh:path, don't create property structure - just merge schema
+    if (this.sb.isFragment() && this.shape.shape?.path == null) {
       this.builder.mergeFrom(schemaWithMetadata);
       return;
     }
 
-    const possibleTargets = this.shape.targets;
     if (possibleTargets.length > 0) {
       const target = possibleTargets[0];
       this.builder.properties({
         ...(this.builder.getKey('properties') as Record<string, JsonSchemaType>),
         [target]: this.sb.getContext().isInvalid ? false : schemaWithMetadata,
       });
+      if (this.sb.isFragment() && this.sb.getContext().required) {
+        this.builder.requiredElement(target);
+      }
     } else {
       this.builder.mergeFrom(schemaWithMetadata);
     }

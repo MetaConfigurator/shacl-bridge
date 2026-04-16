@@ -50,8 +50,12 @@ function toShacl(jsonFile: string, outFile: string): boolean {
 }
 
 function toJsonSchema(ttlFile: string, outFile: string): boolean {
+  const includeExtensions = basename(ttlFile, '.ttl').includes('ext');
+  const flags = includeExtensions ? ' --include-shacl-extensions' : '';
   try {
-    execSync(`${SHACL_BRIDGE} to-json-schema -i "${ttlFile}" -o "${outFile}"`, { stdio: 'pipe' });
+    execSync(`${SHACL_BRIDGE} to-json-schema -i "${ttlFile}" -o "${outFile}"${flags}`, {
+      stdio: 'pipe',
+    });
     return true;
   } catch {
     return false;
