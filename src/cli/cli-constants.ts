@@ -81,21 +81,21 @@ export const TO_JSON_SCHEMA = {
 };
 
 export interface CompareOptions {
-  file1: string;
-  file2: string;
+  expected: string;
+  actual: string;
   shorten: boolean;
 }
 
 export const COMPARE = {
   command: 'compare',
-  description: 'Compare two SHACL files and output a similarity score with differences',
-  file1: {
-    flag: '--file1 <file>',
-    description: 'First SHACL file (Turtle)',
+  description: 'Compare two SHACL files and output precision, recall, and F1 with differences',
+  expected: {
+    flag: '--expected <file>',
+    description: 'Expected (reference) SHACL file (Turtle)',
   },
-  file2: {
-    flag: '--file2 <file>',
-    description: 'Second SHACL file (Turtle)',
+  actual: {
+    flag: '--actual <file>',
+    description: 'Actual (predicted) SHACL file (Turtle)',
   },
   shorten: {
     flag: '--shorten',

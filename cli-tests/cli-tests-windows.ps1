@@ -566,7 +566,7 @@ try {
     Write-Host ""
     Write-Host "Test 27: compare --help flag"
     $compareHelp = shacl-bridge compare --help
-    if ($compareHelp -like "*compare*" -and $compareHelp -like "*--file1*" -and $compareHelp -like "*--file2*")
+    if ($compareHelp -like "*compare*" -and $compareHelp -like "*--expected*" -and $compareHelp -like "*--actual*")
     {
         Write-Host "compare help output is valid" -ForegroundColor Green
     }
@@ -578,57 +578,57 @@ try {
 
     Write-Host ""
     Write-Host "Test 28: compare two different SHACL files"
-    $compareOutput = shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/cardinality-constraints.ttl
+    $compareOutput = shacl-bridge compare --expected samples/shacl/simple-shacl.ttl --actual samples/shacl/cardinality-constraints.ttl
     if ($LASTEXITCODE -ne 0)
     {
         throw "compare command failed"
     }
     $compareString = $compareOutput -join "`n"
-    if ($compareString -like "*Score:*")
+    if ($compareString -like "*F1:*")
     {
-        Write-Host "compare produces score output" -ForegroundColor Green
+        Write-Host "compare produces F1 output" -ForegroundColor Green
         Write-Host "  Output: $( $compareOutput | Select-Object -First 1 )"
     }
     else
     {
-        Write-Host "compare output missing Score" -ForegroundColor Red
+        Write-Host "compare output missing F1" -ForegroundColor Red
         exit 1
     }
 
     Write-Host ""
-    Write-Host "Test 29: compare a file to itself should yield 100% similarity"
-    $sameFileOutput = shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/simple-shacl.ttl
+    Write-Host "Test 29: compare a file to itself should yield F1=1"
+    $sameFileOutput = shacl-bridge compare --expected samples/shacl/simple-shacl.ttl --actual samples/shacl/simple-shacl.ttl
     if ($LASTEXITCODE -ne 0)
     {
         throw "same-file compare failed"
     }
     $sameFileString = $sameFileOutput -join "`n"
-    if ($sameFileString -like "*100.0%*")
+    if ($sameFileString -like "*F1: 1.0000*")
     {
-        Write-Host "Same-file comparison correctly yields 100% similarity" -ForegroundColor Green
+        Write-Host "Same-file comparison correctly yields F1=1" -ForegroundColor Green
     }
     else
     {
-        Write-Host "Same-file comparison did not yield 100% similarity" -ForegroundColor Red
+        Write-Host "Same-file comparison did not yield F1=1" -ForegroundColor Red
         Write-Host "  Output: $sameFileString"
         exit 1
     }
 
     Write-Host ""
     Write-Host "Test 30: compare with --shorten flag produces prefixed output"
-    $shortenOutput = shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/cardinality-constraints.ttl --shorten
+    $shortenOutput = shacl-bridge compare --expected samples/shacl/simple-shacl.ttl --actual samples/shacl/cardinality-constraints.ttl --shorten
     if ($LASTEXITCODE -ne 0)
     {
         throw "compare --shorten failed"
     }
     $shortenString = $shortenOutput -join "`n"
-    if ($shortenString -like "*Score:*")
+    if ($shortenString -like "*F1:*")
     {
         Write-Host "compare --shorten produces valid output" -ForegroundColor Green
     }
     else
     {
-        Write-Host "compare --shorten output missing Score" -ForegroundColor Red
+        Write-Host "compare --shorten output missing F1" -ForegroundColor Red
         exit 1
     }
 
@@ -637,14 +637,14 @@ try {
     shacl-bridge compare 2> $null
     if ($LASTEXITCODE -eq 0)
     {
-        Write-Host "Should have failed without --file1 and --file2" -ForegroundColor Red
+        Write-Host "Should have failed without --expected and --actual" -ForegroundColor Red
         exit 1
     }
-    Write-Host "Correctly requires --file1 and --file2 flags" -ForegroundColor Green
+    Write-Host "Correctly requires --expected and --actual flags" -ForegroundColor Green
 
     Write-Host ""
     Write-Host "Test 32: compare with nonexistent file should fail"
-    shacl-bridge compare --file1 nonexistent.ttl --file2 samples/shacl/simple-shacl.ttl 2> $null
+    shacl-bridge compare --expected nonexistent.ttl --actual samples/shacl/simple-shacl.ttl 2> $null
     if ($LASTEXITCODE -eq 0)
     {
         Write-Host "Should have failed with nonexistent file" -ForegroundColor Red

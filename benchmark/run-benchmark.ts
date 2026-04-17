@@ -57,13 +57,13 @@ function toJsonSchema(ttlFile: string, outFile: string): boolean {
   }
 }
 
-function compareShacl(file1: string, file2: string): string {
+function compareShacl(expected: string, actual: string): string {
   try {
-    const output = execSync(`${SHACL_BRIDGE} compare --file1 "${file1}" --file2 "${file2}"`, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    });
-    const match = /^Score:\s+(\S+)/m.exec(output);
+    const output = execSync(
+      `${SHACL_BRIDGE} compare --expected "${expected}" --actual "${actual}"`,
+      { encoding: 'utf8', stdio: 'pipe' }
+    );
+    const match = /F1:\s+(\S+)/m.exec(output);
     return match ? match[1] : 'N/A';
   } catch {
     return 'N/A';
