@@ -84,8 +84,8 @@ const toShaclCommand = new Command(TO_SHACL.command)
 const compareCommand = new Command(COMPARE.command)
   .description(COMPARE.description)
   .showHelpAfterError(true)
-  .requiredOption(COMPARE.file1.flag, COMPARE.file1.description)
-  .requiredOption(COMPARE.file2.flag, COMPARE.file2.description)
+  .requiredOption(COMPARE.expected.flag, COMPARE.expected.description)
+  .requiredOption(COMPARE.actual.flag, COMPARE.actual.description)
   .option(COMPARE.shorten.flag, COMPARE.shorten.description, COMPARE.shorten.default)
   .action(async function (this: Command, options: CompareOptions) {
     try {

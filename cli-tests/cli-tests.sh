@@ -447,7 +447,7 @@ echo "=== Compare Tests ==="
 echo ""
 echo "Test 27: compare --help flag"
 COMPARE_HELP=$(shacl-bridge compare --help)
-if [[ $COMPARE_HELP == *"compare"* ]] && [[ $COMPARE_HELP == *"--file1"* ]] && [[ $COMPARE_HELP == *"--file2"* ]]; then
+if [[ $COMPARE_HELP == *"compare"* ]] && [[ $COMPARE_HELP == *"--expected"* ]] && [[ $COMPARE_HELP == *"--actual"* ]]; then
     echo -e "${GREEN}compare help output is valid${NC}"
 else
     echo -e "${RED}compare help output is invalid${NC}"
@@ -456,47 +456,47 @@ fi
 
 echo ""
 echo "Test 28: compare two different SHACL files"
-COMPARE_OUTPUT=$(shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/cardinality-constraints.ttl)
-if [[ $COMPARE_OUTPUT == *"Score:"* ]]; then
-    echo -e "${GREEN}compare produces score output${NC}"
+COMPARE_OUTPUT=$(shacl-bridge compare --expected samples/shacl/simple-shacl.ttl --actual samples/shacl/cardinality-constraints.ttl)
+if [[ $COMPARE_OUTPUT == *"F1:"* ]]; then
+    echo -e "${GREEN}compare produces F1 output${NC}"
     echo "  Output: $(echo "$COMPARE_OUTPUT" | head -1)"
 else
-    echo -e "${RED}compare output missing Score${NC}"
+    echo -e "${RED}compare output missing F1${NC}"
     exit 1
 fi
 
 echo ""
-echo "Test 29: compare a file to itself should yield 100% similarity"
-SAME_FILE_OUTPUT=$(shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/simple-shacl.ttl)
-if [[ $SAME_FILE_OUTPUT == *"100.0%"* ]]; then
-    echo -e "${GREEN}Same-file comparison correctly yields 100% similarity${NC}"
+echo "Test 29: compare a file to itself should yield F1=1"
+SAME_FILE_OUTPUT=$(shacl-bridge compare --expected samples/shacl/simple-shacl.ttl --actual samples/shacl/simple-shacl.ttl)
+if [[ $SAME_FILE_OUTPUT == *"F1: 1.0000"* ]]; then
+    echo -e "${GREEN}Same-file comparison correctly yields F1=1${NC}"
 else
-    echo -e "${RED}Same-file comparison did not yield 100% similarity${NC}"
+    echo -e "${RED}Same-file comparison did not yield F1=1${NC}"
     echo "  Output: $SAME_FILE_OUTPUT"
     exit 1
 fi
 
 echo ""
 echo "Test 30: compare with --shorten flag produces prefixed output"
-SHORTEN_OUTPUT=$(shacl-bridge compare --file1 samples/shacl/simple-shacl.ttl --file2 samples/shacl/cardinality-constraints.ttl --shorten)
-if [[ $SHORTEN_OUTPUT == *"Score:"* ]]; then
+SHORTEN_OUTPUT=$(shacl-bridge compare --expected samples/shacl/simple-shacl.ttl --actual samples/shacl/cardinality-constraints.ttl --shorten)
+if [[ $SHORTEN_OUTPUT == *"F1:"* ]]; then
     echo -e "${GREEN}compare --shorten produces valid output${NC}"
 else
-    echo -e "${RED}compare --shorten output missing Score${NC}"
+    echo -e "${RED}compare --shorten output missing F1${NC}"
     exit 1
 fi
 
 echo ""
 echo "Test 31: compare without required flags should fail"
 if shacl-bridge compare 2>/dev/null; then
-    echo -e "${RED}Should have failed without --file1 and --file2${NC}"
+    echo -e "${RED}Should have failed without --expected and --actual${NC}"
     exit 1
 fi
-echo -e "${GREEN}Correctly requires --file1 and --file2 flags${NC}"
+echo -e "${GREEN}Correctly requires --expected and --actual flags${NC}"
 
 echo ""
 echo "Test 32: compare with nonexistent file should fail"
-if shacl-bridge compare --file1 nonexistent.ttl --file2 samples/shacl/simple-shacl.ttl 2>/dev/null; then
+if shacl-bridge compare --expected nonexistent.ttl --actual samples/shacl/simple-shacl.ttl 2>/dev/null; then
     echo -e "${RED}Should have failed with nonexistent file${NC}"
     exit 1
 fi

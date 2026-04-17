@@ -68,33 +68,33 @@ shacl-bridge to-shacl -i input.json --base-uri http://example.org/shapes/
 #### Compare SHACL Files
 
 ```bash
-# Compare two SHACL files and print a similarity score with differences
-shacl-bridge compare --file1 schema-v1.ttl --file2 schema-v2.ttl
+# Compare two SHACL files and print precision, recall, and F1 with differences
+shacl-bridge compare --expected schema-v1.ttl --actual schema-v2.ttl
 
 # Shorten URIs in the diff output using prefixes from the input files
-shacl-bridge compare --file1 schema-v1.ttl --file2 schema-v2.ttl --shorten
+shacl-bridge compare --expected schema-v1.ttl --actual schema-v2.ttl --shorten
 ```
 
 Example output:
 
 ```
-Score: 0.7143 (71.4% similar)
+Precision: 0.8000  Recall: 0.6667  F1: 0.7273
 
-Only in schema-v1.ttl:
+Only in expected (schema-v1.ttl):
   [http://example.org/PersonShape]
     <http://example.org/PersonShape> <http://www.w3.org/ns/shacl#property> _:c14n0 .
     _:c14n0 <http://www.w3.org/ns/shacl#minCount> "1" .
 
-Only in schema-v2.ttl:
+Only in actual (schema-v2.ttl):
   [http://example.org/PersonShape]
     <http://example.org/PersonShape> <http://www.w3.org/ns/shacl#property> _:c14n0 .
     _:c14n0 <http://www.w3.org/ns/shacl#minCount> "2" .
 ```
 
-The similarity score is computed using [Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index) on the
-canonicalized RDF triples of both files (via URDNA2015). Blank nodes are assigned deterministic labels based on their
-structural context, so structurally identical property shapes compare as equal regardless of their original blank node
-identifiers.
+Metrics are computed on the canonicalized RDF triples of both files (via RDFC-1.0). Blank nodes are assigned
+deterministic labels based on their structural context, so structurally identical property shapes compare as equal
+regardless of their original blank node identifiers. `--expected` is the reference (ground truth) and `--actual` is
+the file being evaluated.
 
 #### Command Options
 
@@ -123,11 +123,11 @@ identifiers.
 
 ##### `compare`
 
-| Option           | Description                                            |
-| ---------------- | ------------------------------------------------------ |
-| `--file1 <file>` | First SHACL file to compare (Turtle, required)         |
-| `--file2 <file>` | Second SHACL file to compare (Turtle, required)        |
-| `--shorten`      | Shorten URIs in diff output using prefixes from inputs |
+| Option              | Description                                            |
+| ------------------- | ------------------------------------------------------ |
+| `--expected <file>` | Expected (reference) SHACL file (Turtle, required)     |
+| `--actual <file>`   | Actual (predicted) SHACL file (Turtle, required)       |
+| `--shorten`         | Shorten URIs in diff output using prefixes from inputs |
 
 #### Output Modes (to-json-schema)
 
@@ -144,7 +144,7 @@ The `--mode` (`-m`) option controls how the JSON Schema output is structured:
 - Comprehensive SHACL constraint support
 - Automatic blank node resolution
 - Multi-file output mode for modular schemas
-- SHACL document comparison with Jaccard similarity scoring and triple-level diff
+- SHACL document comparison with precision/recall/F1 scoring and triple-level diff
 
 ### Programmatic API
 

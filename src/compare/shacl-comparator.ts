@@ -27,27 +27,32 @@ function groupBySubject(triples: Set<string>): TripleDiff[] {
 
 export class ShaclComparator {
   constructor(
-    private readonly file1: string,
-    private readonly file2: string
+    private readonly expected: string,
+    private readonly actual: string
   ) {}
 
   async compare(): Promise<ComparisonResult> {
-    const [doc1, doc2] = await Promise.all([
-      new ShaclParser().withPath(this.file1).parse(),
-      new ShaclParser().withPath(this.file2).parse(),
+    const [docExpected, docActual] = await Promise.all([
+      new ShaclParser().withPath(this.expected).parse(),
+      new ShaclParser().withPath(this.actual).parse(),
     ]);
 
-    const [set1, set2] = await Promise.all([
-      canonicalizeStore(doc1.store),
-      canonicalizeStore(doc2.store),
+    const [setExpected, setActual] = await Promise.all([
+      canonicalizeStore(docExpected.store),
+      canonicalizeStore(docActual.store),
     ]);
 
-    const { onlyInA, onlyInB, score } = computeDiff(set1, set2);
+    const { onlyInExpected, onlyInActual, precision, recall, f1 } = computeDiff(
+      setExpected,
+      setActual
+    );
 
     return {
-      score,
-      onlyInFile1: groupBySubject(onlyInA),
-      onlyInFile2: groupBySubject(onlyInB),
+      precision,
+      recall,
+      f1,
+      onlyInExpected: groupBySubject(onlyInExpected),
+      onlyInActual: groupBySubject(onlyInActual),
     };
   }
 }
