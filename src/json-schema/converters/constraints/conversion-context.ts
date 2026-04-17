@@ -27,7 +27,8 @@ export class ConversionContext {
     this.isPathBlankNode =
       parentShape.shape?.path === dependentShape.nodeKey ||
       dependentShape.coreConstraints?.first != null;
-    if (!this.isFragment && !this.isPathBlankNode) {
+    const isPropertyShapeFragment = this.isFragment && dependentShape.shape?.path != null;
+    if (!this.isPathBlankNode && (!this.isFragment || isPropertyShapeFragment)) {
       this.needToBeArray();
     }
     this.extensionsEnabled = false;

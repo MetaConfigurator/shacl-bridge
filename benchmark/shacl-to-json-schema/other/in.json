@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fabric",
+  "type": "object",
+  "properties": {
+    "colour": {
+      "enum": ["Blue", "Green", "Black", "Red", "Yellow"]
+    }
+  }
+}

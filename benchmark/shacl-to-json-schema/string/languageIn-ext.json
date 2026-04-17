@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SelectableLanguage",
+  "type": "object",
+  "properties": {
+    "language": {
+      "type": "string",
+      "x-shacl-languageIn": ["en", "de", "ml"]
+    }
+  },
+  "x-shacl-prefixes": {
+    "ex": "http://example.org/",
+    "sh": "http://www.w3.org/ns/shacl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  }
+}

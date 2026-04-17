@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UniqueLangExample",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "array",
+      "x-shacl-uniqueLang": true
+    }
+  },
+  "x-shacl-prefixes": {
+    "ex": "http://example.org/",
+    "sh": "http://www.w3.org/ns/shacl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}

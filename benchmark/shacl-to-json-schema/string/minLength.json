@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Password",
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string",
+      "minLength": 8
+    }
+  },
+  "required": ["password"]
+}

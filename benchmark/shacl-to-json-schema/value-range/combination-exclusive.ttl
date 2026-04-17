@@ -7,6 +7,7 @@ ex:PersonShape
     a              sh:NodeShape ;
     sh:targetClass ex:Person ;
     sh:property    [ sh:path         ex:birthYear ;
+                     sh:datatype xsd:integer ;
                      sh:minExclusive 1900 ;
                      sh:maxExclusive 2027 ;
                      sh:minCount     1 ;

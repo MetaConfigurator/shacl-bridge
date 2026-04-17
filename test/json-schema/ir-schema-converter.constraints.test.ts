@@ -267,6 +267,90 @@ describe('IR Schema Converter - Constraints', () => {
       });
     });
 
+    it('should handle sh:or at NodeShape level with property shape branches', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:NameShape
+            a sh:NodeShape ;
+            sh:or ( [ sh:path     ex:firstName ;
+                      sh:datatype xsd:string ;
+                      sh:minCount 1 ;
+                      sh:maxCount 1 ]
+                    [ sh:path     ex:giveName ;
+                      sh:datatype xsd:string ;
+                      sh:minCount 1 ;
+                      sh:maxCount 1 ] ) .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $defs: {
+          Name: {
+            additionalProperties: true,
+            anyOf: [
+              {
+                properties: { firstName: { type: 'string' } },
+                required: ['firstName'],
+              },
+              {
+                properties: { giveName: { type: 'string' } },
+                required: ['giveName'],
+              },
+            ],
+            title: 'Name',
+            type: 'object',
+          },
+        },
+        $ref: '#/$defs/Name',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+      });
+    });
+
+    it('should handle sh:and at NodeShape level with property shape branches', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+        ex:NameShape
+            a sh:NodeShape ;
+            sh:and ( [ sh:path     ex:firstName ;
+                       sh:datatype xsd:string ;
+                       sh:minCount 1 ;
+                       sh:maxCount 1 ]
+                     [ sh:path     ex:lastName ;
+                       sh:datatype xsd:string ;
+                       sh:minCount 1 ;
+                       sh:maxCount 1 ] ) .
+      `;
+      const ir = await getIr(content);
+      const schema = new IrSchemaConverter(ir).convert();
+      expect(schema).toStrictEqual({
+        $defs: {
+          Name: {
+            additionalProperties: true,
+            allOf: [
+              {
+                properties: { firstName: { type: 'string' } },
+                required: ['firstName'],
+              },
+              {
+                properties: { lastName: { type: 'string' } },
+                required: ['lastName'],
+              },
+            ],
+            title: 'Name',
+            type: 'object',
+          },
+        },
+        $ref: '#/$defs/Name',
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+      });
+    });
+
     it('should handle logical operators with object references', async () => {
       const content = `
         @prefix sh: <http://www.w3.org/ns/shacl#> .
