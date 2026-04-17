@@ -9,41 +9,42 @@ export class ShaclCompare {
   constructor(private readonly options: CompareOptions) {}
 
   async compare(): Promise<void> {
-    const { file1, file2, shorten } = this.options;
+    const { expected, actual, shorten } = this.options;
 
-    if (!fs.existsSync(file1)) throw new Error(`File not found: ${file1}`);
-    if (!fs.existsSync(file2)) throw new Error(`File not found: ${file2}`);
+    if (!fs.existsSync(expected)) throw new Error(`File not found: ${expected}`);
+    if (!fs.existsSync(actual)) throw new Error(`File not found: ${actual}`);
 
-    const result = await new ShaclComparator(file1, file2).compare();
+    const result = await new ShaclComparator(expected, actual).compare();
 
-    const prefixes = shorten ? await this.collectPrefixes(file1, file2) : {};
+    const prefixes = shorten ? await this.collectPrefixes(expected, actual) : {};
     const format = (triple: string) => (shorten ? applyPrefixes(triple, prefixes) : triple);
 
-    const scorePercent = (result.score * 100).toFixed(1);
-    console.log(`Score: ${result.score.toFixed(4)} (${scorePercent}% similar)\n`);
+    console.log(
+      `Precision: ${result.precision.toFixed(4)}  Recall: ${result.recall.toFixed(4)}  F1: ${result.f1.toFixed(4)}\n`
+    );
 
-    if (result.onlyInFile1.length === 0 && result.onlyInFile2.length === 0) {
+    if (result.onlyInExpected.length === 0 && result.onlyInActual.length === 0) {
       console.log('Files are identical.');
       return;
     }
 
-    if (result.onlyInFile1.length > 0) {
-      console.log(`Only in ${file1}:`);
-      printGroups(result.onlyInFile1, format);
+    if (result.onlyInExpected.length > 0) {
+      console.log(`Only in expected (${expected}):`);
+      printGroups(result.onlyInExpected, format);
     }
 
-    if (result.onlyInFile2.length > 0) {
-      console.log(`Only in ${file2}:`);
-      printGroups(result.onlyInFile2, format);
+    if (result.onlyInActual.length > 0) {
+      console.log(`Only in actual (${actual}):`);
+      printGroups(result.onlyInActual, format);
     }
   }
 
-  private async collectPrefixes(file1: string, file2: string): Promise<Prefixes> {
-    const [doc1, doc2] = await Promise.all([
-      new ShaclParser().withPath(file1).parse(),
-      new ShaclParser().withPath(file2).parse(),
+  private async collectPrefixes(expected: string, actual: string): Promise<Prefixes> {
+    const [docExpected, docActual] = await Promise.all([
+      new ShaclParser().withPath(expected).parse(),
+      new ShaclParser().withPath(actual).parse(),
     ]);
-    return { ...doc1.prefix, ...doc2.prefix };
+    return { ...docExpected.prefix, ...docActual.prefix };
   }
 }
 

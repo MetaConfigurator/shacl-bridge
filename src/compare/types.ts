@@ -4,7 +4,9 @@ export interface TripleDiff {
 }
 
 export interface ComparisonResult {
-  score: number;
-  onlyInFile1: TripleDiff[];
-  onlyInFile2: TripleDiff[];
+  precision: number;
+  recall: number;
+  f1: number;
+  onlyInExpected: TripleDiff[];
+  onlyInActual: TripleDiff[];
 }
