@@ -1,3 +1,12 @@
+## [1.6.2](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.6.1...v1.6.2) (2026-04-20)
+
+
+### Bug Fixes
+
+* **cli:** omit shacl extensions by default ([#153](https://github.com/MetaConfigurator/shacl-bridge/issues/153)) ([ef3242e](https://github.com/MetaConfigurator/shacl-bridge/commit/ef3242e72a2d4836cb780f3cd64e50c8dd86e5c7))
+* **compare:** move to f1 score ([#154](https://github.com/MetaConfigurator/shacl-bridge/issues/154)) ([4cfba6c](https://github.com/MetaConfigurator/shacl-bridge/commit/4cfba6c0cec7abb72f67d03e6dfb06ef2a682b53))
+* **conversion:** add root resolution ([#152](https://github.com/MetaConfigurator/shacl-bridge/issues/152)) ([6dd8768](https://github.com/MetaConfigurator/shacl-bridge/commit/6dd87680a6655a2dc1e35222a31f5b310332295c))
+
 ## [1.6.1](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.6.0...v1.6.1) (2026-03-30)
 
 ### Bug Fixes
