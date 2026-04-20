@@ -1,31 +1,26 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$defs": {
-    "Hand": {
-      "title": "Hand",
-      "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "digit": {
-          "allOf": [
-            { "type": "array", "maxItems": 5 },
-            {
-              "type": "array",
-              "contains": { "$ref": "#/$defs/Thumb" },
-              "minContains": 1,
-              "maxContains": 1
-            },
-            {
-              "type": "array",
-              "contains": { "$ref": "#/$defs/Finger" },
-              "minContains": 4,
-              "maxContains": 4
-            }
-          ]
+  "title": "Hand",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "digit": {
+      "allOf": [
+        { "type": "array", "maxItems": 5 },
+        {
+          "type": "array",
+          "contains": { "$ref": "#/$defs/Thumb" },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "contains": { "$ref": "#/$defs/Finger" },
+          "minContains": 4,
+          "maxContains": 4
         }
-      },
-      "required": ["digit"]
+      ]
     }
   },
-  "$ref": "#/$defs/Hand"
+  "required": ["digit"]
 }
