@@ -108,9 +108,8 @@ export class ConversionContext {
   }
 
   needToBeArray(): void {
-    // Prefer qualified counts if they exist, otherwise use regular counts
-    const minCount = this.constraints.qualifiedMinCount ?? this.constraints.minCount;
-    const maxCount = this.constraints.qualifiedMaxCount ?? this.constraints.maxCount;
+    const minCount = this.constraints.minCount;
+    const maxCount = this.constraints.maxCount;
     match([minCount, maxCount])
       // No constraints - distinguish between primitive and object reference
       .with([undefined, undefined], () => {
@@ -128,13 +127,7 @@ export class ConversionContext {
         this.isArray = false;
       })
       .with([undefined, 1], () => {
-        // Qualified value shapes are always arrays, even with maxCount 1
-        if (this.constraints.qualifiedValueShape != null) {
-          this.isArray = true;
-          this.setMaxItems = true;
-        } else {
-          this.isArray = false;
-        }
+        this.isArray = false;
       })
       // At least one value, unbounded max
       .with([1, undefined], () => {
@@ -205,5 +198,15 @@ export class ConversionContext {
         // Default case for any other combination
         this.isArray = false;
       });
+
+    if (this.constraints.qualifiedValueShape != null) {
+      this.isArray = true;
+      if ((this.constraints.qualifiedMinCount ?? 0) >= 1) {
+        this.required = true;
+      }
+      // Re-enable cardinality flags for regular counts if isArray was previously false
+      if (minCount != null && minCount > 0) this.setMinItems = true;
+      if (maxCount != null && maxCount > 0) this.setMaxItems = true;
+    }
   }
 }

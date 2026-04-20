@@ -39,7 +39,7 @@ function resolveRefs(schema: JsonValue, root: JsonValue): JsonValue {
         const resolvedSchema = resolveRefs(resolved, root);
         const siblings = Object.fromEntries(
           Object.entries(obj)
-            .filter(([k]) => k !== '$ref')
+            .filter(([k]) => k !== '$ref' && k !== '$defs')
             .map(([k, v]) => [k, resolveRefs(v, root)])
         );
         if (
@@ -84,7 +84,14 @@ function equalValues(v1: JsonValue, v2: JsonValue): boolean {
   return JSON.stringify(normalizeValue(v1)) === JSON.stringify(normalizeValue(v2));
 }
 
-const METADATA_KEYS = new Set(['title', 'description', 'examples', '$id', '$schema']);
+const METADATA_KEYS = new Set([
+  'title',
+  'description',
+  'examples',
+  '$id',
+  '$schema',
+  'x-shacl-prefixes',
+]);
 
 // Keys whose presence with their default value is semantically equivalent to absence.
 const JSON_SCHEMA_DEFAULTS: Record<string, JsonValue> = {

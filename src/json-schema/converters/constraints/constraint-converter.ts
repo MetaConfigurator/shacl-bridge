@@ -247,31 +247,16 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const nodeKey = candidate.constraints.qualifiedValueShape ?? '';
               const shape = [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(nodeKey));
               const element = shape ? this.processed.get(shape) : undefined;
-              const existingItems = builder.getKey('items') as JsonSchemaObjectType;
-              const itemSchema = element?.shape.nodeKey.includes('n3')
+              const containsSchema = element?.shape.nodeKey.includes('n3')
                 ? element.builder.build()
                 : new JsonSchemaObjectBuilder()
                     .$ref(`#/$defs/${extractStrippedName(nodeKey)}`)
                     .build();
-              builder.items({
-                ...existingItems,
-                ...itemSchema,
-              });
-            })
-            .otherwise((candidate: ConstraintCandidate) => {
-              const nodeKey = candidate.constraints.qualifiedValueShape ?? '';
-              const shape = [...this.processed.keys()].find((sh) => sh.nodeKey.endsWith(nodeKey));
-              const element = shape ? this.processed.get(shape) : undefined;
-              if (element?.shape.nodeKey.includes('n3')) {
-                builder.mergeFrom(element.builder.build());
-              } else {
-                builder.$ref(`#/$defs/${extractStrippedName(nodeKey)}`);
-              }
+              builder.contains(containsSchema);
             })
             .execute();
         })
@@ -311,9 +296,9 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .allOf(setMinItems)
+            .allOf((c) => (c.constraints.qualifiedMinCount ?? 0) > 0)
             .ifSatisfied((candidate: ConstraintCandidate) =>
-              builder.minItems(candidate.constraints.qualifiedMinCount ?? 0)
+              builder.minContains(candidate.constraints.qualifiedMinCount ?? 1)
             )
             .execute();
         })
@@ -325,9 +310,8 @@ export class ConstraintConverter {
               constraints: this.constraints,
             } as ConstraintCandidate)
             .must(isNotNull)
-            .allOf(setMaxItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
-              builder.maxItems(candidate.constraints.qualifiedMaxCount ?? 0)
+              builder.maxContains(candidate.constraints.qualifiedMaxCount ?? 0)
             )
             .execute();
         })

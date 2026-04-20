@@ -18,12 +18,3 @@ ex:HandShape
                      sh:qualifiedValueShapesDisjoint true ;
                      sh:qualifiedMinCount            4 ;
                      sh:qualifiedMaxCount            4 ; ] .
-
-ex:QualifiedValueShapeExampleShape
-    a           sh:NodeShape ;
-    sh:property [ sh:path                ex:parent ;
-                  sh:minCount            2 ;
-                  sh:maxCount            2 ;
-                  sh:qualifiedValueShape [ sh:path     ex:gender ;
-                                           sh:hasValue ex:female ; ] ;
-                  sh:qualifiedMinCount   1 ; ] .

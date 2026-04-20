@@ -315,24 +315,24 @@ describe('ConstraintConverter', () => {
   });
 
   describe('qualifiedValueShape constraint', () => {
-    it('should apply qualifiedValueShape $ref to items when array context', () => {
+    it('should apply qualifiedValueShape $ref to contains', () => {
       mockContext.isArray = true;
       mockShape.coreConstraints = { qualifiedValueShape: 'http://example.com/QualifiedShape' };
 
       const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
       const result = converter.convert();
 
-      expect(result.items).toHaveProperty('$ref', '#/$defs/Qualified');
+      expect(result.contains).toHaveProperty('$ref', '#/$defs/Qualified');
     });
 
-    it('should apply qualifiedValueShape $ref directly when not array context', () => {
+    it('should apply qualifiedValueShape $ref to contains regardless of array context', () => {
       mockContext.isArray = false;
       mockShape.coreConstraints = { qualifiedValueShape: 'http://example.com/QualifiedShape' };
 
       const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
       const result = converter.convert();
 
-      expect(result.$ref).toBe('#/$defs/Qualified');
+      expect(result.contains).toHaveProperty('$ref', '#/$defs/Qualified');
     });
   });
 
@@ -381,45 +381,43 @@ describe('ConstraintConverter', () => {
   });
 
   describe('qualifiedMinCount constraint', () => {
-    it('should apply minItems when setMinItems is true', () => {
-      mockContext.setMinItems = true;
+    it('should apply minContains when qualifiedMinCount is set', () => {
       mockShape.coreConstraints = { qualifiedMinCount: 2 };
 
       const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
       const result = converter.convert();
 
-      expect(result.minItems).toBe(2);
+      expect(result.minContains).toBe(2);
     });
 
-    it('should not apply minItems when setMinItems is false', () => {
-      mockContext.setMinItems = false;
-      mockShape.coreConstraints = { qualifiedMinCount: 2 };
+    it('should not apply minContains when qualifiedMinCount is 0', () => {
+      mockShape.coreConstraints = { qualifiedMinCount: 0 };
 
       const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
       const result = converter.convert();
 
-      expect(result.minItems).toBeUndefined();
+      expect(result.minContains).toBeUndefined();
     });
   });
 
   describe('qualifiedMaxCount constraint', () => {
-    it('should apply maxItems when setMaxItems is true', () => {
-      mockContext.setMaxItems = true;
+    it('should apply maxContains when qualifiedMaxCount is set', () => {
       mockShape.coreConstraints = { qualifiedMaxCount: 10 };
 
       const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
       const result = converter.convert();
 
-      expect(result.maxItems).toBe(10);
+      expect(result.maxContains).toBe(10);
     });
 
-    it('should not apply maxItems when setMaxItems is false', () => {
+    it('should apply maxContains regardless of setMaxItems flag', () => {
       mockContext.setMaxItems = false;
       mockShape.coreConstraints = { qualifiedMaxCount: 10 };
 
       const converter = new ConstraintConverter(mockStackElementBuilder, processedMap);
       const result = converter.convert();
 
+      expect(result.maxContains).toBe(10);
       expect(result.maxItems).toBeUndefined();
     });
   });
