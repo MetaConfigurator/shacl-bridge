@@ -16,15 +16,17 @@ const JS_TO_SHACL_DIR = join(__dirname, 'json-schema-to-shacl');
 const SHACL_TO_JS_DIR = join(__dirname, 'shacl-to-json-schema');
 const SHACL_BRIDGE = 'npx shacl-bridge';
 const FAIL_THRESHOLD = 0.5;
-const WARN_THRESHOLD = 1.0;
+
+type Status = 'PASS' | 'WARN' | 'FAIL' | 'SKIPPED';
 
 interface TestResult {
   suite: string;
   name: string;
-  score: string;
+  f1: string;
+  jaccard: string;
+  status: Status;
   inputFile: string;
   expectedFile: string;
-  skipped?: boolean;
 }
 
 function findFiles(dir: string, ext: string): string[] {
@@ -62,20 +64,32 @@ function toJsonSchema(ttlFile: string, outFile: string): boolean {
   }
 }
 
-function compareShacl(expected: string, actual: string): string {
+function compareShacl(expected: string, actual: string): { f1: string; jaccard: string } {
   try {
     const output = execSync(
       `${SHACL_BRIDGE} compare --expected "${expected}" --actual "${actual}"`,
       { encoding: 'utf8', stdio: 'pipe' }
     );
-    const match = /F1:\s+(\S+)/m.exec(output);
-    return match ? match[1] : 'N/A';
+    const f1Match = /F1:\s+(\S+)/m.exec(output);
+    const precisionMatch = /Precision:\s+(\S+)/m.exec(output);
+    const recallMatch = /Recall:\s+(\S+)/m.exec(output);
+
+    const f1 = f1Match ? f1Match[1] : 'N/A';
+
+    if (precisionMatch && recallMatch) {
+      const p = Number(precisionMatch[1]);
+      const r = Number(recallMatch[1]);
+      if (p === 0 || r === 0) return { f1, jaccard: '0.0000' };
+      const jaccard = 1 / (1 / p + 1 / r - 1);
+      return { f1, jaccard: jaccard.toFixed(4) };
+    }
+    return { f1, jaccard: 'N/A' };
   } catch {
-    return 'N/A';
+    return { f1: 'N/A', jaccard: 'N/A' };
   }
 }
 
-function compareJson(expectedFile: string, actualFile: string): string {
+function compareJson(expectedFile: string, actualFile: string): { f1: string; jaccard: string } {
   try {
     const expected = JSON.parse(readFileSync(expectedFile, 'utf8')) as JSON;
     const actual = JSON.parse(readFileSync(actualFile, 'utf8')) as JSON;
@@ -83,10 +97,18 @@ function compareJson(expectedFile: string, actualFile: string): string {
       expected as unknown as JsonValue,
       actual as unknown as JsonValue
     );
-    return result.f1.toFixed(2);
+    return { f1: result.f1.toFixed(4), jaccard: result.jaccard.toFixed(4) };
   } catch {
-    return 'N/A';
+    return { f1: 'N/A', jaccard: 'N/A' };
   }
+}
+
+function getStatus(f1: string, jaccard: string): 'PASS' | 'WARN' | 'FAIL' {
+  const f1n = Number(f1);
+  const jn = Number(jaccard);
+  if (isNaN(f1n) || isNaN(jn) || f1n < FAIL_THRESHOLD || jn < FAIL_THRESHOLD) return 'FAIL';
+  if (f1n === 1 && jn === 1) return 'PASS';
+  return 'WARN';
 }
 
 function escapeXml(s: string): string {
@@ -104,36 +126,29 @@ function writeJunit(results: TestResult[], outFile: string): void {
     suites.get(r.suite)?.push(r);
   }
 
-  const isFail = (score: string) => {
-    const n = Number(score);
-    return isNaN(n) || n < FAIL_THRESHOLD;
-  };
-  const isWarn = (score: string) => {
-    const n = Number(score);
-    return !isNaN(n) && n >= FAIL_THRESHOLD && n < WARN_THRESHOLD;
-  };
-
-  const totalFailures = results.filter((r) => !r.skipped && isFail(r.score)).length;
-  const totalSkipped = results.filter((r) => r.skipped).length;
+  const totalFailures = results.filter((r) => r.status === 'FAIL').length;
+  const totalSkipped = results.filter((r) => r.status === 'SKIPPED').length;
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<testsuites name="shacl-bridge" tests="${String(results.length)}" failures="${String(totalFailures)}" skipped="${String(totalSkipped)}">\n`;
 
   for (const [suiteName, suiteResults] of suites) {
-    const failures = suiteResults.filter((r) => !r.skipped && isFail(r.score)).length;
-    const skipped = suiteResults.filter((r) => r.skipped).length;
+    const failures = suiteResults.filter((r) => r.status === 'FAIL').length;
+    const skipped = suiteResults.filter((r) => r.status === 'SKIPPED').length;
     xml += `  <testsuite name="${escapeXml(suiteName)}" tests="${String(suiteResults.length)}" failures="${String(failures)}" skipped="${String(skipped)}">\n`;
     for (const r of suiteResults) {
       xml += `    <testcase name="${escapeXml(r.name)}" classname="${escapeXml(suiteName)}">\n`;
-      if (r.skipped) {
+      if (r.status === 'SKIPPED') {
         xml += `      <skipped message="No expected file found: ${escapeXml(r.expectedFile)}" />\n`;
-      } else if (isFail(r.score)) {
-        xml += `      <failure message="${escapeXml(`Score ${r.score} is below threshold ${String(FAIL_THRESHOLD)}`)}" />\n`;
-      } else if (isWarn(r.score)) {
-        xml += `      <system-out>WARNING: Score ${escapeXml(r.score)} is below ${String(WARN_THRESHOLD)}</system-out>\n`;
+      } else if (r.status === 'FAIL') {
+        xml += `      <failure message="${escapeXml(`F1: ${r.f1}, Jaccard: ${r.jaccard} — at least one score is below threshold ${String(FAIL_THRESHOLD)}`)}" />\n`;
+      } else if (r.status === 'WARN') {
+        xml += `      <system-out>WARNING: F1: ${escapeXml(r.f1)}, Jaccard: ${escapeXml(r.jaccard)} — at least one score is below 1.0</system-out>\n`;
       }
       xml += `      <properties>\n`;
-      xml += `        <property name="score" value="${escapeXml(r.score)}" />\n`;
+      xml += `        <property name="f1" value="${escapeXml(r.f1)}" />\n`;
+      xml += `        <property name="jaccard" value="${escapeXml(r.jaccard)}" />\n`;
+      xml += `        <property name="status" value="${escapeXml(r.status)}" />\n`;
       xml += `        <property name="input" value="${escapeXml(r.inputFile)}" />\n`;
       xml += `        <property name="expected" value="${escapeXml(r.expectedFile)}" />\n`;
       xml += `      </properties>\n`;
@@ -166,12 +181,14 @@ const tempDir = mkdtempSync(join(tmpdir(), 'shacl-benchmark-'));
 const results: TestResult[] = [];
 
 try {
-  const col = { num: 6, suite: 22, loc: 28, file: 35, score: 10 };
-  const sep = '-'.repeat(col.num + col.suite + col.loc + col.file + col.score + 4);
+  const col = { num: 6, suite: 22, loc: 28, file: 32, f1: 8, jaccard: 10, status: 7 };
+  const sep = '-'.repeat(
+    col.num + col.suite + col.loc + col.file + col.f1 + col.jaccard + col.status + 6
+  );
   const pad = (s: string, n: number) => s.slice(0, n).padEnd(n);
 
   console.log(
-    `${pad('Test#', col.num)} ${pad('Suite', col.suite)} ${pad('Location', col.loc)} ${pad('File', col.file)} Score`
+    `${pad('Test#', col.num)} ${pad('Suite', col.suite)} ${pad('Location', col.loc)} ${pad('File', col.file)} ${pad('F1', col.f1)} ${pad('Jaccard', col.jaccard)} Status`
   );
   console.log(sep);
 
@@ -187,15 +204,16 @@ try {
     if (!existsSync(ttlFile)) {
       testNum++;
       console.log(
-        `${pad(String(testNum), col.num)} ${pad('json-schema-to-shacl', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(jsonFile), col.file)} SKIPPED`
+        `${pad(String(testNum), col.num)} ${pad('json-schema-to-shacl', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(jsonFile), col.file)} ${pad('N/A', col.f1)} ${pad('N/A', col.jaccard)} SKIPPED`
       );
       results.push({
         suite: 'json-schema-to-shacl',
         name: `${relDir}/${base}`,
-        score: 'N/A',
+        f1: 'N/A',
+        jaccard: 'N/A',
+        status: 'SKIPPED',
         inputFile: jsonFile,
         expectedFile: ttlFile,
-        skipped: true,
       });
       continue;
     }
@@ -203,15 +221,20 @@ try {
     testNum++;
     const tempTtl = join(tempDir, `${String(testNum)}_${base}.ttl`);
     const converted = toShacl(jsonFile, tempTtl);
-    const score = converted ? compareShacl(ttlFile, tempTtl) : 'ERROR';
+    const { f1, jaccard } = converted
+      ? compareShacl(ttlFile, tempTtl)
+      : { f1: 'ERROR', jaccard: 'ERROR' };
+    const status = converted ? getStatus(f1, jaccard) : 'FAIL';
 
     console.log(
-      `${pad(String(testNum), col.num)} ${pad('json-schema-to-shacl', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(jsonFile), col.file)} ${score}`
+      `${pad(String(testNum), col.num)} ${pad('json-schema-to-shacl', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(jsonFile), col.file)} ${pad(f1, col.f1)} ${pad(jaccard, col.jaccard)} ${status}`
     );
     results.push({
       suite: 'json-schema-to-shacl',
       name: `${relDir}/${base}`,
-      score,
+      f1,
+      jaccard,
+      status,
       inputFile: jsonFile,
       expectedFile: ttlFile,
     });
@@ -228,15 +251,16 @@ try {
       if (!existsSync(jsonFile)) {
         testNum++;
         console.log(
-          `${pad(String(testNum), col.num)} ${pad('shacl-to-json-schema', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(ttlFile), col.file)} SKIPPED`
+          `${pad(String(testNum), col.num)} ${pad('shacl-to-json-schema', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(ttlFile), col.file)} ${pad('N/A', col.f1)} ${pad('N/A', col.jaccard)} SKIPPED`
         );
         results.push({
           suite: 'shacl-to-json-schema',
           name: `${relDir}/${base}`,
-          score: 'N/A',
+          f1: 'N/A',
+          jaccard: 'N/A',
+          status: 'SKIPPED',
           inputFile: ttlFile,
           expectedFile: jsonFile,
-          skipped: true,
         });
         continue;
       }
@@ -244,15 +268,20 @@ try {
       testNum++;
       const tempJson = join(tempDir, `${String(testNum)}_${base}.json`);
       const converted = toJsonSchema(ttlFile, tempJson);
-      const score = converted ? compareJson(jsonFile, tempJson) : 'ERROR';
+      const { f1, jaccard } = converted
+        ? compareJson(jsonFile, tempJson)
+        : { f1: 'ERROR', jaccard: 'ERROR' };
+      const status = converted ? getStatus(f1, jaccard) : 'FAIL';
 
       console.log(
-        `${pad(String(testNum), col.num)} ${pad('shacl-to-json-schema', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(ttlFile), col.file)} ${score}`
+        `${pad(String(testNum), col.num)} ${pad('shacl-to-json-schema', col.suite)} ${pad(relDir, col.loc)} ${pad(basename(ttlFile), col.file)} ${pad(f1, col.f1)} ${pad(jaccard, col.jaccard)} ${status}`
       );
       results.push({
         suite: 'shacl-to-json-schema',
         name: `${relDir}/${base}`,
-        score,
+        f1,
+        jaccard,
+        status,
         inputFile: ttlFile,
         expectedFile: jsonFile,
       });

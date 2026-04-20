@@ -1,0 +1,17 @@
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix ex:  <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:PersonShape
+    a         sh:NodeShape ;
+    sh:sparql [ sh:message "Person must have a unique email" ;
+                sh:select  """
+                    SELECT $this ?email
+                    WHERE {
+                        $this ex:email ?email .
+                        FILTER EXISTS {
+                            ?other ex:email ?email .
+                            FILTER (?other != $this)
+                        }
+                    }
+                """ ; ] .

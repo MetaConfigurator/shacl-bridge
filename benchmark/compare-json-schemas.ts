@@ -11,6 +11,7 @@ export interface SchemaComparisonResult {
   precision: number;
   recall: number;
   f1: number;
+  jaccard: number;
   truePositives: Set<string>;
   falsePositives: Set<string>;
   falseNegatives: Set<string>;
@@ -35,7 +36,20 @@ function resolveRefs(schema: JsonValue, root: JsonValue): JsonValue {
             return schema;
           }
         }
-        return resolveRefs(resolved, root);
+        const resolvedSchema = resolveRefs(resolved, root);
+        const siblings = Object.fromEntries(
+          Object.entries(obj)
+            .filter(([k]) => k !== '$ref')
+            .map(([k, v]) => [k, resolveRefs(v, root)])
+        );
+        if (
+          resolvedSchema !== null &&
+          typeof resolvedSchema === 'object' &&
+          !Array.isArray(resolvedSchema)
+        ) {
+          return { ...siblings, ...(resolvedSchema as Record<string, JsonValue>) };
+        }
+        return resolvedSchema;
       }
     }
     return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, resolveRefs(v, root)]));
@@ -145,6 +159,18 @@ export function compareJsonSchemas(
   const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
   const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
   const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
+  const unionSize =
+    truePositives.size + falsePositives.size + falseNegatives.size + mismatches.size;
+  const jaccard = unionSize > 0 ? truePositives.size / unionSize : 0;
 
-  return { precision, recall, f1, truePositives, falsePositives, falseNegatives, mismatches };
+  return {
+    precision,
+    recall,
+    f1,
+    jaccard,
+    truePositives,
+    falsePositives,
+    falseNegatives,
+    mismatches,
+  };
 }

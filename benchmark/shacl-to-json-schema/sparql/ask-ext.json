@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "type": "object",
+  "x-shacl-sparql": [
+    {
+      "message": "Age must be consistent with birthdate",
+      "ask": "ASK {\n                        $this ex:age ?age ;\n                              ex:birthDate ?birthDate .\n                        BIND(YEAR(NOW()) - YEAR(?birthDate) AS ?calculatedAge)\n                        FILTER(?age != ?calculatedAge)\n                    }"
+    }
+  ],
+  "x-shacl-prefixes": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "ex": "http://example.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
