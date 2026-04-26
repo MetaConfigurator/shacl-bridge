@@ -16,6 +16,7 @@ import {
 import { ShaclMapper } from './mapper/shacl-mapper';
 import { WriterContext } from '../writer/writer-context';
 import { ChildNode, EdgeProcessor } from './edge/edge-processor';
+import { ArrayRootProcessor } from './edge/array-root-processor';
 import { ContainsEdgeProcessor } from './edge/contains-edge-processor';
 import { DefsEdgeProcessor } from './edge/defs-edge-processor';
 import { IfThenElseEdgeProcessor } from './edge/if-then-else-edge-processor';
@@ -28,12 +29,14 @@ export class NodeProcessor {
   private readonly shaclMapper: ShaclMapper;
   private readonly defsProcessor: DefsEdgeProcessor;
   private readonly propertyProcessor: PropertyEdgeProcessor;
+  private readonly arrayRootProcessor: ArrayRootProcessor;
   private readonly edgeProcessors: EdgeProcessor[];
 
   constructor(private readonly context: WriterContext) {
     this.shaclMapper = new ShaclMapper(context);
     this.defsProcessor = new DefsEdgeProcessor(context);
     this.propertyProcessor = new PropertyEdgeProcessor(context, this.shaclMapper);
+    this.arrayRootProcessor = new ArrayRootProcessor(context, this.shaclMapper);
     this.edgeProcessors = [
       new LogicalEdgeProcessor(context, 'allOf', SHACL_AND),
       new LogicalEdgeProcessor(context, 'anyOf', SHACL_OR),
@@ -69,6 +72,11 @@ export class NodeProcessor {
 
       if (schema.$ref) {
         this.context.store.triple(subject, SHACL_NODE, this.context.resolveRef(schema.$ref), false);
+        continue;
+      }
+
+      if (schema.type === 'array') {
+        this.arrayRootProcessor.process(schema, children, subject, isBlank);
         continue;
       }
 

@@ -27,7 +27,7 @@ function formatNode(node: SchemaNode): string {
 }
 
 function formatEdge(edge: SchemaEdge): string {
-  if (edge.key !== undefined) return `─(${edge.label}[${edge.key}])─>`;
-  if (edge.index !== undefined) return `─(${edge.label}[${String(edge.index)}])─>`;
-  return `─(${edge.label})─>`;
+  const key = edge.key ?? '—';
+  const index = edge.index !== undefined ? String(edge.index) : '—';
+  return `─(label: ${edge.label}, key: ${key}, index: ${index})─>`;
 }
