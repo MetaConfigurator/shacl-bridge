@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "if": { "type": "string" },
+  "then": { "minLength": 1 },
+  "else": { "type": "number" }
+}
