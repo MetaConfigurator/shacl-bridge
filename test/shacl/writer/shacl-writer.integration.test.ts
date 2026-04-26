@@ -390,4 +390,35 @@ describe('ShaclWriter Integration', () => {
       );
     });
   });
+
+  describe('Thesis Example', () => {
+    it('thesis example', async () => {
+      const schema: JsonSchemaObjectType = {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          author: {
+            type: 'object',
+            properties: {
+              first: { type: 'string' },
+              last: { type: 'string' },
+            },
+            required: ['first', 'last'],
+          },
+          year: { type: 'integer' },
+          published: { type: 'boolean' },
+          keywords: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          edition: { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+        },
+        required: ['title', 'author', 'year'],
+      };
+
+      const shacl = await toShacl(schema);
+
+      console.log(shacl);
+    });
+  });
 });

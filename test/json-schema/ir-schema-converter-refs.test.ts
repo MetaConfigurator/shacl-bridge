@@ -35,11 +35,11 @@ describe('IR Schema Converter - $refs', () => {
             properties: {
               member: {
                 type: 'array',
-                items: {
+                contains: {
                   $ref: '#/$defs/Person',
                 },
-                minItems: 1,
-                maxItems: 5,
+                minContains: 1,
+                maxContains: 5,
               },
             },
           },
@@ -71,12 +71,17 @@ describe('IR Schema Converter - $refs', () => {
           Team: {
             properties: {
               leader: {
-                $ref: '#/$defs/Person',
-                properties: {
-                  role: {
-                    const: 'Leader',
+                type: 'array',
+                contains: {
+                  $ref: '#/$defs/Person',
+                  properties: {
+                    role: {
+                      const: 'Leader',
+                    },
                   },
                 },
+                minContains: 1,
+                maxContains: 1,
               },
             },
             required: ['leader'],
@@ -112,7 +117,7 @@ describe('IR Schema Converter - $refs', () => {
             properties: {
               manager: {
                 type: 'array',
-                items: {
+                contains: {
                   $ref: '#/$defs/Employee',
                   properties: {
                     level: {
@@ -121,7 +126,7 @@ describe('IR Schema Converter - $refs', () => {
                     department: {},
                   },
                 },
-                minItems: 1,
+                minContains: 1,
               },
             },
             required: ['manager'],
@@ -323,27 +328,31 @@ describe('IR Schema Converter - $refs', () => {
       const ir = await getIr(shacl);
       const schema = new IrSchemaConverter(ir).convert();
 
-      // Note: With maxCount=1, the nested head is a single value, not an array
       expect(schema).toMatchObject({
         $defs: {
           Organization: {
             properties: {
               department: {
                 type: 'array',
-                items: {
+                contains: {
                   $ref: '#/$defs/Department',
                   properties: {
                     head: {
-                      $ref: '#/$defs/Employee',
-                      properties: {
-                        title: {
-                          const: 'Director',
+                      type: 'array',
+                      contains: {
+                        $ref: '#/$defs/Employee',
+                        properties: {
+                          title: {
+                            const: 'Director',
+                          },
                         },
                       },
+                      minContains: 1,
+                      maxContains: 1,
                     },
                   },
                 },
-                minItems: 1,
+                minContains: 1,
               },
             },
             required: ['department'],
@@ -397,19 +406,19 @@ describe('IR Schema Converter - $refs', () => {
               faculties: {
                 type: 'array',
                 minItems: 1,
-                items: {
+                contains: {
                   $ref: '#/$defs/Faculty',
                   properties: {
                     courses: {
                       type: 'array',
                       minItems: 1,
-                      items: {
+                      contains: {
                         $ref: '#/$defs/Course',
                         properties: {
                           students: {
                             type: 'array',
                             minItems: 1,
-                            items: {
+                            contains: {
                               $ref: '#/$defs/Student',
                               properties: {
                                 grades: {
@@ -422,12 +431,15 @@ describe('IR Schema Converter - $refs', () => {
                                 },
                               },
                             },
+                            minContains: 1,
                           },
                         },
                       },
+                      minContains: 1,
                     },
                   },
                 },
+                minContains: 1,
               },
             },
             required: ['faculties'],

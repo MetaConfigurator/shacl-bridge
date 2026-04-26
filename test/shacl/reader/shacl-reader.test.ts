@@ -96,4 +96,67 @@ describe('ShaclReader', () => {
     const reader = new ShaclReader().fromContent(SIMPLE_SHACL);
     expect(() => reader.fromContent(SIMPLE_SHACL)).toThrow();
   });
+
+  it('thesis example', async () => {
+    const content = `
+    @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:PublicationShape a sh:NodeShape ;
+    sh:targetClass ex:Publication ;
+    sh:property [
+        sh:path ex:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ex:author ;
+        sh:node ex:AuthorShape ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ex:year ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ex:published ;
+        sh:datatype xsd:boolean ;
+    ] ;
+    sh:property [
+        sh:path ex:keywords ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path ex:edition ;
+        sh:or (
+            [ sh:datatype xsd:string ]
+            [ sh:datatype xsd:integer ]
+        ) ;
+        sh:maxCount 1 ;
+    ] .
+
+ex:AuthorShape a sh:NodeShape ;
+    sh:property [
+        sh:path ex:first ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ex:last ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+    `;
+
+    const result = await new ShaclReader().fromContent(content).convert();
+
+    console.log(result);
+  });
 });

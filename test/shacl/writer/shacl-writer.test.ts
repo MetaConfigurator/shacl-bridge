@@ -57,6 +57,10 @@ function getObjectFromBlank(store: Store, blankTerm: Term, predicate: string): s
   return store.getObjects(blankTerm, DataFactory.namedNode(predicate), null)[0]?.value;
 }
 
+function getObjectTermsFromBlank(store: Store, blankTerm: Term, predicate: string): Term[] {
+  return store.getObjects(blankTerm, DataFactory.namedNode(predicate), null);
+}
+
 function getListItems(store: Store, listHead: Term): string[] {
   const items: string[] = [];
   let current = listHead;
@@ -632,7 +636,7 @@ describe('ShaclWriter', () => {
   });
 
   describe('array items handling', () => {
-    it('should handle items with inline schema', () => {
+    it('should handle items with inline schema via property shape with list path', () => {
       const schema: JsonSchemaObjectType = {
         $id: `${EX}ArrayShape`,
         type: 'array',
@@ -641,17 +645,36 @@ describe('ShaclWriter', () => {
 
       const store = new ShaclWriter(schema).build();
 
-      const nodeTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_NODE);
-      expect(nodeTerms.length).toBe(1);
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(1);
 
-      const datatype = getObjectFromBlank(store, nodeTerms[0], SHACL_DATATYPE);
+      const datatype = getObjectFromBlank(store, propTerms[0], SHACL_DATATYPE);
       expect(datatype).toBe(XSD_STRING);
 
-      const minLength = getObjectFromBlank(store, nodeTerms[0], SHACL_MIN_LENGTH);
+      const minLength = getObjectFromBlank(store, propTerms[0], SHACL_MIN_LENGTH);
       expect(minLength).toBe('1');
     });
 
-    it('should handle contains with sh:qualifiedValueShape', () => {
+    it('should emit minItems and maxItems on the property shape', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}ArrayShape`,
+        type: 'array',
+        minItems: 2,
+        maxItems: 5,
+        items: { type: 'integer' },
+      };
+
+      const store = new ShaclWriter(schema).build();
+
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(1);
+
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_MIN_COUNT)).toBe('2');
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_MAX_COUNT)).toBe('5');
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_DATATYPE)).toBe(XSD_INTEGER);
+    });
+
+    it('should handle contains with sh:qualifiedValueShape on property shape', () => {
       const schema: JsonSchemaObjectType = {
         $id: `${EX}ArrayShape`,
         type: 'array',
@@ -660,17 +683,17 @@ describe('ShaclWriter', () => {
 
       const store = new ShaclWriter(schema).build();
 
-      const qvsTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_QUALIFIED_VALUE_SHAPE);
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(1);
+
+      const qvsTerms = getObjectTermsFromBlank(store, propTerms[0], SHACL_QUALIFIED_VALUE_SHAPE);
       expect(qvsTerms.length).toBe(1);
 
-      const hasValue = getObjectFromBlank(store, qvsTerms[0], SHACL_HAS_VALUE);
-      expect(hasValue).toBe('admin');
-
-      const minCount = getObject(store, `${EX}ArrayShape`, SHACL_QUALIFIED_MIN_COUNT);
-      expect(minCount).toBe('1');
+      expect(getObjectFromBlank(store, qvsTerms[0], SHACL_HAS_VALUE)).toBe('admin');
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_QUALIFIED_MIN_COUNT)).toBe('1');
     });
 
-    it('should handle contains with minContains', () => {
+    it('should handle contains with minContains on property shape', () => {
       const schema: JsonSchemaObjectType = {
         $id: `${EX}ArrayShape`,
         type: 'array',
@@ -680,11 +703,12 @@ describe('ShaclWriter', () => {
 
       const store = new ShaclWriter(schema).build();
 
-      const minCount = getObject(store, `${EX}ArrayShape`, SHACL_QUALIFIED_MIN_COUNT);
-      expect(minCount).toBe('2');
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(1);
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_QUALIFIED_MIN_COUNT)).toBe('2');
     });
 
-    it('should handle contains with maxContains', () => {
+    it('should handle contains with maxContains on property shape', () => {
       const schema: JsonSchemaObjectType = {
         $id: `${EX}ArrayShape`,
         type: 'array',
@@ -694,8 +718,41 @@ describe('ShaclWriter', () => {
 
       const store = new ShaclWriter(schema).build();
 
-      const maxCount = getObject(store, `${EX}ArrayShape`, SHACL_QUALIFIED_MAX_COUNT);
-      expect(maxCount).toBe('5');
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(1);
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_QUALIFIED_MAX_COUNT)).toBe('5');
+    });
+
+    it('should emit two property shapes for items + contains', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}ArrayShape`,
+        type: 'array',
+        items: { type: 'integer' },
+        contains: { type: 'integer', minimum: 10 },
+        minContains: 1,
+        maxContains: 2,
+      };
+
+      const store = new ShaclWriter(schema).build();
+
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(2);
+
+      const itemsProp = propTerms.find((t) => getObjectFromBlank(store, t, SHACL_DATATYPE) != null);
+      const containsProp = propTerms.find(
+        (t) => getObjectTermsFromBlank(store, t, SHACL_QUALIFIED_VALUE_SHAPE).length > 0
+      );
+
+      expect(itemsProp).toBeDefined();
+      expect(containsProp).toBeDefined();
+
+      if (itemsProp != null) {
+        expect(getObjectFromBlank(store, itemsProp, SHACL_DATATYPE)).toBe(XSD_INTEGER);
+      }
+      if (containsProp != null) {
+        expect(getObjectFromBlank(store, containsProp, SHACL_QUALIFIED_MIN_COUNT)).toBe('1');
+        expect(getObjectFromBlank(store, containsProp, SHACL_QUALIFIED_MAX_COUNT)).toBe('2');
+      }
     });
   });
 
@@ -840,7 +897,7 @@ describe('ShaclWriter', () => {
       expect(getObject(store, `${EX}Root`, SHACL_NODE)).toBe(`${EX}Person`);
     });
 
-    it('should map items $ref to sh:node', () => {
+    it('should map items $ref to sh:node on property shape', () => {
       const schema: JsonSchemaObjectType = {
         $id: `${EX}ArrayShape`,
         type: 'array',
@@ -852,7 +909,9 @@ describe('ShaclWriter', () => {
 
       const store = new ShaclWriter(schema).build();
 
-      expect(getObject(store, `${EX}ArrayShape`, SHACL_NODE)).toBe(`${EX}Item`);
+      const propTerms = getObjectTerms(store, `${EX}ArrayShape`, SHACL_PROPERTY);
+      expect(propTerms.length).toBe(1);
+      expect(getObjectFromBlank(store, propTerms[0], SHACL_NODE)).toBe(`${EX}Item`);
     });
   });
 

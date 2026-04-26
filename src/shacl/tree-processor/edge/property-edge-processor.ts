@@ -39,8 +39,7 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
     const children: ChildNode[] = [];
 
     byName.forEach((edge, name) => {
-      const child = this.processPropertyEdge(name, edge, subject, required, isBlank);
-      if (child) children.push(child);
+      children.push(...this.processPropertyEdge(name, edge, subject, required, isBlank));
     });
 
     for (const req of required) {
@@ -66,41 +65,42 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
     subject: string,
     required: Set<string>,
     isBlank: boolean
-  ): ChildNode | null {
+  ): ChildNode[] {
     const blankId = this.context.nextBlankId();
     this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
     this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
 
     if (edge.node.booleanSchema === false) {
       this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 0, true);
-      return null;
+      return [];
     }
 
     if (required.has(name)) {
       this.context.store.literalInt(blankId, SHACL_MIN_COUNT, 1, true);
     }
 
-    if (edge.node.booleanSchema === true || edge.node.schema.type !== 'array') {
+    const hasLogicalOp = edge.node.children.some((e) => LOGICAL_PREDICATES.has(e.label));
+    if (edge.node.booleanSchema === true || (!hasLogicalOp && edge.node.schema.type !== 'array')) {
       this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 1, true);
     }
 
-    if (edge.node.booleanSchema === true) return null;
+    if (edge.node.booleanSchema === true) return [];
 
     return this.processPropertySchema(blankId, edge.node);
   }
 
-  private processPropertySchema(blankId: string, node: SchemaNode): ChildNode | null {
+  private processPropertySchema(blankId: string, node: SchemaNode): ChildNode[] {
     const { schema } = node;
 
     if (schema.$ref) {
       this.context.store.blank(blankId, SHACL_NODE, this.context.resolveRef(schema.$ref));
-      return null;
+      return [];
     }
 
     if (schema.type === 'object' && schema.properties) {
       const nestedBlankId = this.context.nextBlankId();
       this.context.store.bothBlank(blankId, SHACL_NODE, nestedBlankId);
-      return { node, subject: nestedBlankId, isBlank: true };
+      return [{ node, subject: nestedBlankId, isBlank: true }];
     }
 
     if (schema.type === 'array' && schema.items) {
@@ -116,35 +116,35 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
           this.shaclMapper.map(itemsSchema, nestedBlankId, true);
         }
       }
-      return null;
+      return [];
     }
 
     for (const [label, predicate] of LOGICAL_PREDICATES) {
-      const children = node.children.filter((e) => e.label === label);
-      if (children.length > 0) {
-        this.processPropertyLogicalOperator(blankId, children, predicate);
-        return null;
+      const logicalEdges = node.children.filter((e) => e.label === label);
+      if (logicalEdges.length > 0) {
+        return this.processPropertyLogicalOperator(blankId, logicalEdges, predicate);
       }
     }
 
     this.shaclMapper.map(schema, blankId, true);
-    return null;
+    return [];
   }
 
   private processPropertyLogicalOperator(
     blankId: string,
     edges: SchemaEdge[],
     predicate: string
-  ): void {
+  ): ChildNode[] {
     if (edges.every((e) => !!e.node.schema.$ref)) {
       const refs = edges
         .map((e) => e.node.schema.$ref)
         .filter((ref): ref is string => ref != null)
         .map((ref) => this.context.resolveRef(ref));
       this.context.store.list(blankId, predicate, refs, true, true);
-      return;
+      return [];
     }
 
+    const children: ChildNode[] = [];
     const ids = edges.map((e) => {
       const innerBlank = this.context.nextBlankId();
       if (e.node.schema.$ref) {
@@ -153,11 +153,15 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
           SHACL_NODE,
           this.context.resolveRef(e.node.schema.$ref)
         );
+      } else if (e.node.children.length > 0) {
+        // Has child edges (e.g., contains) — push for full NodeProcessor pipeline
+        children.push({ node: e.node, subject: innerBlank, isBlank: true });
       } else {
         this.shaclMapper.map(e.node.schema, innerBlank, true);
       }
       return innerBlank;
     });
     this.context.store.listOfBlanks(blankId, predicate, ids, true);
+    return children;
   }
 }

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "integer"
+  },
+  "contains": {
+    "type": "integer",
+    "minimum": 10
+  },
+  "minContains": 1,
+  "maxContains": 2
+}

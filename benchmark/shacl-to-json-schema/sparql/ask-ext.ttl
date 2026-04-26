@@ -1,0 +1,15 @@
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix ex:  <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:PersonShape
+    a         sh:NodeShape ;
+    sh:sparql [ sh:message "Age must be consistent with birthdate" ;
+                sh:ask     """
+                    ASK {
+                        $this ex:age ?age ;
+                              ex:birthDate ?birthDate .
+                        BIND(YEAR(NOW()) - YEAR(?birthDate) AS ?calculatedAge)
+                        FILTER(?age != ?calculatedAge)
+                    }
+                """ ; ] .

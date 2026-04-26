@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LessThanExample",
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "array",
+      "x-shacl-lessThanOrEquals": "endDate"
+    }
+  },
+  "x-shacl-prefixes": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "ex": "http://example.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}

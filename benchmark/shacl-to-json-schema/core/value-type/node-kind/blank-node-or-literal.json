@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "value": {
+      "oneOf": [{ "type": "object" }, { "type": ["string", "number", "boolean"] }]
+    }
+  },
+  "required": ["value"]
+}

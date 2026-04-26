@@ -1799,7 +1799,7 @@ describe('IR Schema Converter - Constraints', () => {
       const ir = await getIr(content);
       const schema = new IrSchemaConverter(ir).convert();
       // Note: sh:qualifiedValueShapesDisjoint has no direct JSON Schema equivalent
-      // Preserved as x-shacl-qualifiedValueShapesDisjoint extension
+      // Each qualified value shape maps to a contains constraint in an allOf
       expect(schema).toStrictEqual({
         $defs: {
           Contact: {
@@ -1809,10 +1809,14 @@ describe('IR Schema Converter - Constraints', () => {
               address: {
                 allOf: [
                   {
-                    $ref: '#/$defs/HomeAddress',
+                    type: 'array',
+                    contains: { $ref: '#/$defs/HomeAddress' },
+                    maxContains: 1,
                   },
                   {
-                    $ref: '#/$defs/WorkAddress',
+                    type: 'array',
+                    contains: { $ref: '#/$defs/WorkAddress' },
+                    maxContains: 1,
                   },
                 ],
               },
@@ -2490,10 +2494,10 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
             properties: {
               address: {
-                items: {
+                contains: {
                   $ref: '#/$defs/USAddress',
                 },
-                minItems: 1,
+                minContains: 1,
                 type: 'array',
               },
             },
@@ -2553,10 +2557,10 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
             properties: {
               office: {
-                items: {
+                contains: {
                   $ref: '#/$defs/Headquarters',
                 },
-                maxItems: 1,
+                maxContains: 1,
                 type: 'array',
               },
             },
@@ -2623,11 +2627,11 @@ describe('IR Schema Converter - Constraints', () => {
             additionalProperties: true,
             properties: {
               member: {
-                items: {
+                contains: {
                   $ref: '#/$defs/Leader',
                 },
-                maxItems: 3,
-                minItems: 1,
+                maxContains: 3,
+                minContains: 1,
                 type: 'array',
               },
             },

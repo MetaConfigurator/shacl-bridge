@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "type": "object",
+  "x-shacl-sparql": [
+    {
+      "message": "Person must have a unique email",
+      "select": "\n                    SELECT $this ?email\n                    WHERE {\n                        $this ex:email ?email .\n                        FILTER EXISTS {\n                            ?other ex:email ?email .\n                            FILTER (?other != $this)\n                        }\n                    }\n                "
+    }
+  ],
+  "x-shacl-prefixes": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "ex": "http://example.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
