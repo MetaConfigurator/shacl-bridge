@@ -6,6 +6,7 @@ import {
   compareShacl,
   findFiles,
   getStatus,
+  resolveJunitPath,
   TestResult,
   toJsonSchema,
   toShacl,
@@ -115,10 +116,9 @@ try {
   console.log(sep);
   console.log(`Total: ${String(testNum)} test(s)`);
 
-  if (junitFile) {
-    writeJunit(results, junitFile);
-    console.log(`JUnit report written to: ${junitFile}`);
-  }
+  const junitOut = resolveJunitPath(junitFile, 'roundtrip-benchmark.xml');
+  writeJunit(results, junitOut);
+  console.log(`JUnit report written to: ${junitOut}`);
 } finally {
   rmSync(tempDir, { recursive: true });
 }

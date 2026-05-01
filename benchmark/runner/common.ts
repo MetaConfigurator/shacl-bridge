@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { basename, join } from 'path';
 import { compareJsonSchemas, JsonValue } from '../compare-json-schemas';
 
@@ -109,6 +109,13 @@ export function escapeXml(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+export function resolveJunitPath(explicitPath: string | null, defaultFilename: string): string {
+  if (explicitPath) return explicitPath;
+  const resultsDir = join(process.cwd(), 'results');
+  mkdirSync(resultsDir, { recursive: true });
+  return join(resultsDir, defaultFilename);
 }
 
 export function writeJunit(results: TestResult[], outFile: string): void {
