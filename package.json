@@ -20,7 +20,8 @@
     "prepare": "husky",
     "fix:lint-format": "npm run lint:fix && npm run format",
     "prepublishOnly": "npm run build && npm test",
-    "benchmark": "npm run build && npm link && npx jiti benchmark/run-benchmark.ts"
+    "benchmark": "cd benchmark && npm install && npm run benchmark",
+    "benchmark:roundtrip": "cd benchmark && npm install && npm run benchmark:roundtrip"
   },
   "repository": {
     "type": "git",

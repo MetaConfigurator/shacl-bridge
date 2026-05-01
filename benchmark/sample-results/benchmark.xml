@@ -1,0 +1,1413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="shacl-bridge" tests="127" failures="0" skipped="0">
+    <testsuite name="json-schema-to-shacl" tests="88" failures="0" skipped="0">
+        <testcase name="additional-properties/additional-properties-allowed-by-default"
+                  classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-allowed-by-default.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-allowed-by-default.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="additional-properties/additional-properties-false" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-false.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="additional-properties/additional-properties-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="array/item-simple" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-simple.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="array/item-with-cardinality" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-cardinality.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-cardinality.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="array/item-with-contains" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-contains.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-contains.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-boolean-false" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-false.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-boolean-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-integer" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-integer.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-integer.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-null" classname="json-schema-to-shacl">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-null.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-null.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-string" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-string.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-string.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="def-ref/defs-ref" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/def-ref/defs-ref.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/def-ref/defs-ref.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-empty" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-empty.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-empty.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-false" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-false.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-homogenous" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-homogenous.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-homogenous.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-in-properties" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-in-properties.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-in-properties.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-base-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-base-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-base-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-all-false" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-false.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-all-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-empty-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-empty-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-one-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-one-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-one-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-nested" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-nested.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-nested.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-simple-types" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple-types.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple-types.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-simple" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-single-empty-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-single-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-single-empty-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-with-empty-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-with-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-with-empty-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-base-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-base-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-base-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-complex" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-complex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-complex.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-multiple-all-false" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-false.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-multiple-all-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-multiple-one-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-one-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-one-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-nested" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-nested.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-nested.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-simple" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-simple.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-with-empty-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-with-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-with-empty-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/if-then-else/if-else" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-else.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-else.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/if-then-else/if-then-else" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then-else.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then-else.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/if-then-else/if-then" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/double-negation" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/double-negation.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/double-negation.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/not-complex" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-complex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-complex.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/not-multiple" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-multiple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-multiple.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/not-single" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-single.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-single.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-base-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-base-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-base-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-complex" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-complex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-complex.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-multiple-all-false" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-false.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-multiple-all-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-multiple-one-true" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-one-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-one-true.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-nested" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-nested.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-nested.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-required-all" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-all.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-all.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-required-some" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-some.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-some.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-simple" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-simple.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-with-empty-schema" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-with-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-with-empty-schema.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/exclusiveMaximum/exclusive-maximum" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMaximum/exclusive-maximum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMaximum/exclusive-maximum.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/exclusiveMinimum/exclusive-minimum" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMinimum/exclusive-minimum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMinimum/exclusive-minimum.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-float-with-type" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float-with-type.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-float" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-negative" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-negative.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-negative.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-number-with-type" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-number-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-number-with-type.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-float-with-type" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float-with-type.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-float" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-negative" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-negative.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-negative.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-number-with-type" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-number-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-number-with-type.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="properties/properties-boolean" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-boolean.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-boolean.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="properties/properties-simple" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-simple.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="required/required-default" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-default.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-default.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="required/required-empty" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-empty.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-empty.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="required/required-specified" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-specified.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-specified.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/date-time" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date-time.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date-time.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/date" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/duration" classname="json-schema-to-shacl">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/duration.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/duration.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/email" classname="json-schema-to-shacl">
+            <system-out>WARNING: F1: 0.8000, Jaccard: 0.6667 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.8000"/>
+                <property name="jaccard" value="0.6667"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/email.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/email.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/iri" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/iri.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/iri.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/regex" classname="json-schema-to-shacl">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/regex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/regex.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/time" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/time.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/time.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/uri" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uri.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uri.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/uuid" classname="json-schema-to-shacl">
+            <system-out>WARNING: F1: 0.8000, Jaccard: 0.6667 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.8000"/>
+                <property name="jaccard" value="0.6667"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uuid.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uuid.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/maxLength" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/maxLength.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/maxLength.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/minLength" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/minLength.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/minLength.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="string/pattern" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/pattern.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/pattern.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/array-multiple-types" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-multiple-types.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-multiple-types.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/array-one-type" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-one-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-one-type.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/boolean" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/boolean.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/boolean.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/integer" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/integer.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/integer.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/number" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/number.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/number.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/object" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/object.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/object.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="types/string" classname="json-schema-to-shacl">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/string.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/string.ttl"/>
+            </properties>
+        </testcase>
+    </testsuite>
+    <testsuite name="shacl-to-json-schema" tests="39" failures="0" skipped="0">
+        <testcase name="core/cardiniality/combination-multi" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-multi.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-multi.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/combination-single" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-single.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-single.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/maxCount" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/maxCount.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/maxCount.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/minCount" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/minCount.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/minCount.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/and" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/and.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/and.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/not" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/not.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/not.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/or" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/or.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/or.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/xone" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/xone.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/xone.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/closed" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/closed.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/closed.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/hasValue" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/hasValue.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/hasValue.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/ignored-properties-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/ignored-properties-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/ignored-properties-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/in" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/in.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/in.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/disjoint-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/disjoint-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/disjoint-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/equals-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/equals-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/equals-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/lessThan-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThan-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThan-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/lessThanOrEquals-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThanOrEquals-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThanOrEquals-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/node" classname="shacl-to-json-schema">
+            <system-out>WARNING: F1: 0.7826, Jaccard: 0.6429 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.7826"/>
+                <property name="jaccard" value="0.6429"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/node.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/node.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/property" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/property.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/property.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/qualifiedValueShape" classname="shacl-to-json-schema">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.6667 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.6667"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/qualifiedValueShape.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/qualifiedValueShape.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/languageIn-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/languageIn-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/languageIn-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/maxLength" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/maxLength.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/maxLength.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/minLength" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/minLength.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/minLength.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/pattern" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/pattern.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/pattern.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/uniqueLang-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/uniqueLang-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/uniqueLang-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/combination-exclusive" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-exclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-exclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/combination-inclusive" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-inclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-inclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/maxExclusive" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxExclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxExclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/maxInclusive" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxInclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxInclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/minExclusive" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minExclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minExclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/minInclusive" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minInclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minInclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/class" classname="shacl-to-json-schema">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/class.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/class.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/datatype" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/datatype.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/datatype.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node-or-iri" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-iri.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-iri.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node-or-literal" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-literal.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/iri-or-literal" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/iri-or-literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/iri-or-literal.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/literal" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/literal.json"/>
+            </properties>
+        </testcase>
+        <testcase name="sparql/ask-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/ask-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/ask-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="sparql/select-ext" classname="shacl-to-json-schema">
+            <properties>
+                <property name="f1" value="1.0000"/>
+                <property name="jaccard" value="1.0000"/>
+                <property name="status" value="PASS"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/select-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/select-ext.json"/>
+            </properties>
+        </testcase>
+    </testsuite>
+</testsuites>

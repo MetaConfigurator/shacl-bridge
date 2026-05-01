@@ -24,14 +24,14 @@ jobs:
         run: npm ci
 
       - name: Run benchmark
-        run: npm run benchmark -- --junit ${{ github.workspace }}/benchmark-results.xml
+        run: npm run benchmark
 
       - name: Publish benchmark results
         uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Benchmark Results
-          path: benchmark-results.xml
+          path: benchmark/results/benchmark.xml
           reporter: java-junit
           fail-on-error: true
 
@@ -40,5 +40,5 @@ jobs:
         if: always()
         with:
           name: benchmark-results
-          path: benchmark-results.xml
+          path: benchmark/results/
           retention-days: 30

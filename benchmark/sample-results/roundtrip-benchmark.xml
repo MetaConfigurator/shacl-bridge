@@ -1,0 +1,1532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="shacl-bridge" tests="127" failures="94" skipped="0">
+    <testsuite name="shacl-roundtrip" tests="39" failures="38" skipped="0">
+        <testcase name="core/cardiniality/combination-multi" classname="shacl-roundtrip">
+            <failure message="F1: 0.1000, Jaccard: 0.0526 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1000"/>
+                <property name="jaccard" value="0.0526"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-multi.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-multi.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/combination-single" classname="shacl-roundtrip">
+            <failure message="F1: 0.4444, Jaccard: 0.2857 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4444"/>
+                <property name="jaccard" value="0.2857"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-single.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-single.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/maxCount" classname="shacl-roundtrip">
+            <failure message="F1: 0.2353, Jaccard: 0.1333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2353"/>
+                <property name="jaccard" value="0.1333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/maxCount.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/maxCount.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/minCount" classname="shacl-roundtrip">
+            <failure message="F1: 0.2222, Jaccard: 0.1250 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1250"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/minCount.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/minCount.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/and" classname="shacl-roundtrip">
+            <failure message="F1: 0.2791, Jaccard: 0.1622 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2791"/>
+                <property name="jaccard" value="0.1622"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/and.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/and.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/not" classname="shacl-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/not.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/not.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/or" classname="shacl-roundtrip">
+            <failure message="F1: 0.2326, Jaccard: 0.1316 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2326"/>
+                <property name="jaccard" value="0.1316"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/or.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/or.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/xone" classname="shacl-roundtrip">
+            <failure message="F1: 0.2373, Jaccard: 0.1346 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2373"/>
+                <property name="jaccard" value="0.1346"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/xone.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/xone.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/closed" classname="shacl-roundtrip">
+            <failure message="F1: 0.6486, Jaccard: 0.4800 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.6486"/>
+                <property name="jaccard" value="0.4800"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/closed.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/closed.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/hasValue" classname="shacl-roundtrip">
+            <failure message="F1: 0.4286, Jaccard: 0.2727 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4286"/>
+                <property name="jaccard" value="0.2727"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/hasValue.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/hasValue.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/ignored-properties-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.2500, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2500"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/ignored-properties-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/ignored-properties-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/in" classname="shacl-roundtrip">
+            <system-out>WARNING: F1: 0.7059, Jaccard: 0.5454 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.7059"/>
+                <property name="jaccard" value="0.5454"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/in.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/in.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/disjoint-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.1667, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1667"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/disjoint-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/disjoint-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/equals-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.1667, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1667"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/equals-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/equals-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/lessThan-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.1667, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1667"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThan-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThan-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/lessThanOrEquals-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.1667, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1667"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThanOrEquals-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThanOrEquals-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/node" classname="shacl-roundtrip">
+            <failure message="F1: 0.0588, Jaccard: 0.0303 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0588"/>
+                <property name="jaccard" value="0.0303"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/node.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/node.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/property" classname="shacl-roundtrip">
+            <failure message="F1: 0.4706, Jaccard: 0.3077 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4706"/>
+                <property name="jaccard" value="0.3077"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/property.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/property.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/qualifiedValueShape" classname="shacl-roundtrip">
+            <failure message="F1: 0.1034, Jaccard: 0.0545 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1034"/>
+                <property name="jaccard" value="0.0545"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/qualifiedValueShape.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/qualifiedValueShape.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/languageIn-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/languageIn-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/languageIn-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/maxLength" classname="shacl-roundtrip">
+            <failure message="F1: 0.3750, Jaccard: 0.2307 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.3750"/>
+                <property name="jaccard" value="0.2307"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/maxLength.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/maxLength.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/minLength" classname="shacl-roundtrip">
+            <failure message="F1: 0.3529, Jaccard: 0.2143 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.3529"/>
+                <property name="jaccard" value="0.2143"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/minLength.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/minLength.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/pattern" classname="shacl-roundtrip">
+            <failure message="F1: 0.3750, Jaccard: 0.2307 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.3750"/>
+                <property name="jaccard" value="0.2307"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/pattern.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/pattern.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/uniqueLang-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.1667, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1667"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/uniqueLang-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/uniqueLang-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/combination-exclusive" classname="shacl-roundtrip">
+            <failure message="F1: 0.5455, Jaccard: 0.3750 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5455"/>
+                <property name="jaccard" value="0.3750"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-exclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-exclusive.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/combination-inclusive" classname="shacl-roundtrip">
+            <failure message="F1: 0.5455, Jaccard: 0.3750 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5455"/>
+                <property name="jaccard" value="0.3750"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-inclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-inclusive.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/maxExclusive" classname="shacl-roundtrip">
+            <failure message="F1: 0.5000, Jaccard: 0.3334 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5000"/>
+                <property name="jaccard" value="0.3334"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxExclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxExclusive.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/maxInclusive" classname="shacl-roundtrip">
+            <failure message="F1: 0.5000, Jaccard: 0.3334 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5000"/>
+                <property name="jaccard" value="0.3334"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxInclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxInclusive.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/minExclusive" classname="shacl-roundtrip">
+            <failure message="F1: 0.5000, Jaccard: 0.3334 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5000"/>
+                <property name="jaccard" value="0.3334"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minExclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minExclusive.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/minInclusive" classname="shacl-roundtrip">
+            <failure message="F1: 0.5000, Jaccard: 0.3334 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5000"/>
+                <property name="jaccard" value="0.3334"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minInclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minInclusive.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/class" classname="shacl-roundtrip">
+            <failure message="F1: 0.3333, Jaccard: 0.2000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.3333"/>
+                <property name="jaccard" value="0.2000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/class.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/class.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/datatype" classname="shacl-roundtrip">
+            <failure message="F1: 0.4706, Jaccard: 0.3077 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4706"/>
+                <property name="jaccard" value="0.3077"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/datatype.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/datatype.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node-or-iri" classname="shacl-roundtrip">
+            <failure message="F1: 0.0952, Jaccard: 0.0500 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0952"/>
+                <property name="jaccard" value="0.0500"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-iri.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-iri.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node-or-literal" classname="shacl-roundtrip">
+            <failure message="F1: 0.0667, Jaccard: 0.0345 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0667"/>
+                <property name="jaccard" value="0.0345"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-literal.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node" classname="shacl-roundtrip">
+            <failure message="F1: 0.6250, Jaccard: 0.4545 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.6250"/>
+                <property name="jaccard" value="0.4545"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/iri-or-literal" classname="shacl-roundtrip">
+            <failure message="F1: 0.0667, Jaccard: 0.0345 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0667"/>
+                <property name="jaccard" value="0.0345"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/iri-or-literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/iri-or-literal.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/literal" classname="shacl-roundtrip">
+            <failure message="F1: 0.0800, Jaccard: 0.0416 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0800"/>
+                <property name="jaccard" value="0.0416"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/literal.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="sparql/ask-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/ask-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/ask-ext.ttl"/>
+            </properties>
+        </testcase>
+        <testcase name="sparql/select-ext" classname="shacl-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/select-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/select-ext.ttl"/>
+            </properties>
+        </testcase>
+    </testsuite>
+    <testsuite name="json-schema-roundtrip" tests="88" failures="56" skipped="0">
+        <testcase name="additional-properties/additional-properties-allowed-by-default"
+                  classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-allowed-by-default.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-allowed-by-default.json"/>
+            </properties>
+        </testcase>
+        <testcase name="additional-properties/additional-properties-false" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-false.json"/>
+            </properties>
+        </testcase>
+        <testcase name="additional-properties/additional-properties-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/additional-properties/additional-properties-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="array/item-simple" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-simple.json"/>
+            </properties>
+        </testcase>
+        <testcase name="array/item-with-cardinality" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-cardinality.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-cardinality.json"/>
+            </properties>
+        </testcase>
+        <testcase name="array/item-with-contains" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-contains.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/array/item-with-contains.json"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-boolean-false" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-false.json"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-boolean-true" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-boolean-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-integer" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-integer.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-integer.json"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-null" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-null.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-null.json"/>
+            </properties>
+        </testcase>
+        <testcase name="const/const-string" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-string.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/const/const-string.json"/>
+            </properties>
+        </testcase>
+        <testcase name="def-ref/defs-ref" classname="json-schema-roundtrip">
+            <failure message="F1: 0.6000, Jaccard: 0.4286 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.6000"/>
+                <property name="jaccard" value="0.4286"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/def-ref/defs-ref.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/def-ref/defs-ref.json"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-empty" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-empty.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-empty.json"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-false" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-false.json"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-homogenous" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-homogenous.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-homogenous.json"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-in-properties" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.8889, Jaccard: 0.8000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.8889"/>
+                <property name="jaccard" value="0.8000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-in-properties.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-in-properties.json"/>
+            </properties>
+        </testcase>
+        <testcase name="enum/enum-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/enum/enum-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-base-schema" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.8571, Jaccard: 0.7500 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.8571"/>
+                <property name="jaccard" value="0.7500"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-base-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-base-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-all-false" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-false.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-all-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-all-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-empty-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-empty-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-multiple-one-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-one-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-multiple-one-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-nested" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-nested.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-nested.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-simple-types" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple-types.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple-types.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-simple" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-simple.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-single-empty-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-single-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-single-empty-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/allOf/allOf-with-empty-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-with-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/allOf/allOf-with-empty-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-base-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-base-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-base-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-complex" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-complex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-complex.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-multiple-all-false" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-false.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-multiple-all-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-all-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-multiple-one-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-one-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-multiple-one-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-nested" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-nested.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-nested.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-simple" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-simple.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/anyOf/anyOf-with-empty-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-with-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/anyOf/anyOf-with-empty-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/if-then-else/if-else" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-else.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-else.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/if-then-else/if-then-else" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then-else.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then-else.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/if-then-else/if-then" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/if-then-else/if-then.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/double-negation" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/double-negation.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/double-negation.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/not-complex" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.2500 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.2500"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-complex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-complex.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/not-multiple" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-multiple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-multiple.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/not/not-single" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-single.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/not/not-single.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-base-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-base-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-base-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-complex" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-complex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-complex.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-multiple-all-false" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-false.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-false.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-multiple-all-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-all-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-multiple-one-true" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-one-true.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-multiple-one-true.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-nested" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-nested.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-nested.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-required-all" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.8000, Jaccard: 0.6667 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.8000"/>
+                <property name="jaccard" value="0.6667"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-all.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-all.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-required-some" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-some.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-required-some.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-simple" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-simple.json"/>
+            </properties>
+        </testcase>
+        <testcase name="logical/oneOf/oneOf-with-empty-schema" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-with-empty-schema.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/logical/oneOf/oneOf-with-empty-schema.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/exclusiveMaximum/exclusive-maximum" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMaximum/exclusive-maximum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMaximum/exclusive-maximum.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/exclusiveMinimum/exclusive-minimum" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMinimum/exclusive-minimum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/exclusiveMinimum/exclusive-minimum.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-float-with-type" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float-with-type.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-float" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-float.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-negative" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-negative.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-negative.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum-number-with-type" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-number-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum-number-with-type.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/maximum/maximum" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/maximum/maximum.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-float-with-type" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float-with-type.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-float" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-float.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-negative" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-negative.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-negative.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum-number-with-type" classname="json-schema-roundtrip">
+            <failure message="F1: 0.4000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.4000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-number-with-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum-number-with-type.json"/>
+            </properties>
+        </testcase>
+        <testcase name="numeric/minimum/minimum" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/numeric/minimum/minimum.json"/>
+            </properties>
+        </testcase>
+        <testcase name="properties/properties-boolean" classname="json-schema-roundtrip">
+            <failure message="F1: 0.5000, Jaccard: 0.3333 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.5000"/>
+                <property name="jaccard" value="0.3333"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-boolean.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-boolean.json"/>
+            </properties>
+        </testcase>
+        <testcase name="properties/properties-simple" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.8000, Jaccard: 0.6667 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.8000"/>
+                <property name="jaccard" value="0.6667"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-simple.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/properties/properties-simple.json"/>
+            </properties>
+        </testcase>
+        <testcase name="required/required-default" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-default.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-default.json"/>
+            </properties>
+        </testcase>
+        <testcase name="required/required-empty" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-empty.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-empty.json"/>
+            </properties>
+        </testcase>
+        <testcase name="required/required-specified" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-specified.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/required/required-specified.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/date-time" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date-time.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date-time.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/date" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/date.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/duration" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/duration.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/duration.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/email" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/email.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/email.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/iri" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/iri.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/iri.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/regex" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/regex.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/regex.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/time" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/time.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/time.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/uri" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uri.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uri.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/format/uuid" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uuid.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/format/uuid.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/maxLength" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/maxLength.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/maxLength.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/minLength" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/minLength.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/minLength.json"/>
+            </properties>
+        </testcase>
+        <testcase name="string/pattern" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/pattern.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/string/pattern.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/array-multiple-types" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-multiple-types.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-multiple-types.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/array-one-type" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-one-type.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/array-one-type.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/boolean" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/boolean.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/boolean.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/integer" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/integer.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/integer.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/number" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/number.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/number.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/object" classname="json-schema-roundtrip">
+            <system-out>WARNING: F1: 0.6667, Jaccard: 0.5000 — at least one score is below 1.0</system-out>
+            <properties>
+                <property name="f1" value="0.6667"/>
+                <property name="jaccard" value="0.5000"/>
+                <property name="status" value="WARN"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/object.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/object.json"/>
+            </properties>
+        </testcase>
+        <testcase name="types/string" classname="json-schema-roundtrip">
+            <failure message="F1: 0.0000, Jaccard: 0.0000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0000"/>
+                <property name="jaccard" value="0.0000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/string.json"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/json-schema-to-shacl/types/string.json"/>
+            </properties>
+        </testcase>
+    </testsuite>
+</testsuites>
