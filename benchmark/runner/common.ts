@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { basename, join } from 'path';
-import { compareJsonSchemas, JsonValue } from '../compare-json-schemas';
+import { compareJsonSchemas, JsonValue } from './compare-json-schemas';
 
 export const SHACL_BRIDGE = 'npx shacl-bridge';
 export const FAIL_THRESHOLD = 0.5;
