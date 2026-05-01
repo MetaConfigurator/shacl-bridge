@@ -103,6 +103,36 @@ export function getStatus(f1: string, jaccard: string): 'PASS' | 'WARN' | 'FAIL'
   return 'WARN';
 }
 
+export function printSummary(results: TestResult[]): void {
+  const total = results.length;
+  const passed = results.filter((r) => r.status === 'PASS').length;
+  const warned = results.filter((r) => r.status === 'WARN').length;
+  const failed = results.filter((r) => r.status === 'FAIL').length;
+  const skipped = results.filter((r) => r.status === 'SKIPPED').length;
+
+  const scored = results.filter((r) => !isNaN(Number(r.f1)) && !isNaN(Number(r.jaccard)));
+  const avgF1 =
+    scored.length > 0
+      ? (scored.reduce((sum, r) => sum + Number(r.f1), 0) / scored.length).toFixed(4)
+      : 'N/A';
+  const avgJaccard =
+    scored.length > 0
+      ? (scored.reduce((sum, r) => sum + Number(r.jaccard), 0) / scored.length).toFixed(4)
+      : 'N/A';
+
+  console.log();
+  console.log('Summary');
+  console.log('-'.repeat(36));
+  console.log(`Total:    ${String(total).padStart(6)}`);
+  console.log(`Passed:   ${String(passed).padStart(6)}`);
+  console.log(`Warned:   ${String(warned).padStart(6)}`);
+  console.log(`Failed:   ${String(failed).padStart(6)}`);
+  console.log(`Skipped:  ${String(skipped).padStart(6)}`);
+  console.log('-'.repeat(36));
+  console.log(`Avg F1:   ${avgF1.padStart(6)}`);
+  console.log(`Avg Jacc: ${avgJaccard.padStart(6)}`);
+}
+
 export function escapeXml(s: string): string {
   return s
     .replace(/&/g, '&amp;')

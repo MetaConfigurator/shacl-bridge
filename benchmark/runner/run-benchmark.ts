@@ -6,6 +6,7 @@ import {
   compareShacl,
   findFiles,
   getStatus,
+  printSummary,
   resolveCsvPath,
   resolveJunitPath,
   TestResult,
@@ -149,7 +150,7 @@ try {
   }
 
   console.log(sep);
-  console.log(`Total: ${String(testNum)} test(s)`);
+  printSummary(results);
 
   const junitOut = resolveJunitPath(junitFile, 'benchmark.xml');
   writeJunit(results, junitOut);
