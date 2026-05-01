@@ -1,0 +1,17 @@
+{
+  "name": "shacl-bridge-benchmark",
+  "version": "1.0.0",
+  "description": "Standalone benchmark suite for shacl-bridge",
+  "private": true,
+  "scripts": {
+    "setup": "npx jiti setup.ts",
+    "benchmark": "npm run setup && npx jiti runner/run-benchmark.ts",
+    "benchmark:roundtrip": "npm run setup && npx jiti runner/run-roundtrip-benchmark.ts"
+  },
+  "dependencies": {
+    "shacl-bridge": "latest"
+  },
+  "devDependencies": {
+    "jiti": "^2.6.1"
+  }
+}

@@ -41,3 +41,4 @@ output/
 .DS_Store
 Thumbs.db
 /benchmark/node_modules/
+/benchmark/results/
