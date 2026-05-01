@@ -111,11 +111,29 @@ export function escapeXml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-export function resolveJunitPath(explicitPath: string | null, defaultFilename: string): string {
+function resolveOutputPath(explicitPath: string | null, defaultFilename: string): string {
   if (explicitPath) return explicitPath;
   const resultsDir = join(process.cwd(), 'results');
   mkdirSync(resultsDir, { recursive: true });
   return join(resultsDir, defaultFilename);
+}
+
+export function resolveJunitPath(explicitPath: string | null, defaultFilename: string): string {
+  return resolveOutputPath(explicitPath, defaultFilename);
+}
+
+export function resolveCsvPath(explicitPath: string | null, defaultFilename: string): string {
+  return resolveOutputPath(explicitPath, defaultFilename);
+}
+
+export function writeCsv(results: TestResult[], outFile: string): void {
+  const header = 'suite,name,f1,jaccard,status,inputFile,expectedFile';
+  const escape = (s: string) =>
+    s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+  const rows = results.map((r) =>
+    [r.suite, r.name, r.f1, r.jaccard, r.status, r.inputFile, r.expectedFile].map(escape).join(',')
+  );
+  writeFileSync(outFile, [header, ...rows].join('\n') + '\n', 'utf8');
 }
 
 export function writeJunit(results: TestResult[], outFile: string): void {

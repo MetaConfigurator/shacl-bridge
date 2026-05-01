@@ -6,10 +6,12 @@ import {
   compareShacl,
   findFiles,
   getStatus,
+  resolveCsvPath,
   resolveJunitPath,
   TestResult,
   toJsonSchema,
   toShacl,
+  writeCsv,
   writeJunit,
 } from './common';
 
@@ -18,6 +20,9 @@ const SHACL_TO_JS_DIR = join(__dirname, '..', 'shacl-to-json-schema');
 
 const junitArgIndex = process.argv.indexOf('--junit');
 const junitFile = junitArgIndex !== -1 ? process.argv[junitArgIndex + 1] : null;
+
+const csvArgIndex = process.argv.indexOf('--csv');
+const csvFile = csvArgIndex !== -1 ? process.argv[csvArgIndex + 1] : null;
 
 const fileArgIndex = process.argv.indexOf('--file');
 const fileArg = fileArgIndex !== -1 ? resolve(process.argv[fileArgIndex + 1]) : null;
@@ -119,6 +124,10 @@ try {
   const junitOut = resolveJunitPath(junitFile, 'roundtrip-benchmark.xml');
   writeJunit(results, junitOut);
   console.log(`JUnit report written to: ${junitOut}`);
+
+  const csvOut = resolveCsvPath(csvFile, 'roundtrip-benchmark.csv');
+  writeCsv(results, csvOut);
+  console.log(`CSV report written to: ${csvOut}`);
 } finally {
   rmSync(tempDir, { recursive: true });
 }
