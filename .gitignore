@@ -40,3 +40,4 @@ output/
 # OS files
 .DS_Store
 Thumbs.db
+/benchmark/node_modules/
