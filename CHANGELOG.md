@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.6.2...v1.7.0) (2026-05-02)
+
+
+### Features
+
+* **benchmark:** make benchmark independent ([#165](https://github.com/MetaConfigurator/shacl-bridge/issues/165)) ([37b3067](https://github.com/MetaConfigurator/shacl-bridge/commit/37b306711ed9ee5f9cddd6fa5b498addea48bbb4))
+
 ## [1.6.2](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.6.1...v1.6.2) (2026-04-20)
 
 
