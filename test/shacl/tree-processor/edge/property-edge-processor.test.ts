@@ -125,6 +125,37 @@ describe('PropertyEdgeProcessor', () => {
     });
   });
 
+  describe('$term support', () => {
+    it('should use $term as sh:path when present', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}PersonShape`,
+        type: 'object',
+        properties: {
+          given_name: { type: 'string', $term: 'https://schema.org/givenName' },
+        },
+      };
+      const store = processSchema(schema);
+
+      const propertyTerms = getObjectTerms(store, `${EX}PersonShape`, SHACL_PROPERTY);
+      expect(propertyTerms).toHaveLength(1);
+      expect(getBlankObject(store, propertyTerms[0], SHACL_PATH)).toBe(
+        'https://schema.org/givenName'
+      );
+    });
+
+    it('should fall back to buildPropertyUri when $term is absent', () => {
+      const schema: JsonSchemaObjectType = {
+        $id: `${EX}PersonShape`,
+        type: 'object',
+        properties: { name: { type: 'string' } },
+      };
+      const store = processSchema(schema);
+
+      const propertyTerms = getObjectTerms(store, `${EX}PersonShape`, SHACL_PROPERTY);
+      expect(getBlankObject(store, propertyTerms[0], SHACL_PATH)).toBe(`${EX}name`);
+    });
+  });
+
   describe('required without properties', () => {
     it('should create property shapes for required fields with no corresponding properties', () => {
       const schema: JsonSchemaObjectType = {
