@@ -68,7 +68,11 @@ export class PropertyEdgeProcessor implements EdgeProcessor {
   ): ChildNode[] {
     const blankId = this.context.nextBlankId();
     this.context.store.linkBlank(subject, SHACL_PROPERTY, blankId, isBlank);
-    this.context.store.blank(blankId, SHACL_PATH, this.context.buildPropertyUri(name));
+    const pathUri =
+      typeof edge.node.schema.$term === 'string'
+        ? edge.node.schema.$term
+        : this.context.buildPropertyUri(name);
+    this.context.store.blank(blankId, SHACL_PATH, pathUri);
 
     if (edge.node.booleanSchema === false) {
       this.context.store.literalInt(blankId, SHACL_MAX_COUNT, 0, true);
