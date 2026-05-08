@@ -1,0 +1,869 @@
+@prefix sh:  <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix ex:  <http://www.enzymeml.org/v2/>.
+
+<http://www.enzymeml.org/v2/>
+    a sh:NodeShape ;
+    sh:name "EnzymeMLDocument" ;
+    sh:description
+            "The EnzymeMLDocument is the root object that serves as a container for all components of an enzymatic experiment. It includes essential metadata about the document itself, such as its title and creation/modification dates, as well as references to related publications and databases. Additionally, it contains comprehensive information about the experimental setup, including reaction vessels, proteins, complexes, small molecules, reactions, measurements, equations, and parameters." ;
+    sh:closed true ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:property [ sh:name "complexes" ;
+                  sh:description
+                          "Contains descriptions of all complexes that are part of the experiment that may be referenced in reactions, measurements, and equations." ;
+                  sh:path ex:complexes ;
+                  sh:node ex:Complex ], [ sh:name        "created" ;
+                                          sh:description "Date the EnzymeML Document was created." ;
+                                          sh:path        <https://schema.org/dateCreated> ;
+                                          sh:maxCount    1 ;
+                                          sh:datatype    xsd:string ], [ sh:name     "creators" ;
+                                                                         sh:description
+                                                                                     "Contains descriptions of all authors that are part of the experiment." ;
+                                                                         sh:path     <https://schema.org/creator> ;
+                                                                         sh:node     ex:Creator ;
+                                                                         sh:minCount 1 ], [ sh:name     "description" ;
+                                                                                            sh:description
+                                                                                                        "Description of the EnzymeML Document." ;
+                                                                                            sh:path     ex:description ;
+                                                                                            sh:maxCount 1 ;
+                                                                                            sh:datatype xsd:string ],
+    [ sh:name        "equations" ;
+      sh:description "Contains descriptions of all equations that are part of the experiment." ;
+      sh:path        ex:equations ;
+      sh:node        ex:Equation ], [ sh:name "measurements" ;
+                                      sh:description
+                                              "Contains descriptions of all measurements that are part of the experiment." ;
+                                      sh:path ex:measurements ;
+                                      sh:node ex:Measurement ], [ sh:name     "modified" ;
+                                                                  sh:description
+                                                                              "Date the EnzymeML Document was modified." ;
+                                                                  sh:path     <https://schema.org/dateModified> ;
+                                                                  sh:maxCount 1 ;
+                                                                  sh:datatype xsd:string ], [ sh:name     "name" ;
+                                                                                              sh:description
+                                                                                                          "Title of the EnzymeML Document." ;
+                                                                                              sh:path     <https://schema.org/title> ;
+                                                                                              sh:maxCount 1 ;
+                                                                                              sh:datatype xsd:string ;
+                                                                                              sh:minCount 1 ],
+    [ sh:name "parameters" ;
+      sh:description
+              "Contains descriptions of all parameters that are part of the experiment and may be used in equations." ;
+      sh:path ex:parameters ;
+      sh:node ex:Parameter ], [ sh:name "proteins" ;
+                                sh:description
+                                        "Contains descriptions of all proteins that are part of the experiment that may be referenced in reactions, measurements, and equations." ;
+                                sh:path ex:proteins ;
+                                sh:node ex:Protein ], [ sh:name "reactions" ;
+                                                        sh:description
+                                                                "Contains descriptions of all reactions that are part of the experiment." ;
+                                                        sh:path ex:reactions ;
+                                                        sh:node ex:Reaction ], [ sh:name "references" ;
+                                                                                 sh:description
+                                                                                         "Contains references to publications, databases, and arbitrary links to the web." ;
+                                                                                 sh:path <https://schema.org/citation> ;
+                                                                                 sh:node [ sh:datatype xsd:string ] ],
+    [ sh:name "small_molecules" ;
+      sh:description
+              "Contains descriptions of all reactants that are part of the experiment that may be referenced in reactions, measurements, and equations." ;
+      sh:path ex:small_molecules ;
+      sh:node ex:SmallMolecule ], [ sh:name        "version" ;
+                                    sh:description "The version of the EnzymeML Document." ;
+                                    sh:path        ex:version ;
+                                    sh:maxCount    1 ;
+                                    sh:datatype    xsd:string ;
+                                    sh:minCount    1 ;
+                                    sh:pattern     "\"^(\\d+)\\.\\d+$\"" ], [ sh:name     "vessels" ;
+                                                                              sh:description
+                                                                                          "Contains descriptions of all vessels that are part of the experiment." ;
+                                                                              sh:path     ex:vessels ;
+                                                                              sh:node     ex:Vessel ;
+                                                                              sh:minCount 1 ] .
+
+ex:Complex
+    a                                                                                                               sh:NodeShape ;
+    sh:name                                                                                                         "Complex" ;
+    sh:description                                                                                                  "The Complex object allows the grouping of multiple species using their . This enables the representation of protein-small molecule complexes (e.g., enzyme-substrate complexes) as well as buffer or solvent mixtures (combinations of SmallMolecule species)." ;
+    sh:closed                                                                                                       true ;
+    sh:nodeKind                                                                                                     sh:BlankNodeOrIRI ;
+    sh:property                                                                                                     [ sh:name "constant" ;
+                                                                                                                      sh:description
+                                                                                                                              "Whether the concentration of the complex is constant through the experiment or not. Default is False." ;
+                                                                                                                      sh:path ex:constant ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:boolean ;
+                                                                                                                      sh:minCount
+                                                                                                                              1 ;
+                                                                                                                      sh:defaultValue
+                                                                                                                              false ],
+                                                                                                                    [ sh:name "id" ;
+                                                                                                                      sh:description
+                                                                                                                              "Unique identifier of the complex." ;
+                                                                                                                      sh:path <https://schema.org/identifier> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ;
+                                                                                                                      sh:minCount
+                                                                                                                              1 ],
+                                                                                                                    [ sh:name "name" ;
+                                                                                                                      sh:description
+                                                                                                                              "Name of the complex." ;
+                                                                                                                      sh:path <https://schema.org/name> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ;
+                                                                                                                      sh:minCount
+                                                                                                                              1 ],
+                                                                                                                    [ sh:name "participants" ;
+                                                                                                                      sh:description
+                                                                                                                              "Array of IDs the complex contains" ;
+                                                                                                                      sh:path ex:participants ;
+                                                                                                                      sh:node [ sh:datatype
+                                                                                                                                        xsd:string ] ],
+                                                                                                                    [ sh:name "vessel_id" ;
+                                                                                                                      sh:description
+                                                                                                                              "Unique identifier of the vessel this complex has been used in." ;
+                                                                                                                      sh:path <https://schema.org/identifier> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ] ;
+    sh:targetClass                                                                                                  ex:Complex .
+
+ex:Creator
+    a                                                                                                sh:NodeShape ;
+    sh:name                                                                                          "Creator" ;
+    sh:description                                                                                   "The Creator object represents an individual author or contributor who has participated in creating or modifying the EnzymeML Document. It captures essential personal information such as their name and contact details, allowing proper attribution and enabling communication with the document's creators." ;
+    sh:closed                                                                                        true ;
+    sh:nodeKind                                                                                      sh:BlankNodeOrIRI ;
+    sh:property                                                                                      [ sh:name     "family_name" ;
+                                                                                                       sh:description
+                                                                                                                   "Family name of the author or contributor." ;
+                                                                                                       sh:path     <https://schema.org/familyName> ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:name     "given_name" ;
+                                                                                                       sh:description
+                                                                                                                   "Given name of the author or contributor." ;
+                                                                                                       sh:path     <https://schema.org/givenName> ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:name     "mail" ;
+                                                                                                       sh:description
+                                                                                                                   "Email address of the author or contributor." ;
+                                                                                                       sh:path     <https://schema.org/email> ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ] ;
+    sh:targetClass                                                                                   ex:Creator .
+
+ex:Equation
+    a                                                                                                             sh:NodeShape ;
+    sh:name                                                                                                       "Equation" ;
+    sh:description                                                                                                "The Equation object describes a mathematical equation used to model parts of a reaction system." ;
+    sh:closed                                                                                                     true ;
+    sh:nodeKind                                                                                                   sh:BlankNodeOrIRI ;
+    sh:property                                                                                                   [ sh:name "equation" ;
+                                                                                                                    sh:description
+                                                                                                                            "Mathematical expression of the equation. Represents the right hand side of the equation." ;
+                                                                                                                    sh:path ex:equation ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:datatype
+                                                                                                                            xsd:string ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ],
+                                                                                                                  [ sh:path ex:equation_type ;
+                                                                                                                    sh:node ex:EquationType ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ],
+                                                                                                                  [ sh:name "species_id" ;
+                                                                                                                    sh:description
+                                                                                                                            "Identifier of a defined species (SmallMolecule, Protein, Complex). Represents the left hand side of the equation." ;
+                                                                                                                    sh:path <https://schema.org/identifier> ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:datatype
+                                                                                                                            xsd:string ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ],
+                                                                                                                  [ sh:name "variables" ;
+                                                                                                                    sh:description
+                                                                                                                            "List of variables that are part of the equation" ;
+                                                                                                                    sh:path ex:variables ;
+                                                                                                                    sh:node ex:Variable ] ;
+    sh:targetClass                                                                                                ex:Equation .
+
+ex:Measurement
+    a                                                                                                  sh:NodeShape ;
+    sh:name                                                                                            "Measurement" ;
+    sh:description                                                                                     "This object describes a single measurement, which includes time course data of any type defined in DataTypes. It contains initial concentrations and measurement data for all species involved in the experiment. Multiple measurements can be grouped together using the group_id field to indicate they are part of the same experimental series." ;
+    sh:closed                                                                                          true ;
+    sh:nodeKind                                                                                        sh:BlankNodeOrIRI ;
+    sh:property                                                                                        [ sh:name     "group_id" ;
+                                                                                                         sh:description
+                                                                                                                     "User-defined group ID to signal relationships between measurements." ;
+                                                                                                         sh:path     ex:group_id ;
+                                                                                                         sh:maxCount 1 ;
+                                                                                                         sh:datatype xsd:string ],
+                                                                                                       [ sh:name     "id" ;
+                                                                                                         sh:description
+                                                                                                                     "Unique identifier of the measurement." ;
+                                                                                                         sh:path     <https://schema.org/identifier> ;
+                                                                                                         sh:maxCount 1 ;
+                                                                                                         sh:datatype xsd:string ;
+                                                                                                         sh:minCount 1 ],
+                                                                                                       [ sh:name     "name" ;
+                                                                                                         sh:description
+                                                                                                                     "Name of the measurement" ;
+                                                                                                         sh:path     ex:name ;
+                                                                                                         sh:maxCount 1 ;
+                                                                                                         sh:datatype xsd:string ;
+                                                                                                         sh:minCount 1 ],
+                                                                                                       [ sh:name     "ph" ;
+                                                                                                         sh:description
+                                                                                                                     "pH value of the measurement." ;
+                                                                                                         sh:path     ex:ph ;
+                                                                                                         sh:maxCount 1 ;
+                                                                                                         sh:datatype xsd:decimal ;
+                                                                                                         sh:minInclusive
+                                                                                                                     0 ;
+                                                                                                         sh:maxInclusive
+                                                                                                                     14 ],
+                                                                                                       [ sh:name "species_data" ;
+                                                                                                         sh:description
+                                                                                                                 "Measurement data of all species that were part of the measurement. A species refers to a Protein, Complex, or SmallMolecule." ;
+                                                                                                         sh:path ex:species_data ;
+                                                                                                         sh:node ex:MeasurementData ],
+                                                                                                       [ sh:name     "temperature" ;
+                                                                                                         sh:description
+                                                                                                                     "Temperature of the measurement." ;
+                                                                                                         sh:path     ex:temperature ;
+                                                                                                         sh:maxCount 1 ;
+                                                                                                         sh:datatype xsd:decimal ],
+                                                                                                       [ sh:path     ex:temperature_unit ;
+                                                                                                         sh:node     ex:UnitDefinition ;
+                                                                                                         sh:maxCount 1 ] ;
+    sh:targetClass                                                                                     ex:Measurement .
+
+ex:Parameter
+    a                                                                                                            sh:NodeShape ;
+    sh:name                                                                                                      "Parameter" ;
+    sh:description                                                                                               "This object describes parameters used in kinetic models, including estimated values, bounds, and associated uncertainties. Parameters can represent rate constants, binding constants, or other numerical values that appear in rate equations or other mathematical expressions." ;
+    sh:closed                                                                                                    true ;
+    sh:nodeKind                                                                                                  sh:BlankNodeOrIRI ;
+    sh:property                                                                                                  [ sh:name "constant" ;
+                                                                                                                   sh:description
+                                                                                                                           "Specifies if this parameter is constant. Default is True." ;
+                                                                                                                   sh:path ex:constant ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:boolean ;
+                                                                                                                   sh:defaultValue
+                                                                                                                           true ],
+                                                                                                                 [ sh:name "fit" ;
+                                                                                                                   sh:description
+                                                                                                                           "Whether this parameter should be varied or not in the context of an optimization." ;
+                                                                                                                   sh:path ex:fit ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:boolean ;
+                                                                                                                   sh:defaultValue
+                                                                                                                           true ],
+                                                                                                                 [ sh:name "id" ;
+                                                                                                                   sh:description
+                                                                                                                           "Identifier of the parameter." ;
+                                                                                                                   sh:path <https://schema.org/identifier> ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:string ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:name "initial_value" ;
+                                                                                                                   sh:description
+                                                                                                                           "Initial value that was used for the parameter estimation." ;
+                                                                                                                   sh:path ex:initial_value ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:decimal ],
+                                                                                                                 [ sh:name "lower_bound" ;
+                                                                                                                   sh:description
+                                                                                                                           "Lower bound for the parameter value that was used for the parameter estimation" ;
+                                                                                                                   sh:path ex:lower_bound ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:decimal ],
+                                                                                                                 [ sh:name "name" ;
+                                                                                                                   sh:description
+                                                                                                                           "Name of the parameter." ;
+                                                                                                                   sh:path ex:name ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:string ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:name "stderr" ;
+                                                                                                                   sh:description
+                                                                                                                           "Standard error of the estimated parameter." ;
+                                                                                                                   sh:path ex:stderr ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:decimal ],
+                                                                                                                 [ sh:name "symbol" ;
+                                                                                                                   sh:description
+                                                                                                                           "Equation symbol of the parameter." ;
+                                                                                                                   sh:path ex:symbol ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:string ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:path ex:unit ;
+                                                                                                                   sh:node ex:UnitDefinition ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:name "upper_bound" ;
+                                                                                                                   sh:description
+                                                                                                                           "Upper bound for the parameter value that was used for the parameter estimation" ;
+                                                                                                                   sh:path ex:upper_bound ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:decimal ],
+                                                                                                                 [ sh:name "value" ;
+                                                                                                                   sh:description
+                                                                                                                           "Numerical value of the estimated parameter." ;
+                                                                                                                   sh:path ex:value ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:decimal ] ;
+    sh:targetClass                                                                                               ex:Parameter .
+
+ex:Protein
+    a                                                                                                               sh:NodeShape ;
+    sh:name                                                                                                         "Protein" ;
+    sh:description                                                                                                  "The Protein object represents enzymes and other proteins involved in the experiment." ;
+    sh:closed                                                                                                       true ;
+    sh:nodeKind                                                                                                     sh:BlankNodeOrIRI ;
+    sh:property                                                                                                     [ sh:name "constant" ;
+                                                                                                                      sh:description
+                                                                                                                              "Whether the concentration of the protein is constant through the experiment or not. Default is True." ;
+                                                                                                                      sh:path ex:constant ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:boolean ;
+                                                                                                                      sh:minCount
+                                                                                                                              1 ;
+                                                                                                                      sh:defaultValue
+                                                                                                                              true ],
+                                                                                                                    [ sh:name "ecnumber" ;
+                                                                                                                      sh:description
+                                                                                                                              "EC number of the protein." ;
+                                                                                                                      sh:path ex:ecnumber ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ],
+                                                                                                                    [ sh:name "id" ;
+                                                                                                                      sh:description
+                                                                                                                              "Identifier of the protein, such as a UniProt ID, or a custom identifier." ;
+                                                                                                                      sh:path <https://schema.org/identifier> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ;
+                                                                                                                      sh:minCount
+                                                                                                                              1 ],
+                                                                                                                    [ sh:name "name" ;
+                                                                                                                      sh:description
+                                                                                                                              "Name of the protein." ;
+                                                                                                                      sh:path <https://schema.org/name> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ;
+                                                                                                                      sh:minCount
+                                                                                                                              1 ],
+                                                                                                                    [ sh:name "organism" ;
+                                                                                                                      sh:description
+                                                                                                                              "Expression host organism of the protein." ;
+                                                                                                                      sh:path <http://purl.obolibrary.org/obo/OBI_0100026> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ],
+                                                                                                                    [ sh:name "organism_tax_id" ;
+                                                                                                                      sh:description
+                                                                                                                              "Taxonomy identifier of the expression host." ;
+                                                                                                                      sh:path ex:organism_tax_id ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ],
+                                                                                                                    [ sh:name "references" ;
+                                                                                                                      sh:description
+                                                                                                                              "List of references to publications, database entries, etc. that describe or reference the protein." ;
+                                                                                                                      sh:path <https://schema.org/citation> ;
+                                                                                                                      sh:node [ sh:datatype
+                                                                                                                                        xsd:string ] ],
+                                                                                                                    [ sh:name "sequence" ;
+                                                                                                                      sh:description
+                                                                                                                              "Amino acid sequence of the protein" ;
+                                                                                                                      sh:path <http://purl.obolibrary.org/obo/GSSO_007262> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ],
+                                                                                                                    [ sh:name "vessel_id" ;
+                                                                                                                      sh:description
+                                                                                                                              "Identifier of the vessel this protein has been applied to." ;
+                                                                                                                      sh:path <https://schema.org/identifier> ;
+                                                                                                                      sh:maxCount
+                                                                                                                              1 ;
+                                                                                                                      sh:datatype
+                                                                                                                              xsd:string ] ;
+    sh:targetClass                                                                                                  ex:Protein .
+
+ex:Reaction
+    a                                                                                                sh:NodeShape ;
+    sh:name                                                                                          "Reaction" ;
+    sh:description                                                                                   "The Reaction object represents a chemical or enzymatic reaction and holds the different species and modifiers that are part of the reaction." ;
+    sh:closed                                                                                        true ;
+    sh:nodeKind                                                                                      sh:BlankNodeOrIRI ;
+    sh:property                                                                                      [ sh:name     "id" ;
+                                                                                                       sh:description
+                                                                                                                   "Unique identifier of the reaction." ;
+                                                                                                       sh:path     <https://schema.org/identifier> ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:path     ex:kinetic_law ;
+                                                                                                       sh:node     ex:Equation ;
+                                                                                                       sh:maxCount 1 ],
+                                                                                                     [ sh:name "modifiers" ;
+                                                                                                       sh:description
+                                                                                                               "List of reaction elements that are not part of the reaction but influence it." ;
+                                                                                                       sh:path ex:modifiers ;
+                                                                                                       sh:node ex:ModifierElement ],
+                                                                                                     [ sh:name     "name" ;
+                                                                                                       sh:description
+                                                                                                                   "Name of the reaction." ;
+                                                                                                       sh:path     ex:name ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:name "products" ;
+                                                                                                       sh:description
+                                                                                                               "List of products that are part of the reaction." ;
+                                                                                                       sh:path ex:products ;
+                                                                                                       sh:node ex:ReactionElement ],
+                                                                                                     [ sh:name "reactants" ;
+                                                                                                       sh:description
+                                                                                                               "List of reactants that are part of the reaction." ;
+                                                                                                       sh:path ex:reactants ;
+                                                                                                       sh:node ex:ReactionElement ],
+                                                                                                     [ sh:name     "reversible" ;
+                                                                                                       sh:description
+                                                                                                                   "Whether the reaction is reversible or irreversible. Default is False." ;
+                                                                                                       sh:path     ex:reversible ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:boolean ;
+                                                                                                       sh:minCount 1 ;
+                                                                                                       sh:defaultValue
+                                                                                                                   false ] ;
+    sh:targetClass                                                                                   ex:Reaction .
+
+ex:SmallMolecule
+    a                                                                                                                  sh:NodeShape ;
+    sh:name                                                                                                            "SmallMolecule" ;
+    sh:description                                                                                                     "The SmallMolecule object represents small chemical compounds that participate in the experiment as substrates, products, or modifiers. It captures key molecular identifiers like SMILES and InChI." ;
+    sh:closed                                                                                                          true ;
+    sh:nodeKind                                                                                                        sh:BlankNodeOrIRI ;
+    sh:property                                                                                                        [ sh:name "canonical_smiles" ;
+                                                                                                                         sh:description
+                                                                                                                                 "Canonical Simplified Molecular-Input Line-Entry System (SMILES) encoding of the small molecule." ;
+                                                                                                                         sh:path ex:canonical_smiles ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:string ],
+                                                                                                                       [ sh:name "constant" ;
+                                                                                                                         sh:description
+                                                                                                                                 "Whether the concentration of the small molecule is constant through the experiment or not. Default is False." ;
+                                                                                                                         sh:path ex:constant ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:boolean ;
+                                                                                                                         sh:minCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:defaultValue
+                                                                                                                                 false ],
+                                                                                                                       [ sh:name "id" ;
+                                                                                                                         sh:description
+                                                                                                                                 "Identifier of the small molecule, such as a Pubchem ID, ChEBI ID, or a custom identifier." ;
+                                                                                                                         sh:path <https://schema.org/identifier> ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:string ;
+                                                                                                                         sh:minCount
+                                                                                                                                 1 ],
+                                                                                                                       [ sh:name "inchi" ;
+                                                                                                                         sh:description
+                                                                                                                                 "International Chemical Identifier (InChI) encoding of the small molecule." ;
+                                                                                                                         sh:path ex:inchi ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:string ],
+                                                                                                                       [ sh:name "inchikey" ;
+                                                                                                                         sh:description
+                                                                                                                                 "Hashed International Chemical Identifier (InChIKey) encoding of the small molecule." ;
+                                                                                                                         sh:path ex:inchikey ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:string ],
+                                                                                                                       [ sh:name "name" ;
+                                                                                                                         sh:description
+                                                                                                                                 "Name of the small molecule." ;
+                                                                                                                         sh:path <https://schema.org/name> ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:string ;
+                                                                                                                         sh:minCount
+                                                                                                                                 1 ],
+                                                                                                                       [ sh:name "references" ;
+                                                                                                                         sh:description
+                                                                                                                                 "List of references to publications, database entries, etc. that describe or reference the small molecule." ;
+                                                                                                                         sh:path <https://schema.org/citation> ;
+                                                                                                                         sh:node [ sh:datatype
+                                                                                                                                           xsd:string ] ],
+                                                                                                                       [ sh:name "synonymous_names" ;
+                                                                                                                         sh:description
+                                                                                                                                 "List of synonymous names for the small molecule." ;
+                                                                                                                         sh:path ex:synonymous_names ;
+                                                                                                                         sh:node [ sh:datatype
+                                                                                                                                           xsd:string ] ],
+                                                                                                                       [ sh:name "vessel_id" ;
+                                                                                                                         sh:description
+                                                                                                                                 "Identifier of the vessel this small molecule has been used in." ;
+                                                                                                                         sh:path <https://schema.org/identifier> ;
+                                                                                                                         sh:maxCount
+                                                                                                                                 1 ;
+                                                                                                                         sh:datatype
+                                                                                                                                 xsd:string ] ;
+    sh:targetClass                                                                                                     ex:SmallMolecule .
+
+ex:Vessel
+    a                                                                                                            sh:NodeShape ;
+    sh:name                                                                                                      "Vessel" ;
+    sh:description                                                                                               "The Vessel object represents containers used to conduct experiments, such as reaction vessels, microplates, or bioreactors. It captures key properties like volume and whether the volume remains constant during the experiment." ;
+    sh:closed                                                                                                    true ;
+    sh:nodeKind                                                                                                  sh:BlankNodeOrIRI ;
+    sh:property                                                                                                  [ sh:name "constant" ;
+                                                                                                                   sh:description
+                                                                                                                           "Whether the volume of the vessel is constant or not. Default is True." ;
+                                                                                                                   sh:path ex:constant ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:boolean ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ;
+                                                                                                                   sh:defaultValue
+                                                                                                                           true ],
+                                                                                                                 [ sh:name "id" ;
+                                                                                                                   sh:description
+                                                                                                                           "Unique identifier of the vessel." ;
+                                                                                                                   sh:path <https://schema.org/identifier> ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:string ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:name "name" ;
+                                                                                                                   sh:description
+                                                                                                                           "Name of the used vessel." ;
+                                                                                                                   sh:path <https://schema.org/name> ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:string ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:path ex:unit ;
+                                                                                                                   sh:node ex:UnitDefinition ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ],
+                                                                                                                 [ sh:name "volume" ;
+                                                                                                                   sh:description
+                                                                                                                           "Volumetric value of the vessel." ;
+                                                                                                                   sh:path <http://purl.obolibrary.org/obo/OBI_0002139> ;
+                                                                                                                   sh:maxCount
+                                                                                                                           1 ;
+                                                                                                                   sh:datatype
+                                                                                                                           xsd:decimal ;
+                                                                                                                   sh:minCount
+                                                                                                                           1 ] ;
+    sh:targetClass                                                                                               ex:Vessel .
+
+ex:UnitDefinition
+    a sh:NodeShape ;
+    sh:name "UnitDefinition" ;
+    sh:description "Represents a unit definition that is based on the SI unit system." ;
+    sh:closed true ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:property [ sh:name        "base_units" ;
+                  sh:description "Base units that define the unit." ;
+                  sh:path        ex:base_units ;
+                  sh:node        ex:BaseUnit ], [ sh:name        "id" ;
+                                                  sh:description "Unique identifier of the unit definition." ;
+                                                  sh:path        ex:id ;
+                                                  sh:maxCount    1 ;
+                                                  sh:datatype    xsd:string ], [ sh:name     "name" ;
+                                                                                 sh:description
+                                                                                             "Common name of the unit definition." ;
+                                                                                 sh:path     ex:name ;
+                                                                                 sh:maxCount 1 ;
+                                                                                 sh:datatype xsd:string ] ;
+    sh:targetClass ex:UnitDefinition .
+
+ex:Variable
+    a                                                                                                sh:NodeShape ;
+    sh:name                                                                                          "Variable" ;
+    sh:description                                                                                   "This object describes a variable that is part of an equation. Variables can represent species concentrations, time, or other quantities that appear in mathematical expressions. Each variable must have a unique identifier, name, and symbol that is used in equations." ;
+    sh:closed                                                                                        true ;
+    sh:nodeKind                                                                                      sh:BlankNodeOrIRI ;
+    sh:property                                                                                      [ sh:name     "id" ;
+                                                                                                       sh:description
+                                                                                                                   "Identifier of the variable." ;
+                                                                                                       sh:path     <https://schema.org/identifier> ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:name     "name" ;
+                                                                                                       sh:description
+                                                                                                                   "Name of the variable." ;
+                                                                                                       sh:path     ex:name ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:name     "symbol" ;
+                                                                                                       sh:description
+                                                                                                                   "Equation symbol of the variable." ;
+                                                                                                       sh:path     ex:symbol ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:string ;
+                                                                                                       sh:minCount 1 ] ;
+    sh:targetClass                                                                                   ex:Variable .
+
+ex:UnitType
+    a              sh:NodeShape ;
+    sh:name        "UnitType" ;
+    sh:datatype    xsd:string ;
+    sh:targetClass ex:UnitType ;
+    sh:in          ( "ampere" "avogadro" "becquerel" "candela" "celsius" "coulomb" "dimensionless" "farad" "gram" "gray"
+                     "henry" "hertz" "item" "joule" "katal" "kelvin" "kilogram" "litre" "lumen" "lux" "metre" "mole"
+                     "newton" "ohm" "pascal" "radian" "second" "siemens" "sievert" "steradian" "tesla" "volt" "watt"
+                     "weber" ) .
+
+ex:BaseUnit
+    a                                                                                                sh:NodeShape ;
+    sh:name                                                                                          "BaseUnit" ;
+    sh:description                                                                                   "Represents a base unit in the unit definition." ;
+    sh:closed                                                                                        true ;
+    sh:nodeKind                                                                                      sh:BlankNodeOrIRI ;
+    sh:property                                                                                      [ sh:name     "exponent" ;
+                                                                                                       sh:description
+                                                                                                                   "Exponent of the base unit in the unit definition." ;
+                                                                                                       sh:path     ex:exponent ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:integer ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:path     ex:kind ;
+                                                                                                       sh:node     ex:UnitType ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:minCount 1 ],
+                                                                                                     [ sh:name     "multiplier" ;
+                                                                                                       sh:description
+                                                                                                                   "Multiplier of the base unit in the unit definition." ;
+                                                                                                       sh:path     ex:multiplier ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:decimal ],
+                                                                                                     [ sh:name     "scale" ;
+                                                                                                       sh:description
+                                                                                                                   "Scale of the base unit in the unit definition." ;
+                                                                                                       sh:path     ex:scale ;
+                                                                                                       sh:maxCount 1 ;
+                                                                                                       sh:datatype xsd:decimal ] ;
+    sh:targetClass                                                                                   ex:BaseUnit .
+
+ex:ReactionElement
+    a                                                                                                             sh:NodeShape ;
+    sh:name                                                                                                       "ReactionElement" ;
+    sh:description                                                                                                "This object is part of the object and describes a species (SmallMolecule, Protein, Complex) participating in the reaction. The stochiometry is of the species is specified in the field, whereas negative values indicate that the species is a reactant and positive values indicate that the species is a product of the reaction." ;
+    sh:closed                                                                                                     true ;
+    sh:nodeKind                                                                                                   sh:BlankNodeOrIRI ;
+    sh:property                                                                                                   [ sh:name "species_id" ;
+                                                                                                                    sh:description
+                                                                                                                            "Internal identifier to either a protein or reactant defined in the EnzymeML Document." ;
+                                                                                                                    sh:path <https://schema.org/identifier> ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:datatype
+                                                                                                                            xsd:string ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ],
+                                                                                                                  [ sh:name "stoichiometry" ;
+                                                                                                                    sh:description
+                                                                                                                            "Float number representing the associated stoichiometry." ;
+                                                                                                                    sh:path ex:stoichiometry ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:datatype
+                                                                                                                            xsd:decimal ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ;
+                                                                                                                    sh:defaultValue
+                                                                                                                            1 ] ;
+    sh:targetClass                                                                                                ex:ReactionElement .
+
+ex:ModifierElement
+    a                                                                                                             sh:NodeShape ;
+    sh:name                                                                                                       "ModifierElement" ;
+    sh:description                                                                                                "The ModifierElement object represents a species that is not part of the reaction but influences it." ;
+    sh:closed                                                                                                     true ;
+    sh:nodeKind                                                                                                   sh:BlankNodeOrIRI ;
+    sh:property                                                                                                   [ sh:path ex:role ;
+                                                                                                                    sh:node ex:ModifierRole ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ],
+                                                                                                                  [ sh:name "species_id" ;
+                                                                                                                    sh:description
+                                                                                                                            "Internal identifier to either a protein or reactant defined in the EnzymeML Document." ;
+                                                                                                                    sh:path <https://schema.org/identifier> ;
+                                                                                                                    sh:maxCount
+                                                                                                                            1 ;
+                                                                                                                    sh:datatype
+                                                                                                                            xsd:string ;
+                                                                                                                    sh:minCount
+                                                                                                                            1 ] ;
+    sh:targetClass                                                                                                ex:ModifierElement .
+
+ex:ModifierRole
+    a              sh:NodeShape ;
+    sh:name        "ModifierRole" ;
+    sh:datatype    xsd:string ;
+    sh:targetClass ex:ModifierRole ;
+    sh:in          ( "activator" "additive" "biocatalyst" "buffer" "catalyst" "inhibitor" "solvent" ) .
+
+ex:MeasurementData
+    a                                                                                                           sh:NodeShape ;
+    sh:name                                                                                                     "MeasurementData" ;
+    sh:description                                                                                              "This object describes a single entity of a measurement, which corresponds to one species (Protein, Complex, SmallMolecule). It contains time course data for that species, including the initial amount, prepared amount, and measured data points over time. Endpoint data is treated as a time course data point with only one data point." ;
+    sh:closed                                                                                                   true ;
+    sh:nodeKind                                                                                                 sh:BlankNodeOrIRI ;
+    sh:property                                                                                                 [ sh:name "data" ;
+                                                                                                                  sh:description
+                                                                                                                          "Data that was measured." ;
+                                                                                                                  sh:path ex:data ;
+                                                                                                                  sh:node [ sh:datatype
+                                                                                                                                    xsd:decimal ] ],
+                                                                                                                [ sh:path ex:data_type ;
+                                                                                                                  sh:node ex:DataTypes ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ],
+                                                                                                                [ sh:path ex:data_unit ;
+                                                                                                                  sh:node ex:UnitDefinition ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ],
+                                                                                                                [ sh:name "initial" ;
+                                                                                                                  sh:description
+                                                                                                                          "Initial amount of the measurement data. This must be the same as the first data point in the  array." ;
+                                                                                                                  sh:path ex:initial ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ;
+                                                                                                                  sh:datatype
+                                                                                                                          xsd:decimal ],
+                                                                                                                [ sh:name "is_simulated" ;
+                                                                                                                  sh:description
+                                                                                                                          "Whether or not the data has been generated by simulation. Default is False." ;
+                                                                                                                  sh:path ex:is_simulated ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ;
+                                                                                                                  sh:datatype
+                                                                                                                          xsd:boolean ;
+                                                                                                                  sh:defaultValue
+                                                                                                                          false ],
+                                                                                                                [ sh:name "prepared" ;
+                                                                                                                  sh:description
+                                                                                                                          "Amount of the the species before starting the measurement. This field can be used for specifying the prepared amount of a species in the reaction mix. Not to be confused with , specifying the concentration of a species at the first data point from the  array." ;
+                                                                                                                  sh:path ex:prepared ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ;
+                                                                                                                  sh:datatype
+                                                                                                                          xsd:decimal ],
+                                                                                                                [ sh:name "species_id" ;
+                                                                                                                  sh:description
+                                                                                                                          "The identifier for the described reactant." ;
+                                                                                                                  sh:path ex:species_id ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ;
+                                                                                                                  sh:datatype
+                                                                                                                          xsd:string ;
+                                                                                                                  sh:minCount
+                                                                                                                          1 ],
+                                                                                                                [ sh:name "time" ;
+                                                                                                                  sh:description
+                                                                                                                          "Corresponding time points of the ." ;
+                                                                                                                  sh:path ex:time ;
+                                                                                                                  sh:node [ sh:datatype
+                                                                                                                                    xsd:decimal ] ],
+                                                                                                                [ sh:path ex:time_unit ;
+                                                                                                                  sh:node ex:UnitDefinition ;
+                                                                                                                  sh:maxCount
+                                                                                                                          1 ] ;
+    sh:targetClass                                                                                              ex:MeasurementData .
+
+ex:DataTypes
+    a              sh:NodeShape ;
+    sh:name        "DataTypes" ;
+    sh:datatype    xsd:string ;
+    sh:targetClass ex:DataTypes ;
+    sh:in          ( "absorbance" "amount" "concentration" "conversion" "fluorescence" "peakarea" "transmittance"
+                     "turnover" "yield" ) .
+
+ex:EquationType
+    a              sh:NodeShape ;
+    sh:name        "EquationType" ;
+    sh:datatype    xsd:string ;
+    sh:targetClass ex:EquationType ;
+    sh:in          ( "assignment" "initialAssignment" "ode" "rateLaw" ) .

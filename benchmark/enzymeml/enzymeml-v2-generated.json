@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "EnzymeMLDocument": {
+      "title": "EnzymeMLDocument",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "dateCreated": {
+          "type": "string"
+        },
+        "dateModified": {
+          "type": "string"
+        },
+        "creator": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Creator"
+          }
+        },
+        "citation": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["title", "creator"]
+    },
+    "Creator": {
+      "title": "Creator",
+      "type": "object",
+      "properties": {
+        "givenName": {
+          "type": "string"
+        },
+        "familyName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["givenName", "familyName", "email"]
+    },
+    "Vessel": {
+      "title": "Vessel",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "OBI_0002139": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier", "name", "OBI_0002139"]
+    },
+    "Protein": {
+      "title": "Protein",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "allOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "GSSO_007262": {
+          "type": "string"
+        },
+        "OBI_0100026": {
+          "type": "string"
+        },
+        "citation": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier", "name"]
+    },
+    "Complex": {
+      "title": "Complex",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "allOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier", "name"]
+    },
+    "SmallMolecule": {
+      "title": "SmallMolecule",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "allOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "citation": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier", "name"]
+    },
+    "Reaction": {
+      "title": "Reaction",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    },
+    "ReactionElement": {
+      "title": "ReactionElement",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    },
+    "ModifierElement": {
+      "title": "ModifierElement",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    },
+    "Equation": {
+      "title": "Equation",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    },
+    "Variable": {
+      "title": "Variable",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    },
+    "Parameter": {
+      "title": "Parameter",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    },
+    "Measurement": {
+      "title": "Measurement",
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "required": ["identifier"]
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/EnzymeMLDocument"
+    },
+    {
+      "$ref": "#/$defs/Vessel"
+    },
+    {
+      "$ref": "#/$defs/Protein"
+    },
+    {
+      "$ref": "#/$defs/Complex"
+    },
+    {
+      "$ref": "#/$defs/SmallMolecule"
+    },
+    {
+      "$ref": "#/$defs/Reaction"
+    },
+    {
+      "$ref": "#/$defs/ReactionElement"
+    },
+    {
+      "$ref": "#/$defs/ModifierElement"
+    },
+    {
+      "$ref": "#/$defs/Equation"
+    },
+    {
+      "$ref": "#/$defs/Variable"
+    },
+    {
+      "$ref": "#/$defs/Parameter"
+    },
+    {
+      "$ref": "#/$defs/Measurement"
+    }
+  ]
+}
