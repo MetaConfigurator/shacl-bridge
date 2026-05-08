@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="shacl-bridge" tests="39" failures="39" skipped="0">
+    <testsuite name="comake-shacl-to-json-schema" tests="39" failures="39" skipped="0">
+        <testcase name="core/cardiniality/combination-multi" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1667, Jaccard: 0.1000 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1667"/>
+                <property name="jaccard" value="0.1000"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-multi.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-multi.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/combination-single" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-single.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/combination-single.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/maxCount" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2500, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2500"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/maxCount.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/maxCount.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/cardiniality/minCount" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2000, Jaccard: 0.1250 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2000"/>
+                <property name="jaccard" value="0.1250"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/minCount.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/cardiniality/minCount.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/and" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/and.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/and.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/not" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/not.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/not.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/or" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/or.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/or.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/logical/xone" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/xone.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/logical/xone.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/closed" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.0952, Jaccard: 0.0526 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0952"/>
+                <property name="jaccard" value="0.0526"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/closed.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/closed.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/hasValue" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/hasValue.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/hasValue.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/ignored-properties-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.0909, Jaccard: 0.0500 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0909"/>
+                <property name="jaccard" value="0.0500"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/ignored-properties-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/ignored-properties-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/other/in" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/in.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/other/in.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/disjoint-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/disjoint-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/disjoint-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/equals-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/equals-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/equals-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/lessThan-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThan-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThan-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/property-pair/lessThanOrEquals-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThanOrEquals-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/property-pair/lessThanOrEquals-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/node" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.0606, Jaccard: 0.0313 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.0606"/>
+                <property name="jaccard" value="0.0313"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/node.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/node.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/property" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/property.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/property.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/shape-based/qualifiedValueShape" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/qualifiedValueShape.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/shape-based/qualifiedValueShape.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/languageIn-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/languageIn-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/languageIn-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/maxLength" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/maxLength.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/maxLength.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/minLength" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/minLength.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/minLength.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/pattern" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/pattern.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/pattern.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/string/uniqueLang-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/uniqueLang-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/string/uniqueLang-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/combination-exclusive" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1538, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1538"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-exclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-exclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/combination-inclusive" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1538, Jaccard: 0.0909 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1538"/>
+                <property name="jaccard" value="0.0909"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-inclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/combination-inclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/maxExclusive" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1818, Jaccard: 0.1111 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1818"/>
+                <property name="jaccard" value="0.1111"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxExclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxExclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/maxInclusive" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1818, Jaccard: 0.1111 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1818"/>
+                <property name="jaccard" value="0.1111"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxInclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/maxInclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/minExclusive" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1818, Jaccard: 0.1111 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1818"/>
+                <property name="jaccard" value="0.1111"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minExclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minExclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-range/minInclusive" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.1818, Jaccard: 0.1111 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.1818"/>
+                <property name="jaccard" value="0.1111"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minInclusive.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-range/minInclusive.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/class" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/class.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/class.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/datatype" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/datatype.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/datatype.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node-or-iri" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-iri.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-iri.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node-or-literal" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node-or-literal.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/blank-node" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/blank-node.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/iri-or-literal" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/iri-or-literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/iri-or-literal.json"/>
+            </properties>
+        </testcase>
+        <testcase name="core/value-type/node-kind/literal" classname="comake-shacl-to-json-schema">
+            <failure message="F1: 0.2222, Jaccard: 0.1429 — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="0.2222"/>
+                <property name="jaccard" value="0.1429"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/literal.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/core/value-type/node-kind/literal.json"/>
+            </properties>
+        </testcase>
+        <testcase name="sparql/ask-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/ask-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/ask-ext.json"/>
+            </properties>
+        </testcase>
+        <testcase name="sparql/select-ext" classname="comake-shacl-to-json-schema">
+            <failure message="F1: ERROR, Jaccard: ERROR — at least one score is below threshold 0.5"/>
+            <properties>
+                <property name="f1" value="ERROR"/>
+                <property name="jaccard" value="ERROR"/>
+                <property name="status" value="FAIL"/>
+                <property name="input"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/select-ext.ttl"/>
+                <property name="expected"
+                          value="/Users/giridhar/Code/shacl-bridge/benchmark/shacl-to-json-schema/sparql/select-ext.json"/>
+            </properties>
+        </testcase>
+    </testsuite>
+</testsuites>

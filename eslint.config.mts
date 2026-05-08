@@ -10,7 +10,14 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
-    ignores: ['node_modules/*', 'dist/*', 'coverage/*', 'eslint.config.mts', 'jest.config.js'],
+    ignores: [
+      'node_modules/*',
+      'dist/*',
+      'coverage/*',
+      'benchmark/*',
+      'eslint.config.mts',
+      'jest.config.js',
+    ],
   },
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
