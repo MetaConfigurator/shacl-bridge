@@ -10,7 +10,7 @@ similarity scores.
 Tests each conversion direction independently against known-good expected outputs.
 
 | Suite                  | Input   | Expected output |
-|------------------------|---------|-----------------|
+| ---------------------- | ------- | --------------- |
 | `json-schema-to-shacl` | `.json` | `.ttl`          |
 | `shacl-to-json-schema` | `.ttl`  | `.json`         |
 
@@ -21,7 +21,7 @@ test pairs. Converts Turtle to JSON-LD (via N3 + `jsonld.frame`), then passes fr
 `nodeShapeToJSONSchema`.
 
 | Suite                         | Input  | Expected output |
-|-------------------------------|--------|-----------------|
+| ----------------------------- | ------ | --------------- |
 | `comake-shacl-to-json-schema` | `.ttl` | `.json`         |
 
 ### `benchmark:siqueira` — shacl-jsonschema-converter
@@ -31,7 +31,7 @@ Schema test pairs. Preprocesses Turtle in-memory to inject `sh:targetClass`, `sh
 required by the library, then calls `getUniqueSchemaFromTtl`.
 
 | Suite                           | Input  | Expected output |
-|---------------------------------|--------|-----------------|
+| ------------------------------- | ------ | --------------- |
 | `siqueira-shacl-to-json-schema` | `.ttl` | `.json`         |
 
 ### `benchmark:jsonschema2shacl` — jsonschema2shacl
@@ -41,7 +41,7 @@ pairs. Calls the library via a helper Python script (`runner/jsonschema2shacl_co
 `pip install jsonschema2shacl`.
 
 | Suite              | Input   | Expected output |
-|--------------------|---------|-----------------|
+| ------------------ | ------- | --------------- |
 | `jsonschema2shacl` | `.json` | `.ttl`          |
 
 ### `benchmark:roundtrip` — Round-trip conversion
@@ -49,7 +49,7 @@ pairs. Calls the library via a helper Python script (`runner/jsonschema2shacl_co
 Tests that a full round-trip produces output equivalent to the original input, with no expected output files needed.
 
 | Suite                   | Pipeline                                             |
-|-------------------------|------------------------------------------------------|
+| ----------------------- | ---------------------------------------------------- |
 | `shacl-roundtrip`       | `.ttl` → JSON Schema → `.ttl` (compared to original) |
 | `json-schema-roundtrip` | `.json` → SHACL → `.json` (compared to original)     |
 
@@ -86,7 +86,7 @@ npm run benchmark:jsonschema2shacl
 Both runners accept the same optional flags:
 
 | Flag             | Description                                                           |
-|------------------|-----------------------------------------------------------------------|
+| ---------------- | --------------------------------------------------------------------- |
 | `--junit <path>` | Write JUnit XML to a specific path (default: `results/benchmark.xml`) |
 | `--csv <path>`   | Write CSV to a specific path (default: `results/benchmark.csv`)       |
 | `--file <path>`  | Run only the test(s) at the given file or directory path              |
@@ -96,7 +96,7 @@ Both runners accept the same optional flags:
 Results are always written to `results/` in the benchmark directory unless an explicit path is provided.
 
 | File                                     | Description                                     |
-|------------------------------------------|-------------------------------------------------|
+| ---------------------------------------- | ----------------------------------------------- |
 | `results/benchmark.xml`                  | JUnit report for the direct benchmark           |
 | `results/benchmark.csv`                  | CSV report for the direct benchmark             |
 | `results/roundtrip-benchmark.xml`        | JUnit report for the round-trip benchmark       |
@@ -111,7 +111,7 @@ Results are always written to `results/` in the benchmark directory unless an ex
 ### Status levels
 
 | Status    | Meaning                                                |
-|-----------|--------------------------------------------------------|
+| --------- | ------------------------------------------------------ |
 | `PASS`    | F1 = 1.0 and Jaccard = 1.0                             |
 | `WARN`    | Both scores ≥ 0.5 but at least one is below 1.0        |
 | `FAIL`    | At least one score is below 0.5, or conversion errored |
