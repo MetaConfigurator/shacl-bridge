@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.7.0...v1.7.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* **conversion:** add support for $term ([#169](https://github.com/MetaConfigurator/shacl-bridge/issues/169)) ([57e7934](https://github.com/MetaConfigurator/shacl-bridge/commit/57e7934d0b002c03f5f12f76b6e705a4a12901fe))
+
 # [1.7.0](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.6.2...v1.7.0) (2026-05-02)
 
 
