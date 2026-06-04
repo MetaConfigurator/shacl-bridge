@@ -4,7 +4,6 @@ import { StackElementBuilder } from '../../../../src/stack/stack-element-builder
 import { ShapeDefinition } from '../../../../src/ir/meta-model/shape-definition';
 import { StackElement } from '../../../../src/stack/stack-element';
 import { NodeKind } from '../../../../src/ir/meta-model/node-kind';
-import { CoreConstraints } from '../../../../src/ir/meta-model/core-constraints';
 import { JsonSchemaObjectBuilder } from '../../../../src/json-schema/meta/json-schema-object-builder';
 import { SHAPE_TYPE } from '../../../../src/ir/meta-model/shape';
 
@@ -753,7 +752,7 @@ describe('ConstraintConverter', () => {
 
     describe('unmapped constraints', () => {
       it('should apply custom x-shacl property for unmapped constraint', () => {
-        mockShape.coreConstraints = { uniqueLang: true } as CoreConstraints;
+        mockShape.coreConstraints = { uniqueLang: true };
 
         const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
           includeShaclExtensions: true,
@@ -764,7 +763,7 @@ describe('ConstraintConverter', () => {
       });
 
       it('should not apply custom property for "property" key', () => {
-        mockShape.coreConstraints = { property: ['someProperty'] } as CoreConstraints;
+        mockShape.coreConstraints = { property: ['someProperty'] };
 
         const converter = new ConstraintConverter(mockStackElementBuilder, processedMap, {
           includeShaclExtensions: true,

@@ -60,7 +60,7 @@ export class ConstraintConverter {
               key: 'datatype',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -79,7 +79,7 @@ export class ConstraintConverter {
               key: 'minLength',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.minLength(candidate.constraints.minLength ?? 0);
@@ -93,7 +93,7 @@ export class ConstraintConverter {
               key: 'maxLength',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.maxLength(candidate.constraints.maxLength ?? 0);
@@ -107,7 +107,7 @@ export class ConstraintConverter {
               key: 'minInclusive',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -121,7 +121,7 @@ export class ConstraintConverter {
               key: 'maxInclusive',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -135,7 +135,7 @@ export class ConstraintConverter {
               key: 'minExclusive',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -149,7 +149,7 @@ export class ConstraintConverter {
               key: 'maxExclusive',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(numericDatatypeSpecified)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -158,12 +158,13 @@ export class ConstraintConverter {
             .execute();
         })
         .with('nodeKind', () => {
+          if (this.constraints.class != null || this.constraints.node != null) return;
           new Condition()
             .on({
               key: 'nodeKind',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf((c) => !arraySetByContext(c))
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -184,7 +185,7 @@ export class ConstraintConverter {
               key: 'in',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               builder.enum(candidate.constraints.in?.map(extractStrippedName) ?? []);
@@ -197,7 +198,7 @@ export class ConstraintConverter {
               key: 'class',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -221,7 +222,7 @@ export class ConstraintConverter {
               key: 'node',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(arraySetByContext)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -245,7 +246,7 @@ export class ConstraintConverter {
               key: 'qualifiedValueShape',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const nodeKey = candidate.constraints.qualifiedValueShape ?? '';
@@ -266,7 +267,7 @@ export class ConstraintConverter {
               key: 'minCount',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(setMinItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
@@ -280,7 +281,7 @@ export class ConstraintConverter {
               key: 'maxCount',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(setMaxItems)
             .ifSatisfied((candidate: ConstraintCandidate) =>
@@ -294,7 +295,7 @@ export class ConstraintConverter {
               key: 'qualifiedMinCount',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf((c) => (c.constraints.qualifiedMinCount ?? 0) > 0)
             .ifSatisfied((candidate: ConstraintCandidate) =>
@@ -308,7 +309,7 @@ export class ConstraintConverter {
               key: 'qualifiedMaxCount',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.maxContains(candidate.constraints.qualifiedMaxCount ?? 0)
@@ -321,7 +322,7 @@ export class ConstraintConverter {
               key: 'pattern',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) =>
               builder.pattern(candidate.constraints.pattern ?? '')
@@ -334,7 +335,7 @@ export class ConstraintConverter {
               key: 'hasValue',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .allOf(stringValue)
             .ifSatisfied((candidate: ConstraintCandidate) => {
@@ -352,7 +353,7 @@ export class ConstraintConverter {
               key: 'or',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const orSchemas =
@@ -381,7 +382,7 @@ export class ConstraintConverter {
               key: 'and',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const andSchemas =
@@ -410,7 +411,7 @@ export class ConstraintConverter {
               key: 'xone',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const xoneSchemas =
@@ -439,7 +440,7 @@ export class ConstraintConverter {
               key: 'not',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               const notSchema = candidate.constraints.not
@@ -467,7 +468,7 @@ export class ConstraintConverter {
               key: 'lessThan',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
@@ -484,7 +485,7 @@ export class ConstraintConverter {
               key: 'equals',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
@@ -501,7 +502,7 @@ export class ConstraintConverter {
               key: 'defaultValue',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied((candidate: ConstraintCandidate) => {
               // Parse default value to appropriate JavaScript type based on datatype
@@ -519,7 +520,7 @@ export class ConstraintConverter {
               key: 'lessThanOrEquals',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) =>
@@ -536,7 +537,7 @@ export class ConstraintConverter {
               key: 'disjoint',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .allOf(nonEmptyArray)
@@ -555,7 +556,7 @@ export class ConstraintConverter {
               key: 'ignoredProperties',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .allOf(nonEmptyArray)
@@ -572,7 +573,7 @@ export class ConstraintConverter {
               key: 'closed',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .ifSatisfied(() => builder.additionalProperties(false))
             .execute();
@@ -583,7 +584,7 @@ export class ConstraintConverter {
               key: 'sparqlConstraints',
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) => {

@@ -161,7 +161,7 @@ export class StoreBuilder {
 
   listOfValues(subject: string, predicate: string, items: unknown[], isBlankSubject = false): this {
     return this.buildList(subject, predicate, items, isBlankSubject, (item) =>
-      jsValueToLiteral(item as string | number | boolean)
+      jsValueToLiteral(item)
     );
   }
 

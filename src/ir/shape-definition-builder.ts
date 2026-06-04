@@ -305,14 +305,14 @@ export class ShapeDefinitionBuilder {
     // If this is a SPARQL constraint node, add the constraint to coreConstraints
     if (this.isSparqlConstraintNode && Object.keys(this.currentSparqlConstraint).length > 0) {
       this.coreConstraints.sparqlConstraints ??= [];
-      this.coreConstraints.sparqlConstraints.push(this.currentSparqlConstraint as SparqlConstraint);
+      this.coreConstraints.sparqlConstraints.push(this.currentSparqlConstraint);
     }
 
     return {
       nodeKey: this.nodeKey,
       targets: this.targets,
       shape: this.shape as Shape,
-      coreConstraints: this.coreConstraints as CoreConstraints,
+      coreConstraints: this.coreConstraints,
       dependentShapes: this.dependentShapeDefinitions,
       additionalProperties:
         this.additionalProperties.length > 0 ? this.additionalProperties : undefined,
@@ -407,7 +407,7 @@ export class ShapeDefinitionBuilder {
     if (!this.isSparqlConstraintNode) {
       return null;
     }
-    return this.currentSparqlConstraint as SparqlConstraint;
+    return this.currentSparqlConstraint;
   }
 
   addSparqlConstraint(constraint: SparqlConstraint) {

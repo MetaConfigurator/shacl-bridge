@@ -1096,7 +1096,43 @@ describe('IR Schema Converter - Constraints', () => {
                 type: 'array',
                 items: {
                   $ref: '#/$defs/Course',
-                  oneOf: [{ type: 'object' }, { type: 'string', format: 'uri' }],
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should drop sh:nodeKind sh:IRI when sh:class is also set (no $ref/type collision)', async () => {
+      const content = `
+        @prefix sh: <http://www.w3.org/ns/shacl#> .
+        @prefix ex: <http://example.org/> .
+        @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+        ex:PersonShape
+            a sh:NodeShape ;
+            sh:targetClass foaf:Person ;
+            sh:property [
+                sh:path ex:worksFor ;
+                sh:class ex:Company ;
+                sh:nodeKind sh:IRI ;
+            ] .
+      `;
+      const schema = new IrSchemaConverter(await getIr(content)).convert();
+      expect(schema).toStrictEqual({
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $ref: '#/$defs/Person',
+        $defs: {
+          Person: {
+            title: 'Person',
+            type: 'object',
+            additionalProperties: true,
+            properties: {
+              worksFor: {
+                type: 'array',
+                items: {
+                  $ref: '#/$defs/Company',
                 },
               },
             },
