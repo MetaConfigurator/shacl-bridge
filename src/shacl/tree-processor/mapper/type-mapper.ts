@@ -38,7 +38,7 @@ export class TypeMapper {
     formatOverrides: Set<string>
   ): void {
     if (Array.isArray(schema.type)) {
-      this.mapUnionType(schema.type as string[], subject, isBlank);
+      this.mapUnionType(schema.type, subject, isBlank);
       return;
     }
     if (typeof schema.type !== 'string') return;

@@ -143,7 +143,7 @@ export class StoreWriter {
         writer
       ),
     }));
-    return writer.blank(props) as unknown as BlankNode;
+    return writer.blank(props);
   }
 
   private detectLists(): {
