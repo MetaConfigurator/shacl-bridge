@@ -56,7 +56,7 @@ export class ConstraintConverter {
       match(key)
         .with('datatype', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'datatype',
               context: this.context,
               constraints: this.constraints,
@@ -75,7 +75,7 @@ export class ConstraintConverter {
         })
         .with('minLength', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'minLength',
               context: this.context,
               constraints: this.constraints,
@@ -89,7 +89,7 @@ export class ConstraintConverter {
         })
         .with('maxLength', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'maxLength',
               context: this.context,
               constraints: this.constraints,
@@ -103,7 +103,7 @@ export class ConstraintConverter {
         // (min/max constraints only apply to numeric types in JSON Schema)
         .with('minInclusive', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'minInclusive',
               context: this.context,
               constraints: this.constraints,
@@ -117,7 +117,7 @@ export class ConstraintConverter {
         })
         .with('maxInclusive', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'maxInclusive',
               context: this.context,
               constraints: this.constraints,
@@ -131,7 +131,7 @@ export class ConstraintConverter {
         })
         .with('minExclusive', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'minExclusive',
               context: this.context,
               constraints: this.constraints,
@@ -145,7 +145,7 @@ export class ConstraintConverter {
         })
         .with('maxExclusive', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'maxExclusive',
               context: this.context,
               constraints: this.constraints,
@@ -160,7 +160,7 @@ export class ConstraintConverter {
         .with('nodeKind', () => {
           if (this.constraints.class != null || this.constraints.node != null) return;
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'nodeKind',
               context: this.context,
               constraints: this.constraints,
@@ -181,7 +181,7 @@ export class ConstraintConverter {
         })
         .with('in', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'in',
               context: this.context,
               constraints: this.constraints,
@@ -194,7 +194,7 @@ export class ConstraintConverter {
         })
         .with('class', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'class',
               context: this.context,
               constraints: this.constraints,
@@ -218,7 +218,7 @@ export class ConstraintConverter {
         })
         .with('node', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'node',
               context: this.context,
               constraints: this.constraints,
@@ -242,7 +242,7 @@ export class ConstraintConverter {
         })
         .with('qualifiedValueShape', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'qualifiedValueShape',
               context: this.context,
               constraints: this.constraints,
@@ -263,7 +263,7 @@ export class ConstraintConverter {
         })
         .with('minCount', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'minCount',
               context: this.context,
               constraints: this.constraints,
@@ -277,7 +277,7 @@ export class ConstraintConverter {
         })
         .with('maxCount', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'maxCount',
               context: this.context,
               constraints: this.constraints,
@@ -291,7 +291,7 @@ export class ConstraintConverter {
         })
         .with('qualifiedMinCount', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'qualifiedMinCount',
               context: this.context,
               constraints: this.constraints,
@@ -305,7 +305,7 @@ export class ConstraintConverter {
         })
         .with('qualifiedMaxCount', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'qualifiedMaxCount',
               context: this.context,
               constraints: this.constraints,
@@ -318,7 +318,7 @@ export class ConstraintConverter {
         })
         .with('pattern', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'pattern',
               context: this.context,
               constraints: this.constraints,
@@ -331,7 +331,7 @@ export class ConstraintConverter {
         })
         .with('hasValue', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'hasValue',
               context: this.context,
               constraints: this.constraints,
@@ -349,7 +349,7 @@ export class ConstraintConverter {
         })
         .with('or', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'or',
               context: this.context,
               constraints: this.constraints,
@@ -378,7 +378,7 @@ export class ConstraintConverter {
         })
         .with('and', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'and',
               context: this.context,
               constraints: this.constraints,
@@ -407,7 +407,7 @@ export class ConstraintConverter {
         })
         .with('xone', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'xone',
               context: this.context,
               constraints: this.constraints,
@@ -436,7 +436,7 @@ export class ConstraintConverter {
         })
         .with('not', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'not',
               context: this.context,
               constraints: this.constraints,
@@ -464,7 +464,7 @@ export class ConstraintConverter {
         })
         .with('lessThan', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'lessThan',
               context: this.context,
               constraints: this.constraints,
@@ -481,7 +481,7 @@ export class ConstraintConverter {
         })
         .with('equals', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'equals',
               context: this.context,
               constraints: this.constraints,
@@ -498,7 +498,7 @@ export class ConstraintConverter {
         })
         .with('defaultValue', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'defaultValue',
               context: this.context,
               constraints: this.constraints,
@@ -516,7 +516,7 @@ export class ConstraintConverter {
         })
         .with('lessThanOrEquals', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'lessThanOrEquals',
               context: this.context,
               constraints: this.constraints,
@@ -533,7 +533,7 @@ export class ConstraintConverter {
         })
         .with('disjoint', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'disjoint',
               context: this.context,
               constraints: this.constraints,
@@ -552,7 +552,7 @@ export class ConstraintConverter {
         })
         .with('ignoredProperties', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'ignoredProperties',
               context: this.context,
               constraints: this.constraints,
@@ -569,7 +569,7 @@ export class ConstraintConverter {
         })
         .with('closed', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'closed',
               context: this.context,
               constraints: this.constraints,
@@ -580,7 +580,7 @@ export class ConstraintConverter {
         })
         .with('sparqlConstraints', () => {
           new Condition()
-            .on({
+            .on<ConstraintCandidate>({
               key: 'sparqlConstraints',
               context: this.context,
               constraints: this.constraints,
@@ -597,12 +597,13 @@ export class ConstraintConverter {
         })
         .otherwise((key) => {
           if (key == 'property') return;
+          const constraintKey = key as keyof CoreConstraints;
           new Condition()
-            .on({
-              key: key,
+            .on<ConstraintCandidate>({
+              key: constraintKey,
               context: this.context,
               constraints: this.constraints,
-            } as ConstraintCandidate)
+            })
             .must(isNotNull)
             .must(extensionsEnabled)
             .ifSatisfied((candidate: ConstraintCandidate) => {
