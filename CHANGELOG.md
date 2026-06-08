@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.7.1...v1.7.2) (2026-06-08)
+
+
+### Bug Fixes
+
+* **conversion:** default to reference when converting shapes ([#182](https://github.com/MetaConfigurator/shacl-bridge/issues/182)) ([cc1ff3b](https://github.com/MetaConfigurator/shacl-bridge/commit/cc1ff3bbfcef4ba7d276e69377c1aef90bda9c21))
+
 ## [1.7.1](https://github.com/MetaConfigurator/shacl-bridge/compare/v1.7.0...v1.7.1) (2026-05-11)
 
 
